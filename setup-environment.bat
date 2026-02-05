@@ -30,9 +30,9 @@ echo [2/4] Creating initial commits in bare repositories...
 
 REM Create initial commits (optional but recommended)
 echo Creating temp directory for initial commit...
-mkdir temp-init 2>nul
 
 REM Main system initial commit
+mkdir temp-init 2>nul
 cd temp-init
 git init
 echo # Main System > README.md
@@ -41,8 +41,10 @@ git commit -m "Initial commit"
 git remote add origin ../bare-repos/main-system.git
 git push origin master:main
 cd ..
+rd /s /q temp-init
 
 REM Plugins initial commit
+mkdir temp-init 2>nul
 cd temp-init
 git init
 echo # Plugins > README.md
@@ -51,8 +53,10 @@ git commit -m "Initial commit"
 git remote add origin ../bare-repos/plugins.git
 git push origin master:main
 cd ..
+rd /s /q temp-init
 
 REM Scripts initial commit
+mkdir temp-init 2>nul
 cd temp-init
 git init
 echo # Scripts > README.md
@@ -61,8 +65,10 @@ git commit -m "Initial commit"
 git remote add origin ../bare-repos/scripts.git
 git push origin master:main
 cd ..
+rd /s /q temp-init
 
 REM Resources initial commit
+mkdir temp-init 2>nul
 cd temp-init
 git init
 echo # Resources > README.md
@@ -71,18 +77,43 @@ git commit -m "Initial commit"
 git remote add origin ../bare-repos/resources.git
 git push origin master:main
 cd ..
-
-REM Clean up temp directory
 rd /s /q temp-init
 
 echo.
 echo [3/4] Creating worktrees...
 
-REM Create worktrees
+REM Create worktrees with error handling
+echo Creating worktree for main-system...
 git --git-dir=bare-repos/main-system.git worktree add worktrees/main-system main
+if errorlevel 1 (
+    echo ERROR: Failed to create worktree for main-system. Ensure the repository has a 'main' branch.
+    pause
+    exit /b 1
+)
+
+echo Creating worktree for plugins...
 git --git-dir=bare-repos/plugins.git worktree add worktrees/plugins main
+if errorlevel 1 (
+    echo ERROR: Failed to create worktree for plugins. Ensure the repository has a 'main' branch.
+    pause
+    exit /b 1
+)
+
+echo Creating worktree for scripts...
 git --git-dir=bare-repos/scripts.git worktree add worktrees/scripts main
+if errorlevel 1 (
+    echo ERROR: Failed to create worktree for scripts. Ensure the repository has a 'main' branch.
+    pause
+    exit /b 1
+)
+
+echo Creating worktree for resources...
 git --git-dir=bare-repos/resources.git worktree add worktrees/resources main
+if errorlevel 1 (
+    echo ERROR: Failed to create worktree for resources. Ensure the repository has a 'main' branch.
+    pause
+    exit /b 1
+)
 
 echo.
 echo [4/4] Creating build output directories...
