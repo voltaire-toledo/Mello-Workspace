@@ -1,0 +1,2 @@
+# This directory hosts git worktrees checked out from the bare repositories
+# Each worktree represents an active working copy of the code

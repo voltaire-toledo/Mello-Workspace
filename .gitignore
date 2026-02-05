@@ -1,0 +1,45 @@
+# Build outputs
+build-output/*
+!build-output/.gitkeep
+
+# Compiled binaries
+*.exe
+*.dll
+*.so
+*.dylib
+*.obj
+*.o
+*.lib
+*.a
+
+# Resource files (compiled)
+*.res
+*.rc.o
+
+# IDE and editor files
+.vs/
+.vscode/
+*.suo
+*.user
+*.sln.docstates
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Package manager directories
+node_modules/
+packages/
+
+# Worktree checkouts (keep structure but not content)
+worktrees/*
+!worktrees/.gitkeep
