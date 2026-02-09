@@ -1,6 +1,11 @@
-# Build outputs
-build-output/*
-!build-output/.gitkeep
+# This repo is to only host what's necessary for the Mello-Workspace Dev Environment. 
+# It should not contain any repos, build outputs, binaries, or other generated files.
+
+# Worktree and feature branches (keep structure but not content)
+repos/*
+!repos/.gitkeep
+releases/*
+!releases/.gitkeep
 
 # Compiled binaries
 *.exe
@@ -40,6 +45,3 @@ Desktop.ini
 node_modules/
 packages/
 
-# Worktree checkouts (keep structure but not content)
-worktrees/*
-!worktrees/.gitkeep

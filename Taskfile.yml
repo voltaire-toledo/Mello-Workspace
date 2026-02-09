@@ -27,11 +27,11 @@ tasks:
   init-dev-env:
     desc: Initialize development environment
     cmds:
-      - mkdir -p repos/fix repos/feat repos/lab repos/refa
+      - mkdir -p repos/fix repos/feat repos/lab repos/refac
       - git clone --bare https://github.com/voltaire-toledo/Mello-Workspace.git repos/.mello-workspace.git
       - git clone --bare https://github.com/voltaire-toledo/MWS-Plugin-Chime.git repos/.mws-plugin-chime.git
-      - git -C repos/.mello-workspace.git worktree add ../00-mws-main main
-      - git -C repos/.mws-plugin-chime.git worktree add ../00-chime-main main
+      - git -C repos/.mello-workspace.git worktree add ../.main/Mello-WS main
+      - git -C repos/.mws-plugin-chime.git worktree add ../.main/chime main
   show-color-codes:
     desc: Show color codes
     silent: true                                                              # Suppress output for the default task

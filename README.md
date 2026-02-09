@@ -1,116 +1,253 @@
-# Mello-Workspace Dev Environment
+# App‑Hub Git Worktree Workflow
 
-Dev workspace build environment scaffolding for Windows-based development systems. This repository provides a structured approach to managing multiple git repositories using bare repositories and worktrees, ideal for complex application development with multiple components.
+_A unified development structure for multi‑product, multi‑client teams_
 
-## Overview
+## Purpose
 
-This scaffolding provides a local build environment structure that separates code repositories, build artifacts, and tooling into organized directories. It uses git bare repositories as the foundation, allowing multiple worktrees to be checked out from each repository.
+This document defines a consistent, scalable Git workflow using Git worktrees.It standardizes how developers organize repositories, branches, and working directories across all projects inside ~/app-hub/.
 
-## Directory Structure
+The goals of this workflow:
+
+- Keep development fast and frictionless
+- Support multiple simultaneous feature branches
+- Maintain a clean, always‑updated local main branch
+- Provide a predictable directory structure across all repos
+- Work seamlessly with IDEs like VS Code
+- Avoid the complexity of bare repos while retaining their benefits
+  
+# 1. Directory Structure
+
+All repositories live under this Hub `repos/` directory.
+
+Each repository follows this structure:
 
 ```
-Mello-Workspace_dev-env/
-├── bare-repos/              # Git bare repositories (source of truth)
-│   ├── main-system.git/     # Main application bare repository
-│   ├── plugins.git/         # Plugins component bare repository
-│   ├── scripts.git/         # Build scripts bare repository
-│   └── resources.git/       # Resource DLLs bare repository
-├── worktrees/               # Git worktrees (active working copies)
-├── build-output/            # Compiled binaries and build artifacts
-├── tools/                   # Build tools and utilities
-├── makefiles/               # Makefiles for resource DLLs
-└── README.md               # This file
+🏷️[hub-directory]
+ ├──📁 repos/
+ │   ├──📁 .main/              ← local mirror of remote main (always clean)
+ │   ├──📁 feat-<branch>/      ← feature branches
+ │   ├──📁 fix-<branch>/       ← bugfix branches
+ │   ├──📁 lab-<branch>/       ← experiments / spikes
+ │   └──📁 refac-<branch>/     ← refactoring branches
+ └──📁 releases                ← release packages
 ```
+## Why this structure works
 
-## Getting Started
+- **`.main/`** acts as a stable anchor for all worktrees
+- Each branch has its own **isolated working directory**
+- IDEs treat each worktree as a clean project folder
+- **No nested repos**, no accidental commits of worktree metadata
+- Easy to delete worktrees without touching the main repo
 
-### 1. Initialize Bare Repositories
+---
 
-Each bare repository in `bare-repos/` needs to be initialized before use:
+# Creating a New Repository in App‑Hub
+
+### Clone the repo into the hub:
+
+This creates the .main directory as the default working copy.
 
 ```bash
-# Initialize main system repository
-cd bare-repos/main-system.git
-git init --bare
-
-# Initialize plugins repository
-cd ../plugins.git
-git init --bare
-
-# Initialize scripts repository
-cd ../scripts.git
-git init --bare
-
-# Initialize resources repository
-cd ../resources.git
-git init --bare
+cd ~/app-hub/repos
+git clone <repo-url> .main
 ```
 
-### 2. Create Worktrees
+### Keeping .main Updated
 
-After initializing bare repositories, create worktrees for active development:
+**`.main`** is your local mirror of remote `main` branch.It should always be clean and up to date.
+
+**Update it frequently:**
 
 ```bash
-# Create a worktree for main system
-git --git-dir=bare-repos/main-system.git worktree add worktrees/main-system main
+cd ~/app-hub/repos/<repo-name>/.main
+git pull
 
-# Create a worktree for plugins
-git --git-dir=bare-repos/plugins.git worktree add worktrees/plugins main
+# Or from any worktree:
 
-# Create a worktree for scripts
-git --git-dir=bare-repos/scripts.git worktree add worktrees/scripts main
-
-# Create a worktree for resources
-git --git-dir=bare-repos/resources.git worktree add worktrees/resources main
+git fetch origin
+git -C ~/app-hub/repos/<repo-name>/.main pull
 ```
 
-### 3. Working with the Environment
+> 🔥**IMPORTANT**
+> - .main should never contain uncommitted work. 
+> - DO NOT commit any changes directly to the .main branch.
 
-- **Code Development**: Work in the `worktrees/` directory for each component
-- **Build Outputs**: Compiled artifacts automatically go to `build-output/`
-- **Resource Building**: Use makefiles in `makefiles/` directory to build resource DLLs
-- **Tools**: Store development tools in the `tools/` directory
+### Creating a New Worktree for a Branch
 
-## Use Cases
+From inside .main:
 
-### Plugin Development
+```bash
+cd ~/app-hub/repos/<repo-name>/.main
+git worktree add ../feat-MyFeature -b feat/MyFeature
 
-1. Navigate to `worktrees/plugins/`
-2. Develop plugin code
-3. Commit changes (updates the bare repository)
-4. Build outputs go to `build-output/plugins/`
+# Or for an existing branch:
 
-### Resource DLL Creation
+git worktree add ../fix-Bug42 fix/Bug42
+```
 
-1. Place resource files (icons, audio, images) in `worktrees/resources/`
-2. Use makefiles in `makefiles/` to build resource DLLs
-3. Output DLLs are stored in `build-output/resources/`
+This creates a new directory:
 
-### Build Scripts
+```bash
+~/app-hub/repos/<repo-name>/feat-MyFeature/
+```
 
-1. Develop build automation in `worktrees/scripts/`
-2. Scripts can reference other worktrees and build outputs
-3. Common scripts: build-all.bat, clean.bat, package.bat
+You can open this directly in VS Code or any IDE.
 
-## Benefits of This Structure
+### Working on a Feature Branch
 
-- **Separation of Concerns**: Each component has its own repository
-- **Clean History**: Bare repositories maintain clean git history
-- **Multiple Worktrees**: Work on different branches simultaneously
-- **Organized Builds**: Clear separation between source and build outputs
-- **Windows-Friendly**: Structure designed for Windows development workflows
+Each worktree is a fully isolated working directory.
 
-## Contributing
+Typical workflow:
 
-When adding new components:
+```bash
+cd ~/app-hub/repos/<repo-name>/feat-MyFeature
 
-1. Create a new bare repository in `bare-repos/`
-2. Initialize it with `git init --bare`
-3. Create corresponding worktree in `worktrees/`
-4. Update this README with the new component
+# [edit the code with your choice of IDEs and Tools]
 
-## Notes
+git add .
+git commit -m "Implement feature"
+```
 
-- Build outputs in `build-output/` are excluded from version control
-- Worktree contents are excluded from version control (managed by their respective bare repos)
-- Each bare repository can have multiple worktrees for different branches
+---
+
+## ℹ️ Rebasing Feature Branches onto Updated Main
+
+When main changes (often dozens of times per day), update your feature branch:
+
+**Step 1: Update .main**
+
+```bash
+git fetch origin
+git -C ~/app-hub/repos/<repo-name>/.main pull
+```
+
+**Step 2: Rebase your feature branch**
+
+```bash
+cd ~/app-hub/repos/<repo-name>/feat-MyFeature
+git rebase ../.main
+```
+
+ℹ️ This keeps your branch aligned with the latest changes.
+
+### Why rebase instead of merge
+- Cleaner history
+- Easier code review
+- No merge bubbles
+- Ideal for **Trunk‑Based Development (TBD)**, the modern standard practice
+
+## Deleting a Worktree
+
+Once a branch is merged:
+
+```bash
+cd ~/app-hub/repos/<repo-name>/.main
+git worktree remove ../feat-MyFeature
+git branch -d feat/MyFeature
+```
+
+💡TIP: If the folder was deleted manually:
+```bash
+git worktree prune
+```
+
+## Naming Conventions
+
+Use consistent prefixes:
+
+| Prefix | Purpose |
+|--------|---------|
+| feat-  | New features |
+| fix-   | Bug fixes |
+| lab-   | Experiments, spikes, prototypes |
+| refac- | Refactoring work |
+
+**Note the differences between the directory names and the corresponding Git branch names.** For example:
+
+| Worktree directory name | Git branch name |
+|-------------------------|-----------------|
+| feat-MyFeature | **`feat/MyFeature`** |
+| fix-Bug42      | **`fix/Bug42`**      |
+| lab-PrototypeA | **`lab/PrototypeA`** |
+
+## TIPS: Recommended Developer Workflow
+
+1. Keep .main clean and updated
+2. Create a worktree for each task
+3. Do all work inside the worktree
+4. Rebase frequently
+5. Push when ready
+6. Delete the worktree after merge
+
+This supports:
+- fast context switching
+- multiple parallel tasks
+- clean Git history
+- minimal merge conflicts
+
+## Why We Don’t Use Bare Repos
+
+Bare repos complicate:
+- IDE integration
+- tooling
+- path resolution
+- developer onboarding
+
+This workflow gives you the benefits of a bare repo (a clean anchor) without the drawbacks.
+
+---
+
+## Full Workflow Example
+
+### Start a new feature
+
+Create a worktree for a new feature branch:
+
+```bash
+cd ~/app-hub/repos/myrepo/.main
+git pull
+git worktree add ../feat-UserLogin -b feat/UserLogin
+```
+Work on it
+
+```bash
+cd ../feat-UserLogin
+
+# or 
+
+code ../feat-UserLogin
+```
+
+### Regularly fetch and rebase your local main repo while your branch is in progress
+This ensures your branch stays up to date with the latest changes from main, minimizing merge conflicts and keeping your work aligned with the current codebase.
+
+```bash
+git fetch origin
+git -C ../.main pull
+git rebase ../.main
+```
+
+### Push your changes before opening a Pull Request
+
+```bash
+git push --set-upstream origin feat/UserLogin
+```
+
+### After Pull Request is merged, clean up your worktree
+
+```bash
+git worktree remove ../feat-UserLogin
+git branch -d feat/UserLogin
+```
+
+# Summary
+
+This workflow is:
+- simple
+- scalable
+- IDE‑friendly
+- perfect for teams juggling many products and clients
+- optimized for trunk‑based development
+- easy to teach and easy to adopt
+
+It keeps your local environment clean, your branches organized, and your development velocity high.
