@@ -1,0 +1,43 @@
+version: '3'
+$schema: '.config\taskfile_schema.json'
+vars:
+  BARE_REPOS:
+    - dir_name: repos/.mello-workspace.git
+      remote_url: https://github.com/voltaire-toledo/Mello-Workspace.git
+      release_branch: main
+    - dir_name: repos/.mws-plugin-chime.git
+      remote_url: https://github.com/voltaire-toledo/MWS-Plugin-Chime.git
+      release_branch: main
+tasks:
+  default:
+    desc: "Default task: list available tasks"
+    silent: true                                                              # Suppress output for the default task
+    cmds:
+      - task: list
+  list:
+    desc: List available tasks
+    silent: true                                                              # Suppress output for the default task
+    cmds:
+      - |
+        echo " # List of Available tasks #"
+        echo " ╭──────────────────────────────────────────────────────────────╮"
+        echo " │ - task init-dev-env: Initialize development environment      │"
+        echo " │ - task list: List available tasks                            │"
+        echo " ╰──────────────────────────────────────────────────────────────╯"    
+  init-dev-env:
+    desc: Initialize development environment
+    cmds:
+      - mkdir -p repos/fix repos/feat repos/lab repos/refa
+      - git clone --bare https://github.com/voltaire-toledo/Mello-Workspace.git repos/.mello-workspace.git
+      - git clone --bare https://github.com/voltaire-toledo/MWS-Plugin-Chime.git repos/.mws-plugin-chime.git
+      - git -C repos/.mello-workspace.git worktree add ../00-mws-main main
+      - git -C repos/.mws-plugin-chime.git worktree add ../00-chime-main main
+  show-color-codes:
+    desc: Show color codes
+    silent: true                                                              # Suppress output for the default task
+    cmds:
+      - |
+        Write-Host "$($PSStyle.Foreground.Green)This is green text$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Foreground.Blue)This is blue text$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Background.Yellow)This has a yellow background$($PSStyle.Reset)"
+        Write-Host "$($PSStyle.Bold)This is bold text$($PSStyle.Reset)"
