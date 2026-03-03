@@ -1,47 +1,26 @@
-# This repo is to only host what's necessary for the Mello-Workspace Dev Environment. 
-# It should not contain any repos, build outputs, binaries, or other generated files.
+**/.vscode/*
 
-# Worktree and feature branches (keep structure but not content)
-repos/*
-!repos/.gitkeep
-releases/*
-!releases/.gitkeep
+# Ignore the AutoHotkey binaries; to be installed manually or via the PS1 bootstrap script
+**/ahkbin*/*
 
-# Compiled binaries
-*.exe
-*.dll
-*.so
-*.dylib
-*.obj
-*.o
-*.lib
-*.a
+# Ignore custom directory icon
+**/desktop.ini
+**/Thumbs.db
+**/.DS_Store
 
-# Resource files (compiled)
-*.res
-*.rc.o
+# Ignore the Mello-related user customizations for release
+# Only a generalized version should be included in the release
+custom/.mslrc.ahk
 
-# IDE and editor files
-.vs/
-.vscode/
-*.suo
-*.user
-*.sln.docstates
-*.swp
-*.swo
-*~
+# Ignore .env files that may contain sensitive information
+**/.env
 
-# OS files
-Thumbs.db
-Desktop.ini
-.DS_Store
+# Ignore Mello-releated binaries during development; created during the installation process
+**/Mello*.exe
+**/media/*.dll
+**/*.md
+docs/*
+**/Taskfile.yml
+docs/#!/README.md
 
-# Temporary files
-*.tmp
-*.temp
-*.log
-
-# Package manager directories
-node_modules/
-packages/
 
