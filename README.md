@@ -4,7 +4,7 @@ _A unified development structure for multi‑product, multi‑client teams_
 
 ## Purpose
 
-This document defines a consistent, scalable Git workflow using Git worktrees.It standardizes how developers organize repositories, branches, and working directories across all projects inside ~/app-hub/.
+This document defines a consistent, scalable Git workflow using Git worktrees. It standardizes how developers organize repositories, branches, and working directories across all projects inside ~/app-hub/.
 
 The goals of this workflow:
 
