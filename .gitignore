@@ -1,0 +1,28 @@
+**/.vscode/*
+**/.config/*
+**/.gemini/*
+
+# Ignore the AutoHotkey binaries; to be installed manually or via the PS1 bootstrap script
+**/ahkbin*/*
+
+# Ignore custom directory icon
+**/desktop.ini
+**/Thumbs.db
+**/.DS_Store
+
+# Ignore the Mello-related user customizations for release
+# Only a generalized version should be included in the release
+custom/.mslrc.ahk
+
+# Ignore .env files that may contain sensitive information
+**/.env
+
+# Ignore Mello-releated binaries during development; created during the installation process
+**/Mello*.exe
+**/media/*.dll
+**/*.md
+.gemini/GEMINI.md
+docs/*
+**/Taskfile.yml
+docs/#!/README.md
+
