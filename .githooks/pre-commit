@@ -1,0 +1,20 @@
+#!/bin/sh
+# Mello-Workspace pre-commit hook: runs scripts/test-precommit.ps1
+# Skip with: git commit --no-verify
+
+repo_root=$(git rev-parse --show-toplevel)
+script="$repo_root/scripts/test-precommit.ps1"
+
+if [ ! -f "$script" ]; then
+  echo "pre-commit: $script not found - skipping validation" >&2
+  exit 0
+fi
+
+if command -v pwsh >/dev/null 2>&1; then
+  ps_bin=pwsh
+else
+  ps_bin=powershell.exe
+fi
+
+"$ps_bin" -NoProfile -ExecutionPolicy Bypass -File "$script"
+exit $?
