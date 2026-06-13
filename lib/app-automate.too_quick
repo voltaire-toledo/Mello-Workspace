@@ -35,8 +35,6 @@ LaunchTerminal(*) {
 
 
 ShowActionSplash(actionMessage, appPath := "") {
-  ; This function displays a splash screen with a message in the center of the screen.
-  ; It uses a GUI to show the message and positions it at the center of the active monitor.
   global arpeActionGUI, arpeGUIWidth, arpeGUIHeight
 
   if IsSet(arpeActionGUI) {
@@ -44,76 +42,65 @@ ShowActionSplash(actionMessage, appPath := "") {
     arpeActionGUI := ""
   }
   arpeActionGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
-  ; Detect dark mode and set colors accordingly
   isDarkMode := AppsUseLightTheme() = 0
   bgColor := isDarkMode ? "364249" : "cWhite"
   textColor := isDarkMode ? "cWhite" : "364249"
-
-  ; Set the background and text colors for the GUI
   arpeActionGUI.BackColor := bgColor
+
+  ; Try to get app icon via shell icon cache (works from 32-bit AHK even for 64-bit apps)
+  iconShown := false
+  if appPath != "" {
+    try {
+      sfi := Buffer(700, 0)
+      ; SHGFI_ICON (0x100) | SHGFI_LARGEICON (0x0)
+      if DllCall("Shell32\SHGetFileInfoW", "Str", appPath, "UInt", 0, "Ptr", sfi.Ptr, "UInt", 700, "UInt", 0x100) {
+        hIcon := NumGet(sfi, 0, "Ptr")
+        if hIcon {
+          arpeActionGUI.AddPicture("x12 y12 w32 h32", "HICON:" hIcon)
+          iconShown := true
+        }
+      }
+    }
+  }
+
+  textX := iconShown ? "x52 y12" : "x12 y12"
   arpeActionGUI.SetFont(textColor . " s11", "Segoe UI")
-  arpeActionGUI.AddText("w250 left", "Action in progress:")
+  arpeActionGUI.AddText(textX . " w250 left", "Action in progress:")
   arpeActionGUI.SetFont(textColor . " s13", "Segoe UI")
-  arpeActionGUI.AddText("w250 left", actionMessage)
+  arpeActionGUI.AddText("x" (iconShown ? 52 : 12) " w250 left", actionMessage)
   arpeActionGUI.Show("NoActivate AutoSize Center")
-  ; Position center of active monitor
   thisMonitor := MonitorGetWorkArea(, &thisMonLeft, &thisMonTop, &thisMonRight, &thisMonBottom)
   arpeActionGUI.GetPos(&__, &__, &arpeGUIWidth, &arpeGUIHeight)
-  arpeActionGUI.Move((thisMonRight - thisMonLeft - arpeGUIWidth) // 2, (thisMonBottom - thisMonTop - arpeGUIHeight) //
-    2)
+  arpeActionGUI.Move((thisMonRight - thisMonLeft - arpeGUIWidth) // 2, (thisMonBottom - thisMonTop - arpeGUIHeight) // 2)
 }
 
 LaunchApp(appName, asAdmin := 0) {
-  if (asAdmin = true) {
-    splashMsg := "Starting " . appName . " (Elevated Priv)..."
-  } else {
-    splashMsg := "Starting " . appName . "..."
-  }
-  ShowActionSplash(splashMsg)
-  ; The shell:AppsFolder is a special folder that contains an enumeration of all installed apps (per machine, per user, windows store, etc.)
-  ; Note: Any shortcuts in the list will not have the same parameters as the original app, so we need to handle them separately.
+  splashMsg := asAdmin ? "Starting " appName " (Elevated)..." : "Starting " appName "..."
+
+  ; Find the app first so we can pass its path to the splash for icon extraction.
+  ; shell:AppsFolder enumerates all installed apps (Win32, UWP, Store, shortcuts).
+  foundApp := ""
   for app in ComObject("Shell.Application").NameSpace("shell:AppsFolder").Items {
-    ; myApps.= app.Name ": " app.Path "`n"
     if (app.Name = appName) {
-      ; NOT A BUG: But a limitation of using AutoHotkey 32-bit - you cannot retrieve the icon of a 64-bit application
-      ; ╭─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮
-      ; │ Display all properties of the app (https://learn.microsoft.com/en-us/windows/win32/shell/folderitem)                                            │
-      ; │ Any GUIDs displayed are Known Folders (https://learn.microsoft.com/en-us/windows/win32/shell/knownfolderid)                                        │
-      ; │ MsgBox("App Name: " app.Name "`nApp Path: " app.Path "`nIsLink: " app.IsLink "`nName: " app.Name "`nSize: " app.Size "`nType: " app.Type, , 64) │
-      ; ╰─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯
-      if (asAdmin = 0) {
-        app.InvokeVerb("Open")
-      } else {
-        ; Debug: don't attempt the localized label. Show available verbs instead.
-        app.InvokeVerb("Open new window")  ; commented out for debugging
-
-        ; Debug: Show available verbs for the app
-        verbs := ""
-        try {
-          for v in app.Verbs {
-            name := ""
-            verb := ""
-            try
-              name := v.Name
-            catch Error as e
-              name := ""
-            try
-              verb := v.Verb
-            catch Error as e
-              verb := ""
-            if (name || verb) {
-              verbs .= (name ? name : "(no name)") "    [" (verb ? verb : "no-verb") "]`n"
-            } else {
-              verbs .= "(unknown verb object)`n"
-            }
-          }
-        } catch Error as e {
-          verbs := "Error enumerating verbs: " e.Message
-        }
-
-        MsgBox("Available verbs for: " app.Name "`n`n" verbs, "Debug: App Verbs")
-      }
+      foundApp := app
+      break
     }
+  }
+
+  if !IsObject(foundApp) {
+    ShowActionSplash(splashMsg)
+    arpeActionGUI.Destroy()
+    return
+  }
+
+  ; SHGetFileInfo (called inside ShowActionSplash) handles 64-bit app icons
+  ; even from a 32-bit AHK process, via the shell icon cache.
+  ShowActionSplash(splashMsg, foundApp.Path)
+
+  if (asAdmin = 0) {
+    foundApp.InvokeVerb("Open")
+  } else {
+    foundApp.InvokeVerb("Open new window")
   }
   arpeActionGUI.Destroy()
 }
