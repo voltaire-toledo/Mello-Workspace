@@ -1,0 +1,87 @@
+= Mello-Workspace
+:toc: macro
+:toc-title: Table of Contents
+:icons: font
+:source-highlighter: rouge
+
+_Chill. Flow. Repeat._
+
+== Overview
+
+**Mello-Workspace** is a comprehensive, AutoHotkey v2-powered workspace manager designed to streamline your daily workflow. It brings together hotkeys, hotstrings, window management, and rapid app launching into a single, cohesive toolset designed to keep you in the flow.
+
+toc::[]
+
+== Features
+
+=== ⌨️ Hotkeys
+A collection of keyboard shortcuts designed to automate system controls and navigation.
+
+* **Core Controls:**
+  - `Ctrl + Alt + Win + R` - Reload and restart Mello-Workspace
+  - `Ctrl + Alt + Win + F1` - Display the Mello-Workspace Help & About dialog
+  - `Ctrl + Alt + Win + F12` - Put the system to sleep
+* **App Launchers:**
+  - `Ctrl + Alt + T` - Open or focus Windows Terminal
+  - `Ctrl + Shift + Alt + T` - Open an elevated Windows Terminal
+  - `Right_Alt x 2` (Double-tap) - Open Calculator
+* **System Adjustments:**
+  - `Ctrl + Alt + Win + ]` - Increase Mouse Pointer Size
+  - `Ctrl + Alt + Win + [` - Decrease Mouse Pointer Size
+
+=== 🔤 Hotstrings
+Rapid text replacement modules for symbols, emotes, and formatting.
+
+* **ANSI / ASCII Symbols:** Type intuitive triggers (e.g., `:arrowright`) to insert special characters (e.g., `→`).
+* **Kaomoji:** Quick insertions of Japanese emoticons (e.g., `:shrug` for `¯\_(ツ)_/¯`).
+* **Emojis:** Type standard emoji names (e.g., `:fire`) to output emojis (🔥).
+* **ASCII Boxes & Tables:** Rapidly generate text-based diagrams, directory trees, and tables.
+* **Custom:** Supports a user-defined `.mslrc.ahk` file (located in `custom\` or `%AppData%`) for personal hotstrings.
+
+=== 🪟 Window Management
+Control the size and location of active windows using hotkeys or mouse-based drag adjustments.
+
+* **Snapping & Resizing:**
+  - `Ctrl + Alt + Win + /` - Resize window to 70%
+  - `Ctrl + Alt + Win + <` / `>` - Shrink / Expand window by 5%
+  - `Ctrl + Alt + Shift + I/J/K/L` - Expand or shrink window borders vertically and horizontally
+* **Mouse Control:**
+  - `Ctrl + Alt + Win + Left Drag` - Move window
+  - `Ctrl + Alt + Win + Right Drag` - Resize window
+
+=== 🎵 Arpeggios
+Instead of a standard hotkey, an *Arpeggio* is a sequence of keys—like playing musical notes. Set the "Mood" and tap a letter to trigger an action.
+
+* **Trigger:** `Win + Alt + O`, then a letter.
+* **Moods:**
+  - **Applications:** E.g., tap `c` for VS Code, `t` for Terminal, `d` for Claude, `z` for Zed.
+  - **Selected Text:** Run macros on currently highlighted text.
+  - **Navigation:** Quick jumps and directory navigation.
+
+=== 💻 ThisSystem.Info
+A built-in dashboard available in the Help dialog providing at-a-glance system metrics:
+* Host Name & Current User
+* OS Version & Architecture
+* Live CPU, RAM Working Set, and Uptime tracking
+* One-click copying for system metrics
+
+== Getting Started
+
+=== Prerequisites
+* **AutoHotkey v2.0** or higher is required.
+
+=== Installation
+1. Clone this repository to your local machine.
+2. Ensure AutoHotkey v2 is installed.
+3. Run `Mello-Workspace.ahk` or execute the included `setup-dev.ps1` to prepare your development environment.
+4. Hit `Ctrl + Alt + Win + F1` to open the Help interface and explore the capabilities.
+
+== License
+
+This project is licensed under the **GNU General Public License v2.0 (GPLv2)**.
+
+== Acknowledgements
+
+* AutoHotkey Community
+* Icons by link:https://icons8.com[Icons8]
+* VD.ahk library by FuPeiJiang

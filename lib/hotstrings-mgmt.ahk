@@ -270,14 +270,25 @@ Gen1 Box of ole' with THICK lines (tbox-thick)
 :X:`:ddots:: PasteWith("⋱")
 :X:`:udots:: PasteWith("⋰")
 
-; Tree Dir
-:X:`:tree-extend:: PasteWith(" │")
-; :X:`:tree-add:: PasteWith("├──")
-:X:`:tree-add-dir:: PasteWith("├──📁")
-:X:`:tree-add-file:: PasteWith("├──📄")
-; :X:`:tree-end:: PasteWith("└──")
-:X:`:tree-end-dir:: PasteWith("└──📁")
-:X:`:tree-end-file:: PasteWith("└──📄")
+; Tree / Box Drawing  — prefix `:b` + ASCII shape hint
+:X:`:b|:: PasteWith("│")            ; vertical line
+:X:`:b-:: PasteWith("─")            ; horizontal line
+:X:`:b<:: PasteWith("├")            ; branch right
+:X:`:b<-:: PasteWith("├──")         ; branch + run
+:X:`:b\:: PasteWith("└")            ; end corner
+:X:`:b\-:: PasteWith("└──")         ; end + run
+:X:`:b+:: PasteWith("┼")            ; cross
+:X:`:b^:: PasteWith("┬")            ; T down
+:X:`:bv:: PasteWith("┴")            ; T up
+:X:`:b>:: PasteWith("┤")            ; branch left
+:X:`:br:: PasteWith("┌")            ; corner top-left
+:X:`:b7:: PasteWith("┐")            ; corner top-right
+:X:`:bL:: PasteWith("└")            ; corner bottom-left
+:X:`:bJ:: PasteWith("┘")            ; corner bottom-right
+:X:`:b<d:: PasteWith("├──📁")       ; branch dir
+:X:`:b<f:: PasteWith("├──📄")       ; branch file
+:X:`:b\d:: PasteWith("└──📁")       ; end dir
+:X:`:b\f:: PasteWith("└──📄")       ; end file
 
 ; Now() 
 :X:`:yyyy:: PasteWith(FormatTime(A_Now, "yyyy"))

@@ -91,11 +91,21 @@ if !FileExist(".\custom\_custom_functions.ahk") {
 }
 DisplayTrayMenu()
 SoundPlay sound_file_startrun
-; Apply rounded corners to the splash screen
-SetTimer () => app_splashGUI.Destroy(), -3000
-; app_splashGUI.Destroy()
+; Fade out the splash now that loading is complete
+SetTimer FadeSplashOut, -800
 
 ; End of the auto-execute section. The script is now persistent and will wait for hotkeys.
+FadeSplashOut() {
+  static alpha := 255
+  global app_splashGUI
+  alpha -= 18
+  if (alpha <= 0) {
+    try app_splashGUI.Destroy()
+    return
+  }
+  try WinSetTransparent(alpha, app_splashGUI.Hwnd)
+  SetTimer FadeSplashOut, -25
+}
 
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ FUNCTIONS                                                    │

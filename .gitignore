@@ -23,6 +23,8 @@ custom/.mslrc.ahk
 **/*.md
 .gemini/GEMINI.md
 docs/*
+!docs/README.md
+
 **/Taskfile.yml
 docs/#!/README.md
 

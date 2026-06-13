@@ -71,21 +71,25 @@ ShowArpeggioSplash(message, icon := "none") {
   arpeGUI.Move(thismonRight - arpeGUIWidth - 20, thisMonBottom - arpeGUIHeight - 20)
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
-; │  [Win]+[Alt]+[o] => OPEN APPLICTATION Mode                                     │
+; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │
 ; ├────────────────────────────────────────────────────────────────────────────────┤
-; │  [B] Beyond Compare                                                            │
-; │  [C] Visual Studio Code                                                        │
-; │  [E] Epic Pen                                                                  │
+; │  [a] Antigravity                                                               │
+; │  [b] Beyond Compare                                                            │
+; │  [c] Visual Studio Code                                                        │
+; │  [C] Visual Studio Code Insiders                                               │
+; │  [d] Claude                                                                    │
+; │  [e] Epic Pen                                                                  │
+; │  [k] KeyViz                                                                    │
+; │  [l] Copilot                                                                   │
 ; │  [n] Notion                                                                    │
 ; │  [N] Notepad                                                                   │
-; │  [O] OpenAI Codex                                                              │
+; │  [o] OpenAI Codex                                                              │
 ; │  [p] Perplexity Comet                                                          │
 ; │  [t] Windows Terminal                                                          │
-; │  [!] Windows Terminal (ADMIN)                                                  │
+; │  [T] Windows Terminal (ADMIN)                                                  │
+; │  [v] Windows Terminal Preview                                                  │
 ; │  [w] Warp Terminal                                                             │
-; ├────────────────────────────────────────────────────────────────────────────────┤
-; │  NOTE: Modify with [ShiftPossible Candidates                                   │
-; │  [w] Terminal (WSL)                                                            │
+; │  [z] Zed                                                                       │
 ; ╰────────────────────────────────────────────────────────────────────────────────╯
 ; CapsLock & o::
 !#o::
@@ -94,15 +98,23 @@ ShowArpeggioSplash(message, icon := "none") {
   OptionWindow := "AppModeOptions"
 
   AppModeOptionsString := (
+    "`na`t Antigravity"
     "`nb`t Beyond Compare 4"
     "`nc`t VS Code"
+    "`nC`t VS Code Insiders"
+    "`nd`t Claude"
     "`ne`t Epic Pen"
+    "`nk`t KeyViz"
+    "`nl`t Copilot"
     "`nn`t Notion"
     "`nN`t Notepad"
     "`no`t OpenAI Codex"
     "`np`t Perplexity Comet"
     "`nt`t Windows Terminal"
+    "`nT`t Windows Terminal (Admin)"
+    "`nv`t Windows Terminal Preview"
     "`nw`t Warp Terminal"
+    "`nz`t Zed"
   )
 
   ShowArpeggioSplash(AppModeOptionsString)
@@ -117,14 +129,29 @@ ShowArpeggioSplash(message, icon := "none") {
   ; Use a value switch on the captured key to avoid expression fall-through
   switch retKeyHook
   {
+    case "a":
+      LaunchApp("Antigravity")
+      return
     case "b":
       LaunchApp("Beyond Compare 4")
       return
     case "c":
       LaunchApp("Visual Studio Code")
       return
+    case "C":
+      LaunchApp("Visual Studio Code Insiders")
+      return
+    case "d":
+      LaunchApp("Claude")
+      return
     case "e":
       LaunchApp("Epic Pen")
+      return
+    case "k":
+      LaunchApp("KeyViz")
+      return
+    case "l":
+      LaunchApp("Copilot")
       return
     case "n":
       LaunchApp("Notion")
@@ -150,8 +177,14 @@ ShowArpeggioSplash(message, icon := "none") {
       }
       arpeActionGUI.Destroy()
       return
+    case "v":
+      LaunchApp("Windows Terminal Preview")
+      return
     case "w":
       LaunchApp("Warp", false)
+      return
+    case "z":
+      LaunchApp("Zed")
       return
     case "": return
     default:
