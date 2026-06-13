@@ -16,8 +16,8 @@ LaunchCalculator(*) {
   }
   else {
     Run "calc.exe"
-    WinWait "Calculator"
-    WinActivate
+    calcHwnd := WinWait("Calculator")
+    WinActivate calcHwnd
   }
 }
 
