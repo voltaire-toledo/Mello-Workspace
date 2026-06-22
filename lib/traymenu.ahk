@@ -37,11 +37,10 @@ trayitem_openappdir_ico := icons_path . "icons8-code-folder-32.ico"
 traymenu_icon_checked := icons_path . "checked.ico"
 traymenu_icon_unchecked := icons_path . "unchecked.ico"
 
-this_script_shortcut := A_Startup . "\" . thisapp_name . ".lnk"
-if (FileExist(this_script_shortcut)) {
+try {
+  RegRead("HKCU\Software\Microsoft\Windows\CurrentVersion\Run", "Mello-Ops")
   trayitem_runatstartup_ico := traymenu_icon_checked
-}
-else {
+} catch {
   trayitem_runatstartup_ico := traymenu_icon_unchecked
 }
 
@@ -157,31 +156,28 @@ BuildTrayMenu() {
 
 ; --- Existing helper functions kept intact ---
 ToggleRunAtStartup(*) {
-  this_script_shortcut := A_Startup . "\" . thisapp_name . ".lnk"
-  if (FileExist(this_script_shortcut)) {
-    FileDelete(this_script_shortcut)
-    trayitem_runatstartup_ico := traymenu_icon_unchecked
+  global trayitem_runatstartup_ico
+  regKey := "HKCU\Software\Microsoft\Windows\CurrentVersion\Run"
+  regVal := "Mello-Ops"
+  isRegistered := false
+  try {
+    RegRead(regKey, regVal)
+    isRegistered := true
+  } catch {
+    isRegistered := false
   }
-  else {
-    ; Ensure trayico_default resolves to an absolute path
-    iconFile := trayico_default
-    if (SubStr(iconFile, 1, 2) = ".\") {
-      iconFile := A_ScriptDir . "\" . SubStr(iconFile, 3)
-    } else {
-      ; Detect absolute paths without using RegExMatch (drive letter or UNC)
-      driveColon := (StrLen(iconFile) >= 3) ? (SubStr(iconFile, 2, 1) = ":") : false
-      thirdIsSlash := (StrLen(iconFile) >= 3) ? (SubStr(iconFile, 3, 1) = "\" || SubStr(iconFile, 3, 1) = "/") : false
-      isUNC := (StrLen(iconFile) >= 2) ? (SubStr(iconFile, 1, 2) = "\") : false
-      if !(driveColon && thirdIsSlash) && !isUNC {
-        ; Not absolute -> assume relative to script dir
-        iconFile := A_ScriptDir . "\" . iconFile
-      }
-    }
 
-    ; Create the shortcut
-    FileCreateShortcut(A_AhkPath, this_script_shortcut, A_ScriptDir, , A_ScriptFullPath, iconFile, 0)
+  if isRegistered {
+    RegDelete(regKey, regVal)
+    trayitem_runatstartup_ico := traymenu_icon_unchecked
+  } else {
+    ; Use Mello-Workspace.exe if it exists, otherwise fall back to the currently running executable
+    mwsExePath := A_ScriptDir . "\Mello-Workspace.exe"
+    exePath := FileExist(mwsExePath) ? mwsExePath : A_AhkPath
+    RegWrite('"' . exePath . '" "' . A_ScriptFullPath . '"', "REG_SZ", regKey, regVal)
     trayitem_runatstartup_ico := traymenu_icon_checked
   }
+  SetMenuIcon(A_TrayMenu, trayitem_runatstartup, trayitem_runatstartup_ico)
 }
 
 ToggleMacKeyboard(*) {
