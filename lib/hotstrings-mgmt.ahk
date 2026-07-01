@@ -6,6 +6,8 @@
 ; ║  NOTE: Hotstrings are not working for certain apps like Windows 11 22H2 Notepad                                 ║
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯
 
+#Hotstring EndChars ()[]{}:;'"/\,.?!`n`s`t
+
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
 ; │ ** HELPER FUNCTIONS **                                                                                          │
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯
@@ -148,11 +150,11 @@ BASIC TABLES ()
 ; ROUND-CORNERED table
 :*:`:rtable:: {
     Sleep 100
-    Send "╭──┬──╮{ENTER}"
-    Send "│  │  │{ENTER}"
-    Send "├──┼──┤{ENTER}"
-    Send "│  │  │{ENTER}"
-    Send "╰──┴──╯{ENTER}"
+    Send "╭──┬──╮{Shift ENTER}"
+    Send "│  │  │{Shift ENTER}"
+    Send "├──┼──┤{Shift ENTER}"
+    Send "│  │  │{Shift ENTER}"
+    Send "╰──┴──╯{Shift ENTER}"
     Send "{Blind}{Shift up}"
 }
 
@@ -270,25 +272,54 @@ Gen1 Box of ole' with THICK lines (tbox-thick)
 :X:`:ddots:: PasteWith("⋱")
 :X:`:udots:: PasteWith("⋰")
 
-; Tree / Box Drawing  — prefix `:b` + ASCII shape hint
-:X:`:b|:: PasteWith("│")            ; vertical line
-:X:`:b-:: PasteWith("─")            ; horizontal line
-:X:`:b<:: PasteWith("├")            ; branch right
-:X:`:b<-:: PasteWith("├──")         ; branch + run
-:X:`:b\:: PasteWith("└")            ; end corner
-:X:`:b\-:: PasteWith("└──")         ; end + run
-:X:`:b+:: PasteWith("┼")            ; cross
-:X:`:b^:: PasteWith("┬")            ; T down
-:X:`:bv:: PasteWith("┴")            ; T up
-:X:`:b>:: PasteWith("┤")            ; branch left
-:X:`:br:: PasteWith("┌")            ; corner top-left
-:X:`:b7:: PasteWith("┐")            ; corner top-right
-:X:`:bL:: PasteWith("└")            ; corner bottom-left
-:X:`:bJ:: PasteWith("┘")            ; corner bottom-right
-:X:`:b<d:: PasteWith("├──📁")       ; branch dir
-:X:`:b<f:: PasteWith("├──📄")       ; branch file
-:X:`:b\d:: PasteWith("└──📁")       ; end dir
-:X:`:b\f:: PasteWith("└──📄")       ; end file
+; Tree / Box Drawing  — prefix ":" + ASCII shape hint
+:XC:`:|::   PasteWith("│")            ; '|' = vertical line
+:XC:`:-::   PasteWith("─")            ; '-' = horizontal line
+:XC:`:|-::  PasteWith("├")          ; '|' + '-' = branch right
+:XC:`:|--:: PasteWith("├──")       ; '|' + '-' + '-' = extended branch
+:XC:`:|_::  PasteWith("└")           ; '|' + '_' = end corner
+:XC:`:|__:: PasteWith("└──")        ; '|' + '_' + '_' = extended end corner
+:XC:`:+::   PasteWith("┼")            ; cross
+:XC:`:-v-:: PasteWith("┬")            ; T down
+:XC:`:-^-:: PasteWith("┴")            ; T up
+:XC:`:-|::  PasteWith("┤")            ; branch left
+:XC:`:r::   PasteWith("┌")            ; corner top-left
+:XC:`:7::   PasteWith("┐")            ; corner top-right
+:XC:`:L::   PasteWith("└")            ; corner bottom-left
+:XC:`:J::   PasteWith("┘")            ; corner bottom-right
+:XC:`:|-d:: PasteWith("├──📁")       ; branch dir
+:XC:`:|-f:: PasteWith("├──📄")       ; branch file
+:XC:`:Ld::  PasteWith("└──📁")       ; end dir
+:XC:`:Lf::  PasteWith("└──📄")       ; end file
+
+hotsrings_help :=
+(
+    "`n
+     ┌────────────┬────────┐ ┌────────────┬────────┐
+     │  After `:   │ Result │ │  After `:   │ Result │
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │     |      │   │    │ │    - |     │    ┤   │       
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │     -      │   ─    │ │     r      │   ┌    │
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │    | -     │   ├    │ │     7      │   ┐    │ 
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │   | - -    │  ├──   │ │     L      │   └    │  
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │    | _     │   └    │ │     J      │   ┘    │  
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │   | _ _    │  └──   │ │   | - d    │ ├──📁  │  
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │     +      │   ┼    │ │   | - f    │ ├──📄  │  
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │   - v -    │   ┬    │ │    L d     │ └──📁  │  
+     ├────────────┼────────┤ ├────────────┼────────┤
+     │   - ^ -    │   ┴    │ │    L f     │ └──📄  │  
+     └────────────┴────────┘ └────────────┴────────┘
+    `n"   
+)
+
+:XC:`:Hotstrings:: PasteWith(hotsrings_help)
 
 ; Now() 
 :X:`:yyyy:: PasteWith(FormatTime(A_Now, "yyyy"))

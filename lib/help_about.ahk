@@ -375,7 +375,7 @@ ConstructAboutDialog(*) {
   hs_rb_ansi := aboutDlg.Add("Radio", "x32 y120 w90 h23 vhs_rb_ansi", "ANSI")
   hs_rb_kaomoji := aboutDlg.Add("Radio", "x120 y120 w90 h23 vhs_rb_kaomoji", "Kaomoji")
   hs_rb_emoji := aboutDlg.Add("Radio", "x220 y120 w90 h23 vhs_rb_emoji", "Emojis")
-  hs_rb_boxes := aboutDlg.Add("Radio", "x320 y120 w130 h23 vhs_rb_boxes", "Tables `& Boxes")
+  hs_rb_boxes := aboutDlg.Add("Radio", "x320 y120 w130 h23 vhs_rb_boxes", "ASCII P-Graphics")
   hs_rb_custom := aboutDlg.Add("Radio", "x500 y120 w90 h23 vhs_rb_custom", "Custom")
 
   hs_rb_ansi.Value := true ; Default selection
@@ -577,7 +577,7 @@ ConstructAboutDialog(*) {
     else if (hs_rb_kaomoji.Value)
       aboutDlg["hs_rb_text"].Value := "Kaomojis are Japanese emoticons that can be used in text. Here are some examples:"
     else if (hs_rb_boxes.Value)
-      aboutDlg["hs_rb_text"].Value := "ASCII line-drawing (also called box-drawing) characters are used to create boxes, tables and dirtrees. Best used with monospace fonts with full UTF-8 coverage."
+      aboutDlg["hs_rb_text"].Value := "ASCII pseudographics (also called line/box-drawing characters) are used to create boxes, tables and dirtrees. Best used with monospace fonts with full UTF-8 coverage."
     else if (hs_rb_emoji.Value)
       aboutDlg["hs_rb_text"].Value := "Emojis can be used to add visual elements to your text. Here are some examples:"
   }
