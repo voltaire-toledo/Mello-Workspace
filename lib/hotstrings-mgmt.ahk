@@ -274,53 +274,24 @@ Gen1 Box of ole' with THICK lines (tbox-thick)
 :X:`:udots:: PasteWith("⋰")
 
 ; Tree / Box Drawing  — prefix ":" + ASCII shape hint
-:XC:`:|::   PasteWith("│")            ; '|' = vertical line
-:XC:`:-::   PasteWith("─")            ; '-' = horizontal line
-:XC:`:|-::  PasteWith("├")          ; '|' + '-' = branch right
-:XC:`:|--:: PasteWith("├──")       ; '|' + '-' + '-' = extended branch
-:XC:`:|_::  PasteWith("└")           ; '|' + '_' = end corner
-:XC:`:|__:: PasteWith("└──")        ; '|' + '_' + '_' = extended end corner
-:XC:`:+::   PasteWith("┼")            ; cross
-:XC:`:-v-:: PasteWith("┬")            ; T down
-:XC:`:-^-:: PasteWith("┴")            ; T up
-:XC:`:-|::  PasteWith("┤")            ; branch left
-:XC:`:r::   PasteWith("┌")            ; corner top-left
-:XC:`:7::   PasteWith("┐")            ; corner top-right
-:XC:`:L::   PasteWith("└")            ; corner bottom-left
-:XC:`:J::   PasteWith("┘")            ; corner bottom-right
-:XC:`:|-d:: PasteWith("├──📁")       ; branch dir
-:XC:`:|-f:: PasteWith("├──📄")       ; branch file
-:XC:`:Ld::  PasteWith("└──📁")       ; end dir
-:XC:`:Lf::  PasteWith("└──📄")       ; end file
-
-hotsrings_help :=
-(
-    "`n
-     ┌────────────┬────────┐ ┌────────────┬────────┐
-     │  After `:   │ Result │ │  After `:   │ Result │
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │     |      │   │    │ │    - |     │    ┤   │       
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │     -      │   ─    │ │     r      │   ┌    │
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │    | -     │   ├    │ │     7      │   ┐    │ 
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │   | - -    │  ├──   │ │     L      │   └    │  
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │    | _     │   └    │ │     J      │   ┘    │  
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │   | _ _    │  └──   │ │   | - d    │ ├──📁  │  
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │     +      │   ┼    │ │   | - f    │ ├──📄  │  
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │   - v -    │   ┬    │ │    L d     │ └──📁  │  
-     ├────────────┼────────┤ ├────────────┼────────┤
-     │   - ^ -    │   ┴    │ │    L f     │ └──📄  │  
-     └────────────┴────────┘ └────────────┴────────┘
-    `n"   
-)
-
-:XC:`:Hotstrings:: PasteWith(hotsrings_help)
+:XC:`:|::   PasteWith("┃")          ; '|' = vertical line
+:XC:`:-::   PasteWith("━")          ; '-' = horizontal line
+:XC:`:|-::  PasteWith("┣")          ; '|' + '-' = branch right
+:XC:`:|--:: PasteWith("┣━━")        ; '|' + '-' + '-' = extended branch
+:XC:`:|_::  PasteWith("┗")          ; '|' + '_' = end corner
+:XC:`:|__:: PasteWith("┗━━")        ; '|' + '_' + '_' = extended end corner
+:XC:`:+::   PasteWith("╋")          ; cross
+:XC:`:-v-:: PasteWith("┳")          ; T down
+:XC:`:-^-:: PasteWith("┻")          ; T up
+:XC:`:-|::  PasteWith("┫")          ; branch left
+:XC:`:r::   PasteWith("┏")          ; corner top-left
+:XC:`:7::   PasteWith("┓")          ; corner top-right
+:XC:`:L::   PasteWith("┗")          ; corner bottom-left
+:XC:`:J::   PasteWith("┛")          ; corner bottom-right
+:XC:`:|-d:: PasteWith("┣━━📁")      ; branch dir
+:XC:`:|-f:: PasteWith("┣━━📄")      ; branch file
+:XC:`:Ld::  PasteWith("┗━━📁")      ; end dir
+:XC:`:Lf::  PasteWith("┗━━📄")      ; end file
 
 ; Now() 
 :X:`:yyyy:: PasteWith(FormatTime(A_Now, "yyyy"))
