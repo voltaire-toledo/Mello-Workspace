@@ -22,7 +22,7 @@ $Arguments = Join-Path -Path $InstallDir -ChildPath "$ThisAppName.ahk"
 $Description = "Start $ThisAppName"
 $IconPath = Join-Path -Path $InstallDir -ChildPath "media\icons\$ThisAppName.ico"
 $StartMenuFolderName = "Mello"
-$AHKZipUrl = "https://www.autohotkey.com/download/2.0/AutoHotkey_2.0.19.zip"
+$AHKZipUrl = "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.19/AutoHotkey_2.0.19.zip"
 $AHKZipPath = Join-Path -Path $InstallDir -ChildPath "AutoHotkey.zip"
 $RepoZipUrl = "https://github.com/voltaire-toledo/Mello-Workspace.Local/archive/refs/heads/main.zip"
 $RepoZipPath = Join-Path $env:TEMP "$ThisAppName-main.zip"
@@ -70,7 +70,13 @@ function Get-AutoHotkey {
   try {
     # Force strong TLS
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-        $headers = @{ "User-Agent" = "curl/8.14.1"; "Accept" = "*/*"; "Host" = "www.autohotkey.com" }
+        # Downloaded from GitHub Releases (not autohotkey.com) — github.com is
+        # near-universally allow-listed in locked-down/enterprise environments,
+        # sidestepping per-domain trust/categorization issues. No Host header
+        # override here: that was specific to the old autohotkey.com workaround
+        # and is unnecessary (and can look like header manipulation to
+        # SSL-inspecting proxies).
+        $headers = @{ "User-Agent" = "curl/8.14.1"; "Accept" = "*/*" }
         Invoke-WebRequest -Uri $AHKZipUrl -Headers $headers -OutFile $AHKZipPath -ErrorAction Stop
         Expand-Archive -Path $AHKZipPath -DestinationPath $AHKBinPath -Force
         Remove-Item -Path $AHKZipPath -Force
@@ -78,7 +84,19 @@ function Get-AutoHotkey {
         return $true
     }
     catch {
-        Write-Error "Failed to download or extract AutoHotkey: $($_.Exception.Message)"
+        $errorDetail = $_.Exception.Message
+        $resp = $_.Exception.Response
+        if ($resp) {
+            try {
+                $stream = $resp.GetResponseStream()
+                $reader = New-Object System.IO.StreamReader($stream)
+                $body = $reader.ReadToEnd()
+                $errorDetail += " | Response body (first 500 chars): $($body.Substring(0, [Math]::Min(500, $body.Length)))"
+            } catch {
+                # best-effort diagnostics only; don't let this mask the original error
+            }
+        }
+        Write-Error "Failed to download or extract AutoHotkey: $errorDetail"
         return $false
     }
 }

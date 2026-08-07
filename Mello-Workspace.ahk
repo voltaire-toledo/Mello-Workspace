@@ -58,9 +58,6 @@ WinSetRegion("0-0 w" . w . " h" . h . " r20-20", app_splashGUI.Hwnd)
 ; │ LIBRARY INCLUDES                                             │
 ; ╰──────────────────────────────────────────────────────────────╯
 #Include "*i %A_ScriptDir%\custom\.mslrc.ahk"
-#Include "*i %A_ScriptDir%\.mslrc.ahk"
-#Include "*i %A_ScriptDir%\.mslrc.ahk"
-#Include "*i %A_AppData%\.mslrc.ahk"
 #Include <traymenu>
 #Include <help_about>
 #Include <app-automate>
@@ -70,6 +67,7 @@ WinSetRegion("0-0 w" . w . " h" . h . " r20-20", app_splashGUI.Hwnd)
 #Include <hotkeys-core>
 #Include <hotstrings-mgmt>
 #Include <app-dyn>
+#Include plugins\QuickNoteMD\QuickNoteMD.ahk
 
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ ** PERSONAL CUSTOMIZATIONS HERE **                           │
