@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>QuickNote MD</title>
+<script src="marked.min.js"></script>
+<style>
+  :root {
+    --bg: #f3f3f3; --fg: #1a2023; --pane-bg: #ffffff; --border: #d8dcde;
+    --status-bg: #e7e9ea; --status-fg: #4a5157; --code-bg: #eef0f1; --link: #2662d9;
+    --notice: #a15c00;
+  }
+  body.dark {
+    --bg: #232a2f; --fg: #f3f3f3; --pane-bg: #1b2126; --border: #384049;
+    --status-bg: #1b2126; --status-fg: #a9b1b8; --code-bg: #2a3238; --link: #6fa8ff;
+    --notice: #ffb454;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; flex-direction: column; background: var(--bg); color: var(--fg);
+    font: 13px/1.4 -apple-system, "Segoe UI", sans-serif; overflow: hidden;
+  }
+  #stage { flex: 1; position: relative; min-height: 0; }
+  #editor, #preview { position: absolute; inset: 0; }
+  #editor {
+    resize: none; border: none; outline: none; width: 100%; height: 100%;
+    padding: 10px 12px; background: var(--pane-bg); color: var(--fg);
+    font: 13px/1.5 Consolas, "Cascadia Code", monospace; white-space: pre-wrap;
+  }
+  #preview { overflow-y: auto; padding: 10px 16px; background: var(--bg); }
+  #preview img { max-width: 100%; }
+  #preview pre { background: var(--code-bg); padding: 8px 10px; overflow-x: auto; border-radius: 4px; line-height: 1.2; }
+  #preview code { background: var(--code-bg); padding: 1px 4px; border-radius: 3px; }
+  #preview pre code { background: none; padding: 0; }
+  #preview a { color: var(--link); }
+  #preview blockquote { margin: 0 0 0 4px; padding-left: 10px; border-left: 3px solid var(--border); color: var(--status-fg); }
+  #preview table { border-collapse: collapse; }
+  #preview th, #preview td { border: 1px solid var(--border); padding: 3px 8px; }
+  body.mode-edit #preview { display: none; }
+  body.mode-view #editor { display: none; }
+  #statusbar {
+    flex: 0 0 auto; display: flex; justify-content: space-between; gap: 12px;
+    padding: 3px 10px; background: var(--status-bg); color: var(--status-fg);
+    font: 11px/1.4 "Segoe UI", sans-serif; border-top: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  #statusbar .hint { overflow: hidden; text-overflow: ellipsis; }
+  #statusbar .hint.notice { color: var(--notice); font-weight: 600; }
+  #statusbar .counts { flex: 0 0 auto; }
+</style>
+</head>
+<body class="light mode-edit">
+  <div id="stage">
+    <textarea id="editor" spellcheck="false" wrap="off"
+      placeholder="Start typing Markdown... paste an image with Ctrl+V"></textarea>
+    <div id="preview" tabindex="-1"></div>
+  </div>
+  <div id="statusbar">
+    <span class="hint" id="hint"></span>
+    <span class="counts" id="counts">0 words, 0 chars</span>
+  </div>
+
+<script>
+(function () {
+  marked.use({
+    renderer: {
+      // Raw HTML embedded in pasted/typed markdown is dropped, not executed —
+      // this is a local single-user notes surface, not a sanitized document viewer.
+      html() { return ''; }
+    }
+  });
+  marked.setOptions({ gfm: true, breaks: true });
+
+  const editor = document.getElementById('editor');
+  const preview = document.getElementById('preview');
+  const counts = document.getElementById('counts');
+  const hint = document.getElementById('hint');
+  let saveTimer = null, suppressSave = false;
+  let mode = 'edit';
+  let noticeTimer = null;
+
+  function render() {
+    preview.innerHTML = marked.parse(editor.value);
+    const text = editor.value, trimmed = text.trim();
+    const words = trimmed === '' ? 0 : trimmed.replace(/\s+/g, ' ').split(' ').length;
+    counts.textContent = words + ' words, ' + text.length + ' chars';
+  }
+
+  function updateHint() {
+    hint.classList.remove('notice');
+    hint.textContent = mode === 'edit'
+      ? 'Esc: switch to View  ·  Ctrl+B/I bold/italic  ·  Ctrl+V paste image'
+      : 'Esc: switch to Edit  ·  read-only in View mode';
+  }
+
+  function flashReadonlyNotice() {
+    hint.textContent = 'Read-only in View mode — press Esc to switch to Edit';
+    hint.classList.add('notice');
+    clearTimeout(noticeTimer);
+    noticeTimer = setTimeout(updateHint, 1500);
+  }
+
+  function setMode(next) {
+    if (mode === next) return;
+    mode = next;
+    document.body.classList.toggle('mode-edit', mode === 'edit');
+    document.body.classList.toggle('mode-view', mode === 'view');
+    if (mode === 'view') {
+      render();
+      preview.focus();
+    } else {
+      editor.focus();
+    }
+    updateHint();
+  }
+
+  function toggleMode() {
+    setMode(mode === 'edit' ? 'view' : 'edit');
+  }
+
+  function scheduleSave() {
+    if (suppressSave) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage(editor.value);
+      }
+    }, 600);
+  }
+
+  function insertAtCursor(text) {
+    const start = editor.selectionStart, end = editor.selectionEnd;
+    editor.setRangeText(text, start, end, 'end');
+    editor.dispatchEvent(new Event('input'));
+  }
+
+  function wrapSelection(pre, post) {
+    const start = editor.selectionStart, end = editor.selectionEnd;
+    const sel = editor.value.slice(start, end);
+    editor.setRangeText(pre + sel + post, start, end, sel === '' ? 'end' : 'select');
+    if (sel === '') editor.setSelectionRange(start + pre.length, start + pre.length);
+    editor.dispatchEvent(new Event('input'));
+  }
+
+  editor.addEventListener('input', () => { render(); scheduleSave(); });
+
+  editor.addEventListener('paste', (e) => {
+    const items = e.clipboardData && e.clipboardData.items;
+    if (!items) return;
+    for (const item of items) {
+      if (item.type && item.type.startsWith('image/')) {
+        e.preventDefault();
+        const file = item.getAsFile();
+        if (!file) continue;
+        const reader = new FileReader();
+        reader.onload = () => insertAtCursor('![](' + reader.result + ')');
+        reader.readAsDataURL(file);
+        return;
+      }
+    }
+    // Non-image paste: allow the browser's default plain-text paste.
+  });
+
+  // Edit-mode-only shortcuts. These only ever see events while the editor is
+  // focused, which only happens in edit mode (it's hidden/unfocused in view mode).
+  editor.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      insertAtCursor('  ');
+      return;
+    }
+    if (e.key === 'Enter') {
+      // Continue an active list marker onto the next line.
+      const start = editor.selectionStart;
+      const lineStart = editor.value.lastIndexOf('\n', start - 1) + 1;
+      const line = editor.value.slice(lineStart, start);
+      const m = line.match(/^(\s*(?:[-*]|\d+\.)\s+)/);
+      if (m && m[1].trim() !== line.trim()) {
+        e.preventDefault();
+        insertAtCursor('\n' + m[1]);
+      }
+      return;
+    }
+    if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'b') {
+      e.preventDefault(); wrapSelection('**', '**'); return;
+    }
+    if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'i') {
+      e.preventDefault(); wrapSelection('*', '*'); return;
+    }
+    if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'c') {
+      e.preventDefault(); wrapSelection('`', '`'); return;
+    }
+  });
+
+  // Global: Escape toggles Edit/View. In View mode, any key that would try to
+  // modify content is blocked and reported via the status bar instead of
+  // silently doing nothing (there's no split pane anymore, so this is the
+  // only signal the user gets that they're in a read-only mode).
+  const VIEW_SCROLL_KEYS = new Set([
+    'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End'
+  ]);
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      toggleMode();
+      return;
+    }
+    if (mode !== 'view') return;
+    if (VIEW_SCROLL_KEYS.has(e.key)) return;
+    if (e.ctrlKey && e.key.toLowerCase() === 'c') return; // allow copy
+    e.preventDefault();
+    flashReadonlyNotice();
+  });
+
+  // Bridge exposed for the AHK host to call via ExecuteScriptAsync.
+  window.QN = {
+    loadNote(text) {
+      suppressSave = true;
+      editor.value = text;
+      render();
+      suppressSave = false;
+    },
+    setTheme(dark) {
+      document.body.classList.toggle('dark', !!dark);
+      document.body.classList.toggle('light', !dark);
+    },
+    focus() {
+      if (mode === 'edit') editor.focus();
+      else preview.focus();
+    }
+  };
+
+  render();
+  updateHint();
+})();
+</script>
+</body>
+</html>
