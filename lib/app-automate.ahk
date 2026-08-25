@@ -21,16 +21,61 @@ LaunchCalculator(*) {
   }
 }
 
-LaunchTerminal(*) {
-  Sleep 1000
-  if WinExist("ahk_exe WindowsTerminal.exe") or WinExist("ahk_title Terminal") {
-    WinActivate
-    WinShow
+LaunchTerminal(asAdmin := false, *) {
+  ; If not elevated, activate existing Terminal window if one is open
+  if (!asAdmin) {
+    if WinExist("ahk_exe WindowsTerminal.exe") or WinExist("ahk_title Terminal") {
+      WinActivate
+      WinShow
+      return
+    }
   }
-  else {
-    Run "wt.exe --size 0,45 --window last new-tab --tabColor #367d55 --title (ツ)_/¯ --focus", , , &wt_pid
+
+  runPrefix := asAdmin ? "*RunAs " : ""
+  wtArgs := asAdmin
+    ? "-w 0 new-tab --title Terminal(Admin) --suppressApplicationTitle"
+    : "--size 0,45 --window last new-tab --tabColor #367d55 --title (ツ)_/¯ --focus"
+
+  ; Tier 1: Try launching wt.exe via PATH
+  try {
+    Run runPrefix . "wt.exe " . wtArgs
+    return
+  } catch {
+    ; wt.exe not found or failed, continue to fallback
   }
-  return
+
+  ; Tier 2: Dynamically discover Terminal via Shell AppsFolder (no hardcoded paths/GUIDs)
+  try {
+    for app in ComObject("Shell.Application").NameSpace("shell:AppsFolder").Items {
+      if (app.Name = "Terminal" or app.Name = "Windows Terminal" or app.Name = "Terminal Preview") {
+        try {
+          if (asAdmin) {
+            Run "*RunAs explorer.exe shell:AppsFolder\" . app.Path
+          } else {
+            app.InvokeVerb("Open")
+          }
+          return
+        } catch {
+          ; continue to next fallback
+        }
+      }
+    }
+  } catch {
+    ; COM Shell.Application failed, continue
+  }
+
+  ; Tier 3: Tiered shell fallback via standard OS commands / environment
+  fallbacks := ["pwsh.exe", "powershell.exe", A_ComSpec]
+  for shell in fallbacks {
+    try {
+      Run runPrefix . shell
+      return
+    } catch {
+      ; try next fallback shell
+    }
+  }
+
+  MsgBox("Unable to launch a terminal emulator.", "Mello-Workspace", 48)
 }
 
 
@@ -195,19 +240,14 @@ GetKnownFolderPath(FolderGUID) {
 ; ╰──────────────────────────────────────────────────────────────────────────────────────────╯
 LAlt & t::
 {
-  ; [Ctrl]+[Alt/⌥]+[T] to run Terminal as Admin
+  ; [Ctrl]+[Alt/⌥]+[Shift]+[T] to run Terminal as Admin
   if GetKeyState("LShift", "P") && GetKeyState("Alt", "P") && GetKeyState("LCtrl", "P") {
-    try {
-      Run "*RunAs wt.exe -w 0 new-tab --title Terminal(Admin) --suppressApplicationTitle"
-    } catch {
-      ; user cancelled UAC or launch failed — swallow the error and return
-      return
-    }
+    LaunchTerminal(true)
     return   ; end this hotkey thread
   }
 
   if GetKeyState("LCtrl", "P") && GetKeyState("LAlt", "P") {
-    LaunchTerminal()
+    LaunchTerminal(false)
   }
   else {
     Send "T"
