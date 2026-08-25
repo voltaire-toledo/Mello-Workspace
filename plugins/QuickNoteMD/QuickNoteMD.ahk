@@ -27,7 +27,11 @@ global QNMD_DIR := A_AppData "\Mello-Workspace\QuickNoteMD"
 global QNMD_NOTE_FILE := QNMD_DIR "\note.md"
 global QNMD_INI := QNMD_DIR "\window.ini"
 global QNMD_USERDATA_DIR := QNMD_DIR "\webview2-data"
-global QNMD_MIN_W := 480, QNMD_MIN_H := 320
+; Monospace font column/row metrics (13px Consolas):
+; Default open size: 110 columns wide x 35 rows tall (~880px x 720px)
+; Minimum allowed size: 80 columns wide x 25 rows tall (~660px x 520px)
+global QNMD_DEFAULT_W := 880, QNMD_DEFAULT_H := 720
+global QNMD_MIN_W := 660, QNMD_MIN_H := 520
 
 global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, themeMode: "auto", opacity: 255, ready: false }
 
@@ -57,9 +61,10 @@ QNMD_Toggle(*) {
 }
 
 QNMD_Show(activate := true) {
-    global qnmd
+    global qnmd, QNMD_DEFAULT_W, QNMD_DEFAULT_H
     g := qnmd.gui
-    g.Show((qnmd.geom != "" ? qnmd.geom : "w900 h620") (activate ? "" : " NoActivate"))
+    defaultGeom := "w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H
+    g.Show((qnmd.geom != "" ? qnmd.geom : defaultGeom) (activate ? "" : " NoActivate"))
     if activate {
         if (qnmd.opacity < 255)
             WinSetTransparent(qnmd.opacity, g.Hwnd)
@@ -96,11 +101,11 @@ QNMD_SuppressEscape(*) {
 
 ; ---- construction ------------------------------------------------------------
 QNMD_Create() {
-    global qnmd, QNMD_USERDATA_DIR
+    global qnmd, QNMD_USERDATA_DIR, QNMD_MIN_W, QNMD_MIN_H, QNMD_DEFAULT_W, QNMD_DEFAULT_H
 
-    g := Gui("+AlwaysOnTop +Resize -MaximizeBox", "QuickNote MD")
+    g := Gui("+AlwaysOnTop +Resize -MaximizeBox +MinSize" QNMD_MIN_W "x" QNMD_MIN_H, "QuickNote MD")
     g.MarginX := 0, g.MarginY := 0
-    host := g.AddText("x0 y0 w900 h620")
+    host := g.AddText("x0 y0 w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H)
 
     g.OnEvent("Size", QNMD_OnSize)
     g.OnEvent("Close", QNMD_Hide)
