@@ -110,10 +110,10 @@ QNMD_Create() {
     iconPath := QNMD_SELF_DIR "\assets\markdown.ico"
     if FileExist(iconPath) {
         try {
-            hIconSmall := LoadPicture(iconPath, "w16 h16 Icon1", &imgType1)
-            hIconBig := LoadPicture(iconPath, "w32 h32 Icon1", &imgType2)
+            hIconSmall := LoadPicture(iconPath, "Icon1 Small", &imgType1)
+            hIconBig := LoadPicture(iconPath, "Icon1", &imgType2)
             SendMessage(0x0080, 0, hIconSmall, g.Hwnd)   ; WM_SETICON, ICON_SMALL (titlebar)
-            SendMessage(0x0080, 1, hIconBig, g.Hwnd)     ; WM_SETICON, ICON_BIG (taskbar)
+            SendMessage(0x0080, 1, hIconBig, g.Hwnd)     ; WM_SETICON, ICON_BIG (taskbar / alt-tab)
         }
     }
 
