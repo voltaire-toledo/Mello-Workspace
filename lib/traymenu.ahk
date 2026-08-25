@@ -32,6 +32,7 @@ trayitem_edit := "E&dit Script`tCTRL + ⊞ + ALT + E"
 trayitem_edit_ico := icons_path . "edit.ico"
 trayitem_runatstartup := "Launch at Startup"
 trayitem_usingmackeybd := "Using Mac Keyboard Layout"
+trayitem_disablestartupsound := "Disable Startup Sound"
 trayitem_openappdir := "Open script &folder`tCTRL + ⊞ + ALT + F"
 trayitem_openappdir_ico := icons_path . "icons8-code-folder-32.ico"
 traymenu_icon_checked := icons_path . "checked.ico"
@@ -43,6 +44,8 @@ try {
 } catch {
   trayitem_runatstartup_ico := traymenu_icon_unchecked
 }
+
+trayitem_disablestartupsound_ico := IsStartupSoundDisabled ? traymenu_icon_checked : traymenu_icon_unchecked
 
 ; ╭───────────────────────────────────────────────────────────────────╮
 ; │  Helper: SetMenuIcon                                             │
@@ -83,6 +86,9 @@ BuildTrayMenu() {
 
   A_TrayMenu.Add(trayitem_usingmackeybd, ToggleMacKeyboard)
   SetMenuIcon(A_TrayMenu, trayitem_usingmackeybd, traymenu_icon_unchecked)
+
+  A_TrayMenu.Add(trayitem_disablestartupsound, ToggleDisableStartupSound)
+  SetMenuIcon(A_TrayMenu, trayitem_disablestartupsound, trayitem_disablestartupsound_ico)
 
   A_TrayMenu.Add() ; separator
 
@@ -183,6 +189,20 @@ ToggleRunAtStartup(*) {
 ToggleMacKeyboard(*) {
   global IsMacKeyboard := !IsMacKeyboard
   SetNotificationIcon(IsRemoteSession(), IsMacKeyboard)
+}
+
+ToggleDisableStartupSound(*) {
+  global IsStartupSoundDisabled, trayitem_disablestartupsound_ico
+  regKey := "HKCU\Software\Mello-Workspace"
+  regVal := "DisableStartupSound"
+  IsStartupSoundDisabled := !IsStartupSoundDisabled
+  try {
+    RegWrite(IsStartupSoundDisabled ? 1 : 0, "REG_DWORD", regKey, regVal)
+  } catch {
+    ; Fallback if registry write fails
+  }
+  trayitem_disablestartupsound_ico := IsStartupSoundDisabled ? traymenu_icon_checked : traymenu_icon_unchecked
+  SetMenuIcon(A_TrayMenu, trayitem_disablestartupsound, trayitem_disablestartupsound_ico)
 }
 
 ShowListLines(*) {
