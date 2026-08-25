@@ -29,7 +29,7 @@ global QNMD_INI := QNMD_DIR "\window.ini"
 global QNMD_USERDATA_DIR := QNMD_DIR "\webview2-data"
 global QNMD_MIN_W := 480, QNMD_MIN_H := 320
 
-global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, ready: false }
+global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, themeMode: "auto", opacity: 255, ready: false }
 
 if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
@@ -38,6 +38,11 @@ OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
 OnExit(QNMD_SaveGeometry)
 
 #!m::QNMD_Toggle()
+
+#HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
+!WheelUp::QNMD_AdjustOpacity(25)     ; Alt + Scroll Up = increase opacity
+!WheelDown::QNMD_AdjustOpacity(-25)  ; Alt + Scroll Down = decrease opacity
+#HotIf
 
 ; ---- show / hide / toggle ---------------------------------------------------
 QNMD_Toggle(*) {
@@ -54,6 +59,10 @@ QNMD_Show(activate := true) {
     global qnmd
     g := qnmd.gui
     g.Show((qnmd.geom != "" ? qnmd.geom : "w900 h620") (activate ? "" : " NoActivate"))
+    if (qnmd.opacity < 255)
+        WinSetTransparent(qnmd.opacity, g.Hwnd)
+    else
+        WinSetTransparent("Off", g.Hwnd)
     if activate
         WinActivate("ahk_id " g.Hwnd)
     try qnmd.wvc.IsVisible := true
@@ -124,17 +133,19 @@ QNMD_Create() {
 }
 
 ; ---- window event handlers ---------------------------------------------------
-QNMD_OnSize(thisGui, minMax, w, h) {
+QNMD_OnSize(thisGui, minMax, winW, winH) {
     global qnmd
     if (minMax = -1 || qnmd.gui = "")   ; ignore minimize
         return
-    try qnmd.host.Move(0, 0, w, h)
+    try qnmd.host.Move(0, 0, winW, winH)
     try qnmd.wvc.Fill()
 }
 
 QNMD_OnSettingChange(wParam, lParam, msg, hwnd) {
     global qnmd
     if (qnmd.gui = "")
+        return
+    if (qnmd.themeMode != "auto")
         return
     was := qnmd.dark
     QNMD_DetectTheme()
@@ -178,13 +189,74 @@ QNMD_JSStr(s) {
 
 ; ---- theming ------------------------------------------------------------------
 QNMD_DetectTheme() {
-    global qnmd
+    global qnmd, QNMD_INI
     try {
-        v := RegRead("HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme")
-        qnmd.dark := (v = 0)
+        savedMode := IniRead(QNMD_INI, "theme", "mode", "auto")
+        qnmd.themeMode := savedMode
     } catch Any {
-        qnmd.dark := true
+        qnmd.themeMode := "auto"
     }
+
+    if (qnmd.themeMode = "dark") {
+        qnmd.dark := true
+    } else if (qnmd.themeMode = "light") {
+        qnmd.dark := false
+    } else {
+        qnmd.themeMode := "auto"
+        try {
+            v := RegRead("HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme")
+            qnmd.dark := (v = 0)
+        } catch Any {
+            qnmd.dark := true
+        }
+    }
+}
+
+QNMD_SetThemeMode(mode) {
+    global qnmd, QNMD_INI
+    qnmd.themeMode := mode
+    if (mode = "dark") {
+        qnmd.dark := true
+    } else if (mode = "light") {
+        qnmd.dark := false
+    } else {
+        qnmd.themeMode := "auto"
+        try {
+            v := RegRead("HKCU\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize", "AppsUseLightTheme")
+            qnmd.dark := (v = 0)
+        } catch Any {
+            qnmd.dark := true
+        }
+    }
+
+    try IniWrite(qnmd.themeMode, QNMD_INI, "theme", "mode")
+    if (qnmd.wv != "")
+        try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
+}
+
+QNMD_ToggleTheme(*) {
+    global qnmd
+    nextMode := qnmd.dark ? "light" : "dark"
+    QNMD_SetThemeMode(nextMode)
+}
+
+; ---- opacity / transparency --------------------------------------------------
+QNMD_AdjustOpacity(delta) {
+    global qnmd, QNMD_INI
+    if (qnmd.gui = "" || !DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd))
+        return
+
+    newAlpha := Min(Max(qnmd.opacity + delta, 64), 255)
+    if (newAlpha = qnmd.opacity)
+        return
+
+    qnmd.opacity := newAlpha
+    if (qnmd.opacity >= 255)
+        WinSetTransparent("Off", qnmd.gui.Hwnd)
+    else
+        WinSetTransparent(qnmd.opacity, qnmd.gui.Hwnd)
+
+    try IniWrite(qnmd.opacity, QNMD_INI, "window", "opacity")
 }
 
 ; ---- persistence ----------------------------------------------------------------
@@ -194,11 +266,12 @@ QNMD_SaveGeometry(*) {
         return
     try {
         if DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd) {
-            qnmd.gui.GetPos(&x, &y, &w, &h)
-            IniWrite(x, QNMD_INI, "window", "x")
-            IniWrite(y, QNMD_INI, "window", "y")
-            IniWrite(w, QNMD_INI, "window", "w")
-            IniWrite(h, QNMD_INI, "window", "h")
+            qnmd.gui.GetPos(&winX, &winY, &winW, &winH)
+            IniWrite(winX, QNMD_INI, "window", "x")
+            IniWrite(winY, QNMD_INI, "window", "y")
+            IniWrite(winW, QNMD_INI, "window", "w")
+            IniWrite(winH, QNMD_INI, "window", "h")
+            IniWrite(qnmd.opacity, QNMD_INI, "window", "opacity")
         }
     } catch Any {
     }
@@ -208,23 +281,38 @@ QNMD_RestoreGeometry() {
     global qnmd, QNMD_INI, QNMD_MIN_W, QNMD_MIN_H
     qnmd.geom := ""
     try {
-        x := IniRead(QNMD_INI, "window", "x", "")
-        y := IniRead(QNMD_INI, "window", "y", "")
-        w := IniRead(QNMD_INI, "window", "w", "")
-        h := IniRead(QNMD_INI, "window", "h", "")
-        if (x != "" && y != "" && w != "" && h != "") {
-            w := Max(w + 0, QNMD_MIN_W), h := Max(h + 0, QNMD_MIN_H)
-            x := Min(Max(x + 0, 0), A_ScreenWidth - 100)
-            y := Min(Max(y + 0, 0), A_ScreenHeight - 100)
-            qnmd.geom := "x" x " y" y " w" w " h" h
+        winX := IniRead(QNMD_INI, "window", "x", "")
+        winY := IniRead(QNMD_INI, "window", "y", "")
+        winW := IniRead(QNMD_INI, "window", "w", "")
+        winH := IniRead(QNMD_INI, "window", "h", "")
+        if (winX != "" && winY != "" && winW != "" && winH != "") {
+            winW := Max(winW + 0, QNMD_MIN_W), winH := Max(winH + 0, QNMD_MIN_H)
+            winX := Min(Max(winX + 0, 0), A_ScreenWidth - 100)
+            winY := Min(Max(winY + 0, 0), A_ScreenHeight - 100)
+            qnmd.geom := "x" winX " y" winY " w" winW " h" winH
         }
     } catch Any {
+    }
+
+    try {
+        op := IniRead(QNMD_INI, "window", "opacity", "255")
+        if (op != "")
+            qnmd.opacity := Min(Max(op + 0, 64), 255)
+    } catch Any {
+        qnmd.opacity := 255
     }
 }
 
 ; ---- tray menu ------------------------------------------------------------------
+ThemeMenu := Menu()
+ThemeMenu.Add("Auto (Follow System)", (*) => QNMD_SetThemeMode("auto"))
+ThemeMenu.Add("Light Theme", (*) => QNMD_SetThemeMode("light"))
+ThemeMenu.Add("Dark Theme", (*) => QNMD_SetThemeMode("dark"))
+
 A_TrayMenu.Delete()
 A_TrayMenu.Add("Show / Hide QuickNote MD`tWin+Alt+M", QNMD_Toggle)
+A_TrayMenu.Add("Toggle Light/Dark Theme", QNMD_ToggleTheme)
+A_TrayMenu.Add("Theme Mode", ThemeMenu)
 A_TrayMenu.Add("Open notes folder", (*) => Run(QNMD_DIR))
 A_TrayMenu.Add()
 A_TrayMenu.Add("Reload script", (*) => Reload())
