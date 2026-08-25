@@ -167,14 +167,12 @@ ShowArpeggioSplash(message, icon := "none") {
       return
     case "t":
       ShowActionSplash("Starting Windows Terminal...")
-      LaunchTerminal()
+      LaunchTerminal(false)
       arpeActionGUI.Destroy()
       return
     case "T":
       ShowActionSplash("Starting Windows Terminal (Admin)...")
-      try {
-        Run "*RunAs wt.exe -w 0 new-tab --title Terminal(Admin) --suppressApplicationTitle"
-      }
+      LaunchTerminal(true)
       arpeActionGUI.Destroy()
       return
     case "v":
