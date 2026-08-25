@@ -1,0 +1,155 @@
+= Mello-Workspace (MWS) - Changelog
+:toc:
+:toclevels: 2
+:icons: font
+:experimental:
+:source-highlighter: rouge
+
+All notable changes to the *Mello-Workspace* (MWS) project are documented in this file.
+
+== [0.1] - 2026-06-08 (Initial Release)
+
+Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 productivity and window management suite.
+
+=== 📊 Release 0.1 Subsystem Overview
+
+[cols="^1,^1,2,3", options="header"]
+|===
+| Subsystem | Module | Key Features | Scope & Target Environment
+
+.3+| *Core Hotkeys*
+| `hotkeys-core.ahk`
+| Script reload (kbd:[Ctrl+Alt+Win+R]), suspend (kbd:[Ctrl+Alt+Win+S]), edit, sleep mode
+| Universal Windows 11 (Exempt from Suspend)
+
+| `cursor-mgmt.ahk`
+| Real-time mouse pointer scaling (16px–256px) via `SystemParametersInfo` DllCalls
+| Desktop / Presentation mode
+
+| `app-automate.ahk`
+| Quick launchers: Terminal, elevated Terminal, and double-tap kbd:[RCtrl] Calculator
+| Local Windows desktop
+
+.2+| *Window Management*
+| `winui-mgmt.ahk`
+| 9-zone quadrant grid snapping, 5% border resizing, and middle-click gesture engine
+| Multi-monitor workstation
+
+| `arpeggios.ahk`
+| Modal HUD overlay (kbd:[Alt+Win+P]) for interactive arrow-key moving and numpad snapping
+| Multi-monitor workstation
+
+.2+| *Text Automation*
+| `hotstrings-mgmt.ahk`
+| ASCII rounded boxes, heavy boxes, tables, directory trees, Kaomojis, and date stamps
+| Universal text editors & terminals
+
+| `custom/.mslrc.ahk`
+| User-level custom hotstring and function overrides isolated from Git tracking
+| User personalization
+
+.2+| *Hardware & Telemetry*
+| `traymenu.ahk`
+| Dynamic context tray icon (Local, RDP session, macOS keyboard mapping mode, Paused)
+| System notification area
+
+| `help_about.ahk`
+| Tabbed cheat sheet & `ThisSystem.Info` hardware metrics dashboard with copy buttons
+| Diagnostic & help dialog
+
+.1+| *Platform Integration*
+| `MWS Remote Sync`
+| Translates macOS shortcuts (kbd:[Cmd+Shift+P], kbd:[Cmd+I], kbd:[Cmd+B], kbd:[Cmd+Y]) inside RDP
+| RDP & Hyper-V client sessions
+
+.1+| *Deployment Engine*
+| `Mello-Workspace.ps1`
+2+| Dual-mode installation: Direct URL-based bootstrap and local clone runner with auto-backups
+|===
+
+=== ⌨️ Detailed Feature Breakdown
+
+==== Core Hotkeys & System Controls
+* **Script Lifecycle Controls:**
+** kbd:[Ctrl+Alt+Win+S] – Toggle script suspension with tray icon state change.
+** kbd:[Ctrl+Alt+Win+R] – Reload and reinitialize Mello-Workspace.
+** kbd:[Ctrl+Alt+Win+E] – Open script in default editor.
+* **System Actions & Navigation:**
+** kbd:[Ctrl+Alt+Win+F1] – Open the interactive *Help & About* dialog.
+** kbd:[Ctrl+Alt+Win+F2] – Open the AutoHotkey documentation (`AutoHotkey.chm`).
+** kbd:[Ctrl+Alt+Win+F3] – Launch AutoHotkey *WindowSpy*.
+** kbd:[Ctrl+Alt+Win+F12] – Trigger system sleep mode via `powrprof.dll`.
+** kbd:[Ctrl+Alt+Win+F] – Open the active Mello-Workspace folder in File Explorer.
+** kbd:[Ctrl+Win+F] – Open Documents directory in File Explorer.
+** kbd:[Win+F] – Remap Windows Feedback shortcut to open user home folder.
+* **Tenkeyless (TKL) Keyboard Navigation:**
+** kbd:[RCtrl+Up] / kbd:[RCtrl+Down] – Send `PgUp` / `PgDn`.
+** kbd:[RCtrl+Left] / kbd:[RCtrl+Right] – Send `Home` / `End`.
+
+==== 🪟 Window & Mouse Management
+* **Dynamic Window Resizing & Snapping:**
+** Multi-monitor aware window grid snapping (Left, Right, Full, Top/Bottom Halves, Quarters).
+** Fine-grained border expansion and contraction (`ResizeWindowBorders`).
+** Monitor edge snapping (`ExtendToMonitorEdge`).
+* **Middle-Click Mouse Gestures:**
+** Gesture recognition on Middle-Click drag:
+*** Up: Toggle maximize/restore.
+*** Down: Toggle Always-on-Top pinning.
+*** Left / Right: Snap to left / right screen half.
+*** Diagonals: Snap to top-left, top-right, bottom-left, bottom-right quadrants.
+*** Click without movement: Minimize active window.
+* **Dynamic Mouse Pointer Scaling (`cursor-mgmt.ahk`):**
+** kbd:[Ctrl+Alt+Win+\]] – Increment cursor size in 16px steps (clamped up to 256px).
+** kbd:[Ctrl+Alt+Win+\[] – Decrement cursor size.
+** Immediate visual feedback via transient ToolTip.
+
+==== 🔤 Hotstrings & Text Automation
+* **Box Drawing & Diagrams:**
+** `:box` – Quick ASCII/Unicode rounded box.
+** `##tbox-thick##` – Double-line heavy Unicode box.
+** `:rtable` – Formatted rounded data table template.
+** Directory tree builders: `:tree-add-dir` (├──📁), `:tree-add-file` (├──📄), `:tree-end-dir` (└──📁), `:tree-end-file` (└──📄), `:tree-extend` ( │).
+* **Symbols & Formatting:**
+** ANSI directional arrows (`:arrowleft`, `:arrowright`, `:arrowup`, `:arrowdown`).
+** Monospaced keycap symbols (`:keycmd`, `:keyalt`, `:keyctrl`, `:keyshift`, `:keywin`, `:keytab`, `:keyenter`, `:keybackspace`, `:keydel`).
+** Kaomoji emoticons (`:shrug`, `:tableflip`, `:fuckoff`, `:idk`, `:ohshit`).
+** Common emojis (`:fire`, `:check`, `:warning`, `:star`, `:lightbulb`, `:zap`, etc.).
+** Dynamic date stamps: `:yyyy`, `:yy`, `:mm`, `:dd`.
+* **User Customization Support:**
+** Seamless inclusion of user hotstrings and overrides from `custom/.mslrc.ahk`, `.mslrc.ahk`, or `%AppData%\.mslrc.ahk`.
+** Auto-generation of user-customizable `custom/_custom_functions.ahk` stub.
+
+==== 🎵 Arpeggios & Modal Launching
+* **Modal Keystroke Launching (`arpeggios.ahk`):**
+** Multi-key sequence trigger with HUD splash feedback.
+** kbd:[Alt+Win+P] – Window Management Mode modal overlay with live interactive arrow-key moving, resizing, and numpad grid snapping.
+* **Application Automation (`app-automate.ahk`):**
+** Double-tap kbd:[RCtrl] – Launch Calculator.
+** kbd:[Ctrl+Alt+T] – Launch or focus Windows Terminal.
+** kbd:[Ctrl+Alt+Shift+T] – Launch elevated (Admin) Windows Terminal.
+** Universal `shell:AppsFolder` launcher with UAC-aware privileges.
+
+==== 🖥️ System Tray Menu & ThisSystem.Info
+* **Context-Aware System Tray:**
+** Dynamic tray icons reflecting session states (Standard, Remote Desktop / RDP session, macOS keyboard mapping mode, Paused/Suspended).
+** Direct shortcuts to reload, edit, open directory, inspect WindowSpy, or view script lines.
+** Start Menu startup integration toggle (`ToggleRunAtStartup`).
+* **Interactive Help & About Dashboard (`help_about.ahk`):**
+** Tabbed graphical interface displaying cheat sheets for hotkeys, hotstrings, window commands, and arpeggios.
+** **ThisSystem.Info tab:** Live system metrics gathering (Host Name, Current User, OS Version, Architecture, CPU details, RAM capacity, Uptime) with one-click clipboard copy buttons.
+
+==== 🌐 Remote Desktop & Cross-Platform Compatibility
+* **macOS to Windows Remote Desktop Remaps:**
+** Automatically adapts common macOS shortcuts inside RDP / Hyper-V sessions:
+*** kbd:[Cmd+Shift+P] -> kbd:[Ctrl+Shift+P] (Command Palette)
+*** kbd:[Cmd+I] -> kbd:[Ctrl+I] (Italics)
+*** kbd:[Cmd+B] -> kbd:[Ctrl+B] (Bold)
+*** kbd:[Cmd+Y] -> kbd:[Ctrl+Y] (Redo)
+*** kbd:[RAlt+Arrows] -> `PgUp`/`PgDn`/`Home`/`End` mapping.
+
+==== 📦 Automated Deployment & PowerShell Engine (`Mello-Workspace.ps1`)
+* **Dual Execution Modes:**
+** **URL / Web Bootstrap (`Install-FromUrl`):** One-liner installation from PowerShell. Automatically downloads and unpacks MWS, manages backups, fetches official AutoHotkey v2 binaries from GitHub Releases, configures executables, and installs Start Menu shortcuts.
+** **Local Repository Runner (`Run-FromLocal`):** Prepares dependencies in-place within the cloned workspace and creates/refreshes desktop and Start Menu shortcuts.
+* **Safe State Management:**
+** Automated timestamped directory backups (`backup-YYYYMMDD_X`) before upgrades.
