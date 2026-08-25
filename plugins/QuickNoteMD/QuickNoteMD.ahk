@@ -35,6 +35,7 @@ if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
 
 OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
+OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 50% opacity / focused restore
 OnExit(QNMD_SaveGeometry)
 
 #!m::QNMD_Toggle()
@@ -59,12 +60,16 @@ QNMD_Show(activate := true) {
     global qnmd
     g := qnmd.gui
     g.Show((qnmd.geom != "" ? qnmd.geom : "w900 h620") (activate ? "" : " NoActivate"))
-    if (qnmd.opacity < 255)
-        WinSetTransparent(qnmd.opacity, g.Hwnd)
-    else
-        WinSetTransparent("Off", g.Hwnd)
-    if activate
+    if activate {
+        if (qnmd.opacity < 255)
+            WinSetTransparent(qnmd.opacity, g.Hwnd)
+        else
+            WinSetTransparent("Off", g.Hwnd)
         WinActivate("ahk_id " g.Hwnd)
+    } else {
+        unfocusedAlpha := Min(qnmd.opacity, 128)
+        WinSetTransparent(unfocusedAlpha, g.Hwnd)
+    }
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
     if activate
@@ -151,6 +156,27 @@ QNMD_OnSettingChange(wParam, lParam, msg, hwnd) {
     QNMD_DetectTheme()
     if (was != qnmd.dark)
         try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
+}
+
+QNMD_OnActivate(wParam, lParam, msg, hwnd) {
+    global qnmd
+    if (qnmd.gui = "" || hwnd != qnmd.gui.Hwnd)
+        return
+    if !DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd)
+        return
+
+    state := wParam & 0xFFFF
+    if (state = 0) {
+        ; Window deactivated (lost focus) -> dim to 50% opacity (128)
+        unfocusedAlpha := Min(qnmd.opacity, 128)
+        WinSetTransparent(unfocusedAlpha, qnmd.gui.Hwnd)
+    } else {
+        ; Window activated (in focus) -> restore original configured opacity
+        if (qnmd.opacity >= 255)
+            WinSetTransparent("Off", qnmd.gui.Hwnd)
+        else
+            WinSetTransparent(qnmd.opacity, qnmd.gui.Hwnd)
+    }
 }
 
 ; ---- WebView2 <-> AHK bridge --------------------------------------------------
