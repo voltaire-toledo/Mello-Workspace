@@ -27,11 +27,8 @@ global QNMD_DIR := A_AppData "\Mello-Workspace\QuickNoteMD"
 global QNMD_NOTE_FILE := QNMD_DIR "\note.md"
 global QNMD_INI := QNMD_DIR "\window.ini"
 global QNMD_USERDATA_DIR := QNMD_DIR "\webview2-data"
-; Monospace font column/row metrics (13px Consolas):
-; Default open size: 110 columns wide x 35 rows tall (~880px x 720px)
-; Minimum allowed size: 80 columns wide x 25 rows tall (~660px x 520px)
-global QNMD_DEFAULT_W := 880, QNMD_DEFAULT_H := 720
-global QNMD_MIN_W := 660, QNMD_MIN_H := 520
+global QNMD_DEFAULT_W := 800, QNMD_DEFAULT_H := 600
+global QNMD_MIN_W := 320, QNMD_MIN_H := 240
 
 global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, themeMode: "auto", opacity: 255, ready: false }
 
