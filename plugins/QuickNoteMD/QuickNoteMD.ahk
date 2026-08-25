@@ -288,17 +288,20 @@ QNMD_AdjustOpacity(delta) {
 
 ; ---- persistence ----------------------------------------------------------------
 QNMD_SaveGeometry(*) {
-    global qnmd, QNMD_INI
+    global qnmd, QNMD_INI, QNMD_MIN_W, QNMD_MIN_H
     if (qnmd.gui = "")
         return
     try {
         if DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd) {
             qnmd.gui.GetPos(&winX, &winY, &winW, &winH)
+            winW := Max(winW, QNMD_MIN_W), winH := Max(winH, QNMD_MIN_H)
+            winX := Min(Max(winX, 0), A_ScreenWidth - 100)
+            winY := Min(Max(winY, 0), A_ScreenHeight - 100)
+            qnmd.geom := "x" winX " y" winY " w" winW " h" winH
             IniWrite(winX, QNMD_INI, "window", "x")
             IniWrite(winY, QNMD_INI, "window", "y")
             IniWrite(winW, QNMD_INI, "window", "w")
             IniWrite(winH, QNMD_INI, "window", "h")
-            IniWrite(qnmd.opacity, QNMD_INI, "window", "opacity")
         }
     } catch Any {
     }
