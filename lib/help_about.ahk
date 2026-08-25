@@ -109,9 +109,10 @@ class ThisPC {
   static GetExternalIP() {
     try {
       whr := ComObject("WinHttp.WinHttpRequest.5.1")
+      whr.SetTimeouts(2000, 2000, 2000, 2000)
       whr.Open("GET", "https://api.ipify.org/", true)
       whr.Send()
-      whr.WaitForResponse()
+      whr.WaitForResponse(2)
       return whr.ResponseText
     } catch {
       return "Unavailable"
@@ -712,74 +713,128 @@ ConstructAboutDialog(*) {
   ; ╰───────────────────────────────────────────────────────────────────────────────────────╯
   mainTab.UseTab(8)
   aboutDlg.SetFont("Bold s11", guiFont)
-  aboutDlg.Add("Text", "x16 y74 w835 h23", "ThisSystem.Info")
+  aboutDlg.Add("Text", "x16 y72 w400 h20", "ThisSystem.Info")
 
-  ; Host information container
+  btnLoad := aboutDlg.Add("Button", "x700 y68 w170 h26 vbtnLoad", "⚡ Load System Telemetry")
+  btnLoad.OnEvent("Click", PopulateTelemetry)
+
+  ; Group 1: System & OS (Left Top)
+  aboutDlg.SetFont("Bold s10", guiFont)
+  aboutDlg.Add("GroupBox", "x16 y100 w410 h185", "System & OS")
   aboutDlg.SetFont("c353881 W600 q5 s10", guiFont)
 
-  ; Create text controls with copy buttons
-  yPos := 100
-  spacing := 24
+  yPos := 125
+  spacing := 28
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Host Name:")
+  aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtHost", A_ComputerName)
+  btnCopyHost := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyHost.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtHost"].Text))
 
-  ; Host Name
-
-  aboutDlg.Add("Text", "x20 y" yPos " w120", "Host Name:")
-  hostText := aboutDlg.Add("Text", "yp", A_ComputerName)
-  copyBtn1 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  copyBtn1.OnEvent("Click", (*) => CopyToClipboard(A_ComputerName))
-
-  ; Current User
   yPos += spacing
-  aboutDlg.Add("Text", "x20 y" yPos " w120", "Current User:")
-  userText := aboutDlg.Add("Text", "yp", A_UserName . (A_IsAdmin ? " (Admin)" : ""))
-  copyBtn2 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  copyBtn2.OnEvent("Click", (*) => CopyToClipboard(A_UserName . (A_IsAdmin ? " (Admin)" : "")))
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Current User:")
+  aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtUser", A_UserName . (A_IsAdmin ? " (Admin)" : ""))
+  btnCopyUser := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyUser.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtUser"].Text))
 
-  ; OS Version
   yPos += spacing
-  aboutDlg.Add("Text", "x20 y" yPos " w120", "OS Version:")
-  osText := aboutDlg.Add("Text", "yp", A_OSVersion)
-  copyBtn3 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  copyBtn3.OnEvent("Click", (*) => CopyToClipboard(A_OSVersion))
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "OS Version:")
+  aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtOS", A_OSVersion)
+  btnCopyOS := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyOS.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtOS"].Text))
 
-  ; Word Size
   yPos += spacing
-  aboutDlg.Add("Text", "x20 y" yPos " w120", "Word Size:")
-  wordText := aboutDlg.Add("Text", "yp", A_Is64bitOS ? "64-bit" : "32-bit")
-  copyBtn4 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  copyBtn4.OnEvent("Click", (*) => CopyToClipboard(A_Is64bitOS ? "64-bit" : "32-bit"))
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Architecture:")
+  aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtArch", A_Is64bitOS ? "64-bit" : "32-bit")
+  btnCopyArch := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyArch.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtArch"].Text))
 
-  ; CPU Info
   yPos += spacing
-  aboutDlg.Add("Text", "x20 y" yPos " w120", "CPU:")
-  cpuProperty := "Click here to display CPU info" ; . ThisPC.CPUInfo.Name
-  cpuText := aboutDlg.Add("Text", "yp w400", cpuProperty)
-  ; Pass an info type and the control reference so GetPCInfo can
-  ; replace the control and rebind the copy button correctly.
-  cpuText.OnEvent("Click", GetPCInfo)
-  ; copyBtn5 := aboutDlg.Add("Picture", "xm yp+0 w14 h14 Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  ; copyBtn5.OnEvent("Click", (*) => CopyToClipboard(cpuProperty))
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Uptime:")
+  txtUptime := aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtUptime", "Click 'Load Telemetry'")
+  txtUptime.OnEvent("Click", PopulateTelemetry)
+  btnCopyUptime := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14 vbtnCopyUptime Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyUptime.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtUptime"].Text))
 
-  ; ; Memory
-  ; yPos += spacing
-  ; aboutDlg.Add("Text", "x20 y" yPos " w120", "Memory:")
-  ; memText := aboutDlg.Add("Text", "yp", "xx GiB/ 127.78 GiB")
-  ; copyBtn6 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  ; copyBtn6.OnEvent("Click", (*) => CopyToClipboard(memText.Text))
+  ; Group 2: Hardware (Left Bottom)
+  aboutDlg.SetFont("Bold s10", guiFont)
+  aboutDlg.Add("GroupBox", "x16 y295 w410 h225", "Hardware")
+  aboutDlg.SetFont("c353881 W600 q5 s10", guiFont)
 
-  ; ; Local IP
-  ; yPos += spacing
-  ; aboutDlg.Add("Text", "x20 y" yPos " w120", "Local IP:")
-  ; ipText := aboutDlg.Add("Text", "yp", "192.168.1.1")
-  ; copyBtn7 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  ; copyBtn7.OnEvent("Click", (*) => CopyToClipboard(ipText.Text))
+  yPos := 320
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "CPU:")
+  txtCPU := aboutDlg.Add("Text", "x145 y" yPos " w230 r2 vtxtCPU", "Click 'Load Telemetry'")
+  txtCPU.OnEvent("Click", PopulateTelemetry)
+  btnCopyCPU := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14 vbtnCopyCPU Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyCPU.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtCPU"].Text))
 
-  ; ; External IP
-  ; yPos += spacing
-  ; aboutDlg.Add("Text", "x20 y" yPos " w120", "External IP:")
-  ; extIpText := aboutDlg.Add("Text", "yp", "xxx.xxx.xxx.xxx")
-  ; copyBtn8 := aboutDlg.Add("Picture", "yp+0 w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-  ; copyBtn8.OnEvent("Click", (*) => CopyToClipboard(extIpText.Text))
+  yPos += 40
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Motherboard:")
+  txtMB := aboutDlg.Add("Text", "x145 y" yPos " w230 r2 vtxtMB", "Click 'Load Telemetry'")
+  txtMB.OnEvent("Click", PopulateTelemetry)
+  btnCopyMB := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14 vbtnCopyMB Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyMB.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtMB"].Text))
+
+  yPos += 40
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Installed RAM:")
+  txtRAM := aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtRAM", "Click 'Load Telemetry'")
+  txtRAM.OnEvent("Click", PopulateTelemetry)
+  btnCopyRAM := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14 vbtnCopyRAM Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyRAM.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtRAM"].Text))
+
+  yPos += spacing
+  aboutDlg.Add("Text", "x30 y" yPos " w110", "Battery / Power:")
+  txtBat := aboutDlg.Add("Text", "x145 y" yPos " w230 vtxtBat", "Click 'Load Telemetry'")
+  txtBat.OnEvent("Click", PopulateTelemetry)
+  btnCopyBat := aboutDlg.Add("Picture", "x385 y" (yPos+2) " w14 h14 vbtnCopyBat Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyBat.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtBat"].Text))
+
+  ; Group 3: Network & Adapters (Right)
+  aboutDlg.SetFont("Bold s10", guiFont)
+  aboutDlg.Add("GroupBox", "x440 y100 w434 h420", "Network & Telemetry")
+  aboutDlg.SetFont("c353881 W600 q5 s10", guiFont)
+
+  yPos := 125
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "External IP:")
+  txtExtIP := aboutDlg.Add("Text", "x570 y" yPos " w260 vtxtExtIP", "Click 'Load Telemetry'")
+  txtExtIP.OnEvent("Click", PopulateTelemetry)
+  btnCopyExtIP := aboutDlg.Add("Picture", "x840 y" (yPos+2) " w14 h14 vbtnCopyExtIP Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyExtIP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtExtIP"].Text))
+
+  yPos += spacing
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "Primary NIC:")
+  txtNIC1Desc := aboutDlg.Add("Text", "x570 y" yPos " w280 r2 vtxtNIC1Desc", "Click 'Load Telemetry'")
+  txtNIC1Desc.OnEvent("Click", PopulateTelemetry)
+
+  yPos += 36
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "Local IPv4:")
+  txtNIC1IP := aboutDlg.Add("Text", "x570 y" yPos " w260 vtxtNIC1IP", "Click 'Load Telemetry'")
+  txtNIC1IP.OnEvent("Click", PopulateTelemetry)
+  btnCopyNIC1IP := aboutDlg.Add("Picture", "x840 y" (yPos+2) " w14 h14 vbtnCopyNIC1IP Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC1IP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC1IP"].Text))
+
+  yPos += spacing
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "Gateway:")
+  txtNIC1GW := aboutDlg.Add("Text", "x570 y" yPos " w260 vtxtNIC1GW", "Click 'Load Telemetry'")
+  txtNIC1GW.OnEvent("Click", PopulateTelemetry)
+  btnCopyNIC1GW := aboutDlg.Add("Picture", "x840 y" (yPos+2) " w14 h14 vbtnCopyNIC1GW Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC1GW.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC1GW"].Text))
+
+  yPos += spacing
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "MAC Address:")
+  txtNIC1MAC := aboutDlg.Add("Text", "x570 y" yPos " w260 vtxtNIC1MAC", "Click 'Load Telemetry'")
+  txtNIC1MAC.OnEvent("Click", PopulateTelemetry)
+  btnCopyNIC1MAC := aboutDlg.Add("Picture", "x840 y" (yPos+2) " w14 h14 vbtnCopyNIC1MAC Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC1MAC.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC1MAC"].Text))
+
+  yPos += 36
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "Secondary NIC:")
+  txtNIC2Desc := aboutDlg.Add("Text", "x570 y" yPos " w280 r2 vtxtNIC2Desc", "-")
+
+  yPos += 36
+  aboutDlg.Add("Text", "x454 y" yPos " w110", "Secondary IP:")
+  txtNIC2IP := aboutDlg.Add("Text", "x570 y" yPos " w260 vtxtNIC2IP", "-")
+  btnCopyNIC2IP := aboutDlg.Add("Picture", "x840 y" (yPos+2) " w14 h14 vbtnCopyNIC2IP Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC2IP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC2IP"].Text))
 
   aboutDlg.Title := "Mello-Workspace - About"
   return aboutDlg
@@ -787,35 +842,67 @@ ConstructAboutDialog(*) {
 
 }
 
-GetPCInfo(_GuiControlObj, infoType := "CPUInfo") {
-  static copyBtn5 := ""
-  _GuiControlObj.Text := "Please wait..."
-  ThisPC.CollectInfo()
-  cpuProperty := ThisPC.CPUInfo.Name . " (" . ThisPC.CPUInfo.NumberOfCores . "/" . ThisPC.CPUInfo.NumberOfLogicalProcessors . ") @ " . Round(ThisPC.CPUInfo.MaxClockSpeed / 1000, 1) . "GHz"
-
-  _GuiControlObj.Text := cpuProperty
-
-  ; Resize the control to fit the rendered text
-  hDC := DllCall("GetDC", "Ptr", _GuiControlObj.Hwnd, "Ptr")
-  hFont := DllCall("SendMessage", "Ptr", _GuiControlObj.Hwnd, "UInt", 0x31, "Ptr", 0, "Ptr", 0, "Ptr")
-  hOldFont := DllCall("SelectObject", "Ptr", hDC, "Ptr", hFont, "Ptr")
-  size := Buffer(8)
-  DllCall("GetTextExtentPoint32", "Ptr", hDC, "Str", cpuProperty, "Int", StrLen(cpuProperty), "Ptr", size.Ptr)
-  textWidth := NumGet(size, 0, "Int") + 8
-  DllCall("SelectObject", "Ptr", hDC, "Ptr", hOldFont)
-  DllCall("ReleaseDC", "Ptr", _GuiControlObj.Hwnd, "Ptr", hDC)
-  _GuiControlObj.Move(, , textWidth)
-
-  ; Show or create copy button next to the text
-  _GuiControlObj.GetPos(&_textGuiXPos, &__, &_textGuiWidth, &__)
+PopulateTelemetry(_GuiControlObj, *) {
+  dlgGui := _GuiControlObj.Gui
   try {
-    copyBtn5.Move(_textGuiXPos + _textGuiWidth + 6, , 14, 14)
-    copyBtn5.Visible := true
-    copyBtn5.OnEvent("Click", (*) => CopyToClipboard(_GuiControlObj.Text))
-  } catch {
-    copyBtn5 := _GuiControlObj.Gui.Add("Picture", "x" (_textGuiXPos + _textGuiWidth + 6) " yp w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
-    copyBtn5.OnEvent("Click", (*) => CopyToClipboard(_GuiControlObj.Text))
+    dlgGui["btnLoad"].Text := "Loading..."
+    dlgGui["btnLoad"].Enabled := false
   }
+
+  ThisPC.CollectInfo()
+
+  ; System & OS
+  dlgGui["txtUptime"].Text := ThisPC.Uptime
+  dlgGui["btnCopyUptime"].Visible := true
+
+  ; Hardware
+  cpuStr := ThisPC.CPUInfo.Name . " (" . ThisPC.CPUInfo.NumberOfCores . "/" . ThisPC.CPUInfo.NumberOfLogicalProcessors . ") @ " . Round(ThisPC.CPUInfo.MaxClockSpeed / 1000, 1) . "GHz"
+  dlgGui["txtCPU"].Text := cpuStr
+  dlgGui["btnCopyCPU"].Visible := true
+
+  mbStr := (ThisPC.Motherboard.Has("Manufacturer") ? ThisPC.Motherboard["Manufacturer"] : "") . " " . (ThisPC.Motherboard.Has("Product") ? ThisPC.Motherboard["Product"] : "")
+  dlgGui["txtMB"].Text := mbStr
+  dlgGui["btnCopyMB"].Visible := true
+
+  dlgGui["txtRAM"].Text := ThisPC.RAM . " GiB"
+  dlgGui["btnCopyRAM"].Visible := true
+
+  batText := (ThisPC.Battery.Count > 0 && ThisPC.Battery.Has("EstimatedChargeRemaining"))
+    ? (ThisPC.Battery["EstimatedChargeRemaining"] . "%")
+    : "N/A (Desktop / AC Only)"
+  dlgGui["txtBat"].Text := batText
+  dlgGui["btnCopyBat"].Visible := true
+
+  ; Network
+  dlgGui["txtExtIP"].Text := ThisPC.ExternalIP
+  dlgGui["btnCopyExtIP"].Visible := true
+
+  if ThisPC.Network.Length > 0 {
+    nic1 := ThisPC.Network[1]
+    dlgGui["txtNIC1Desc"].Text := nic1["Description"]
+    dlgGui["txtNIC1IP"].Text := nic1["IPAddress"]
+    dlgGui["btnCopyNIC1IP"].Visible := true
+    dlgGui["txtNIC1GW"].Text := (nic1["Gateway"] != "") ? nic1["Gateway"] : "N/A"
+    dlgGui["btnCopyNIC1GW"].Visible := (nic1["Gateway"] != "")
+    dlgGui["txtNIC1MAC"].Text := (nic1["MACAddress"] != "") ? nic1["MACAddress"] : "N/A"
+    dlgGui["btnCopyNIC1MAC"].Visible := (nic1["MACAddress"] != "")
+  }
+
+  if ThisPC.Network.Length > 1 {
+    nic2 := ThisPC.Network[2]
+    dlgGui["txtNIC2Desc"].Text := nic2["Description"]
+    dlgGui["txtNIC2IP"].Text := nic2["IPAddress"]
+    dlgGui["btnCopyNIC2IP"].Visible := true
+  }
+
+  try {
+    dlgGui["btnLoad"].Text := "⚡ Refresh Telemetry"
+    dlgGui["btnLoad"].Enabled := true
+  }
+}
+
+GetPCInfo(_GuiControlObj, *) {
+  PopulateTelemetry(_GuiControlObj)
 }
 
 CopyToClipboard(text, *) {
