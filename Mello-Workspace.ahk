@@ -31,6 +31,12 @@ global theme_dark_bgcolor := "232a2f"
 global theme_light_fgcolor := "1a2023"
 global theme_dark_fgcolor := "f3f3f3"
 global IsMacKeyboard := false
+global IsStartupSoundDisabled := false
+try {
+  global IsStartupSoundDisabled := !!RegRead("HKCU\Software\Mello-Workspace", "DisableStartupSound", 0)
+} catch {
+  global IsStartupSoundDisabled := false
+}
 
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ HANDLERS                                                     │
@@ -88,7 +94,9 @@ if !FileExist(".\custom\_custom_functions.ahk") {
     ".\custom\_custom_functions.ahk"
 }
 DisplayTrayMenu()
-SoundPlay sound_file_startrun
+if (!IsStartupSoundDisabled) {
+  SoundPlay sound_file_startrun
+}
 ; Fade out the splash now that loading is complete
 SetTimer FadeSplashOut, -800
 
