@@ -60,17 +60,14 @@ QNMD_Toggle(*) {
 QNMD_Show(activate := true) {
     global qnmd, QNMD_DEFAULT_W, QNMD_DEFAULT_H
     g := qnmd.gui
+    qnmd.opacity := 255
     defaultGeom := "w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H
     g.Show((qnmd.geom != "" ? qnmd.geom : defaultGeom) (activate ? "" : " NoActivate"))
     if activate {
-        if (qnmd.opacity < 255)
-            WinSetTransparent(qnmd.opacity, g.Hwnd)
-        else
-            WinSetTransparent("Off", g.Hwnd)
+        WinSetTransparent("Off", g.Hwnd)
         WinActivate("ahk_id " g.Hwnd)
     } else {
-        unfocusedAlpha := Min(qnmd.opacity, 128)
-        WinSetTransparent(unfocusedAlpha, g.Hwnd)
+        WinSetTransparent(128, g.Hwnd)
     }
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
@@ -84,6 +81,8 @@ QNMD_Hide(*) {
     if (g = "" || !DllCall("IsWindowVisible", "ptr", g.Hwnd))
         return true
     QNMD_SaveGeometry()
+    qnmd.opacity := 255
+    try WinSetTransparent("Off", g.Hwnd)
     try qnmd.wvc.IsVisible := false
     g.Hide()
     return true     ; consume Close so the GUI is never destroyed
