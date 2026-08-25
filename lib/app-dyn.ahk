@@ -12,7 +12,7 @@ ModalMsg(message_string := "No Action Assigned", app_in_use := "No App Defined",
   trigger_key := "" ; ensure variable is initialized to avoid linter warnings when no case matches
   Switch A_ThisHotkey
   {
-    case "F13": trigger_key := "⌨️  [F13] `n🖱️  [Onboard_Cycle]     `n#️⃣  [Num_###?]"
+    case "F13": trigger_key := "⌨️  [F13] `n🖱️  [G + Onboard_Cycle] `n#️⃣  [Num_###?]"
     case "F14": trigger_key := "⌨️  [F14] `n🖱️  [G + Scroll_Left]   `n#️⃣  [Num_###?]"
     case "F15": trigger_key := "⌨️  [F15] `n🖱️  [G + Middle_Click]  `n#️⃣  [Num_8]"
     case "F16": trigger_key := "⌨️  [F16] `n🖱️  [G + Scroll_Right]  `n#️⃣  [Num_6]"
