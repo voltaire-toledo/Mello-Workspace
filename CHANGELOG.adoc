@@ -7,6 +7,218 @@
 
 All notable changes to the *Mello-Workspace* (MWS) project are documented in this file.
 
+== [0.4] - 2026-08-25 (August Release)
+
+Major feature and architecture release introducing the WebView2-powered QuickNote MD markdown scratchpad, comprehensive hardware and network telemetry in the ThisPC dashboard, dynamic terminal resolution with fallback cascade, registry-backed startup sound controls, heavy Unicode diagramming hotstrings, and AsciiDoc documentation overhaul.
+
+=== 📊 Release 0.4 Subsystem Overview
+
+[cols="^1,^1,2,3", options="header"]
+|===
+| Subsystem | Module | Key Features | Scope & Target Environment
+
+.2+| *Productivity Plugins*
+| `plugins/QuickNoteMD/`
+| WebView2-powered Markdown scratchpad (kbd:[Win+Alt+M]) with live Marked.js rendering, Edit/View modes, and clipboard image pasting
+| Local workstation (Win 10/11 with WebView2)
+
+| `plugins/QuickNoteMD/`
+| Manual Light/Dark/Auto theme override, auto-dimming to 50% opacity on unfocus, kbd:[Alt+WheelUp/Down] opacity adjustment, and `window.ini` persistence
+| Modern desktop workflow
+
+.1+| *Hardware & Telemetry*
+| `lib/help_about.ahk`
+| Expanded *ThisPC* diagnostics (Motherboard/Baseboard, RAM, NIC details, MAC, Gateway, on-demand External IP, Battery, Uptime) with one-click copy buttons and unified Segoe UI typography
+| Diagnostic & help dialog (800px)
+
+.1+| *App Automation*
+| `lib/app-automate.ahk`
+| Path-agnostic dynamic terminal discovery via COM `shell:AppsFolder` and tiered fallback cascade (`wt.exe` -> `pwsh.exe` -> `powershell.exe` -> `cmd.exe`) with elevation support
+| Universal Windows desktop
+
+.1+| *System Tray & Core*
+| `lib/traymenu.ahk` + `Mello-Workspace.ahk`
+| *Disable Startup Sound* toggle with HKCU registry persistence (`HKCU\Software\Mello-Workspace`) and dynamic checked/unchecked icon state synchronization
+| System notification area & audio engine
+
+.1+| *Text Automation*
+| `lib/hotstrings-mgmt.ahk`
+| Upgraded tree and table diagram hotstrings using heavy Unicode box-drawing lines (`┃`, `━`, `┣`, `┣━━`, `┗`, `┗━━`, `╋`, `┳`, `┻`, `┫`, `┏`, `┓`, `┣━━📁`, `┣━━📄`, `┗━━📁`, `┗━━📄`)
+| Documentation & text editing
+
+.1+| *Documentation*
+| `README.adoc` + `CHANGELOG.adoc`
+| Comprehensive documentation overhaul transitioned to AsciiDoc format with collapsible feature showcases and architecture map
+| Repository documentation
+|===
+
+=== ⌨️ Detailed Feature Breakdown
+
+==== 📝 QuickNote MD (WebView2 Markdown Scratchpad)
+* **WebView2 & Marked.js Integration (`plugins/QuickNoteMD/`):**
+** Replaced legacy native GUI with an embedded Microsoft Edge WebView2 control rendering `assets/editor.html` using Marked.js.
+** Seamless two-way asynchronous IPC bridge between AutoHotkey v2 and WebView2 (`WebView2.ahk`, `Promise.ahk`, `ComVar.ahk`).
+** Bundled 32-bit and 64-bit `WebView2Loader.dll` for portable out-of-the-box operation.
+* **Editing & View Modes:**
+** kbd:[Win+Alt+M] – Summon or dismiss floating scratchpad (auto-focuses input upon opening).
+** kbd:[Esc] – Toggle between interactive Edit mode and rendered, read-only Markdown View mode.
+** Markdown shortcuts: kbd:[Ctrl+B] (bold `****`), kbd:[Ctrl+I] (italic `**`), and kbd:[Ctrl+Shift+C] (inline code ````).
+** Clipboard Image Pasting: Paste images directly from clipboard (kbd:[Ctrl+V]) to embed as Markdown data URIs.
+* **Manual Theme Override & Transparency Controls (TASK-4):**
+** Tray context menu theme selector supporting *Auto (Follow System)*, *Light Theme*, and *Dark Theme*, persisted to `%APPDATA%\Mello-Workspace\QuickNoteMD\window.ini`.
+** Dynamic window opacity adjustment using kbd:[Alt+WheelUp] and kbd:[Alt+WheelDown] while focused (clamped safely between 25% and 100%).
+** Auto-dimming: Scratchpad automatically dims to 50% opacity when unfocused (`WM_ACTIVATE`) and restores configured opacity when reactivated.
+** Dynamic geometry retention across summon/hide actions with minimum window bounds (320x240) and starting defaults (800x600).
+** High-resolution DPI-aware Markdown icon (`markdown.ico`) applied to window titlebar and taskbar.
+
+==== 💻 Expanded ThisPC Diagnostics & Hardware Telemetry (TASK-3)
+* **Comprehensive Metrics Dashboard (`lib/help_about.ahk`):**
+** **Motherboard / Baseboard:** Manufacturer, Product model, and Serial Number.
+** **Memory (RAM):** Total installed physical RAM calculated dynamically via WMI `Win32_PhysicalMemory`.
+** **Network Adapters:** Enabled adapter descriptions, physical MAC addresses, local IPv4/IPv6 addresses, and Default Gateway.
+** **External IP:** Asynchronous on-demand external/public IP lookup to prevent GUI initialization latency.
+** **Battery & Power:** Battery charge percentage, charging/AC line status, and power chemistry.
+** **System Uptime:** Human-readable system boot time and elapsed uptime.
+* **UI & Typography Polish:**
+** Dedicated copy buttons next to all telemetry fields using the `_GuiControlObj.Gui` reference pattern.
+** Modernized typography utilizing Segoe UI Variable with clean, unbolded data fields.
+** Widened help dialog layout to 800px for optimal data display across all 6 tabs.
+
+==== ⚡ Dynamic Terminal Resolution & Fallback Cascade (TASK-7)
+* **Path-Agnostic Discovery (`lib/app-automate.ahk`):**
+** Resolved `LaunchTerminal` failures when `wt.exe` is absent from system `PATH`.
+** **Tier 1:** Standard `wt.exe` execution via `PATH`.
+** **Tier 2:** Dynamic discovery via COM `shell:AppsFolder` searching for registered instances ("Terminal", "Windows Terminal", "Terminal Preview") without hardcoded absolute paths or package GUIDs.
+** **Tier 3:** Tiered shell fallback cascade launching `pwsh.exe`, `powershell.exe`, or `A_ComSpec` (`cmd.exe`).
+** Full support for elevated Administrator terminals (kbd:[Ctrl+Alt+Shift+T] and arpeggio kbd:[Alt+Win+O] -> kbd:[T]).
+
+==== 🔔 Disable Startup Sound Tray Option (TASK-10)
+* **Audio Preference Management (`lib/traymenu.ahk`, `Mello-Workspace.ahk`):**
+** Added *Disable Startup Sound* toggle item to the system tray menu.
+** Persists mute setting in HKCU registry (`HKCU\Software\Mello-Workspace\DisableStartupSound`).
+** Dynamically updates tray menu item icon (`checked.ico` / `unchecked.ico`) upon toggle.
+** Suppresses startup chime playback (`media/sounds/start_app.wav`) on script launch and reload when enabled.
+
+==== 🔤 Heavy Line Tree & Diagramming Hotstrings
+* **Refined Pseudographics (`lib/hotstrings-mgmt.ahk`):**
+** Upgraded tree and box hotstrings to heavy-weight Unicode lines:
+*** `:|` -> `┃` (vertical), `:-` -> `━` (horizontal), `:+` -> `╋` (cross).
+*** `:|-` -> `┣` / `:|--` -> `┣━━` (branch right), `:|_` -> `┗` / `:|__` -> `┗━━` (corner bottom-left).
+*** `:-v-` -> `┳` (T down), `:-^-` -> `┻` (T up), `:-|` -> `┫` (branch left).
+*** `:r` -> `┏`, `:7` -> `┓`, `:L` -> `┗`, `:J` -> `┛`.
+*** `:|-d` -> `┣━━📁` (directory branch), `:|-f` -> `┣━━📄` (file branch).
+*** `:Ld` -> `┗━━📁` (terminal directory node), `:Lf` -> `┗━━📄` (terminal file node).
+
+==== 📚 AsciiDoc Documentation Architecture
+* **Documentation Overhaul:**
+** Replaced legacy `README.md` with rich AsciiDoc `README.adoc` featuring collapsible sections, badge matrices, hardware routing tables, and architecture diagrams.
+** Added structured `CHANGELOG.adoc` following Keep a Changelog specifications.
+
+---
+
+== [0.3] - 2026-07-25 (July Release)
+
+Monthly release introducing expanded ASCII pseudographics and diagramming hotstrings, multiline-aware table generation, Kaomojis, dynamic date expansions, and Help & About cheatsheet updates.
+
+=== 📊 Release 0.3 Subsystem Overview
+
+[cols="^1,^1,2,3", options="header"]
+|===
+| Subsystem | Module | Key Features | Scope & Target Environment
+
+.2+| *Text Automation*
+| `lib/hotstrings-mgmt.ahk`
+| Pseudographics suite (`:|`, `:-`, `:|-`, `:|_`, `:+`, `:-v-`, `:-^-`, `:r`, `:7`, `:L`, `:J`, `:|-d`, `:|-f`, `:Ld`, `:Lf`) and interactive `:Hotstrings` cheatsheet trigger
+| Monospace text editors & terminals
+
+| `lib/hotstrings-mgmt.ahk`
+| Multiline-safe table output (`:rtable` via kbd:[Shift+Enter]), dynamic date stamps (`:yyyy`, `:yy`, `:mm`, `:dd`), and expanded Kaomojis / emojis (`:ghost`)
+| Universal text input
+
+.1+| *Hardware & Telemetry*
+| `lib/help_about.ahk`
+| Refined cheatsheet tab labels and descriptions (renamed "Tables & Boxes" to "ASCII Pseudographics")
+| Help & about dialog
+|===
+
+=== ⌨️ Detailed Feature Breakdown
+
+==== 🔤 Pseudographics & Diagramming Triggers (`lib/hotstrings-mgmt.ahk`)
+* **ASCII & Box-Drawing Hotstrings:**
+** Introduced ASCII shape-hint triggers for single-line pseudographics (`:|`, `:-`, `:+`, `:-v-`, `:-^-`, `:-|`, `:r`, `:7`, `:L`, `:J`).
+** Added tree diagram nodes with file/folder icons: `:|-d` (├──📁), `:|-f` (├──📄), `:Ld` (└──📁), `:Lf` (└──📄).
+** Added `:Hotstrings` interactive help popup rendering a quick reference table of all pseudographic triggers.
+** Enhanced rounded table expansion (`:rtable`) using kbd:[Shift+Enter] between rows to prevent premature message submission in chat and web apps.
+
+==== 🎭 Kaomojis & Character Additions
+* **Expressive Kaomojis:**
+** Added conversational Kaomojis: `:shrug` (`¯\_(ツ)_/¯`), `:tableflip` (`(ノಠ益ಠ)ノ彡┻━┻`), `:fuckoff` (`୧༼ಠ益ಠ╭∩╮༽`), `:fuckyou` (`┌П┐(ಠ_ಠ)`), `:idk` (`¯\(°_o)/¯`), `:ohshit` (`( º﹃º )`).
+* **Auxiliary Emojis:**
+** Added `:ghost` (`👻`) and updated inline symbols.
+
+==== 📅 Dynamic Date & Time Replacements
+* **System Clock Macro Expansions:**
+** `:yyyy` – Expands current 4-digit year (e.g. `2026`).
+** `:yy` – Expands current 2-digit year (e.g. `26`).
+** `:mm` – Expands current 2-digit month (e.g. `07`).
+** `:dd` – Expands current 2-digit day (e.g. `25`).
+
+==== ℹ️ Help & About Dialog Updates (`lib/help_about.ahk`)
+* Updated hotstring radio category label from "Tables & Boxes" to "ASCII Pseudographics".
+* Improved explanatory text for monospace box-drawing font recommendations.
+
+---
+
+== [0.2] - 2026-06-30 (June Release)
+
+Monthly release introducing the QuickNote scratchpad debut, Windows Registry-based startup integration, dynamic tray icon synchronization, and Calculator focus stability fixes.
+
+=== 📊 Release 0.2 Subsystem Overview
+
+[cols="^1,^1,2,3", options="header"]
+|===
+| Subsystem | Module | Key Features | Scope & Target Environment
+
+.1+| *Productivity Plugins*
+| `lib/plugin-qnote.ahk`
+| QuickNote floating scratchpad debut (kbd:[Win+Alt+N]) with markdown formatting, auto-save to `%APPDATA%`, and word/char count
+| Local Windows desktop
+
+.1+| *System Tray & Startup*
+| `lib/traymenu.ahk`
+| Switched startup registration to Windows Registry Run key (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run\Mello-Ops`) with live Win32 menu icon state updates
+| System notification area
+
+.1+| *App Automation*
+| `lib/app-automate.ahk`
+| Fixed Calculator activation and focus handling in newer AutoHotkey v2 releases
+| Universal Windows desktop
+|===
+
+=== ⌨️ Detailed Feature Breakdown
+
+==== 📝 QuickNote Scratchpad Debut (`lib/plugin-qnote.ahk`)
+* **Floating Scratchpad v1:**
+** kbd:[Win+Alt+N] – Toggle show/hide of lightweight floating note window without destroying contents.
+** Quick markdown formatting buttons for Bold, Italic, and Code blocks.
+** Integrated theme adaptation following system light/dark mode settings.
+** Real-time status bar displaying active word count and character count.
+** Auto-saving of note content and window geometry to `%APPDATA%\Mello-Workspace`.
+
+==== 🚀 Registry-Based Startup Configuration & Tray State Fixes (`lib/traymenu.ahk`)
+* **Reliable Startup Invocation:**
+** Replaced legacy Startup folder `.lnk` shortcut creation with native Windows Registry Run key (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run\Mello-Ops`).
+** Correctly invokes `"<exe-path>" "<script-path>"` passing explicit arguments.
+* **Live Menu Icon Updates:**
+** Fixed variable shadowing bug (`global trayitem_runatstartup_ico`) in `ToggleRunAtStartup`.
+** Added `SetMenuIcon` refresh call to immediately update the Win32 tray menu checkbox icon upon toggling.
+
+==== 🧮 Calculator Activation Stability (`lib/app-automate.ahk`)
+* **Focus Handling Fix:**
+** Resolved `LaunchCalculator` focus race condition in newer AutoHotkey v2 releases using `WinWait("Calculator")` and `WinActivate`.
+
+---
+
 == [0.1] - 2026-06-08 (Initial Release)
 
 Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 productivity and window management suite.
@@ -92,7 +304,7 @@ Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 product
 ** Fine-grained border expansion and contraction (`ResizeWindowBorders`).
 ** Monitor edge snapping (`ExtendToMonitorEdge`).
 * **Middle-Click Mouse Gestures:**
-** Gesture recognition on Middle-Click drag:
+** Gesture recognition on kbd:[Ctrl+Alt+Win+MButton] drag:
 *** Up: Toggle maximize/restore.
 *** Down: Toggle Always-on-Top pinning.
 *** Left / Right: Snap to left / right screen half.
