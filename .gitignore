@@ -19,7 +19,7 @@ custom/.mslrc.ahk
 
 # Ignore Mello-releated binaries during development; created during the installation process
 **/Mello*.exe
-**/media/*.dll
+**/assets/*.dll
 **/*.md
 .gemini/GEMINI.md
 docs/*

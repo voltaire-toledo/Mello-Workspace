@@ -97,7 +97,7 @@ Major feature and architecture release introducing the WebView2-powered QuickNot
 ** Added *Disable Startup Sound* toggle item to the system tray menu.
 ** Persists mute setting in HKCU registry (`HKCU\Software\Mello-Workspace\DisableStartupSound`).
 ** Dynamically updates tray menu item icon (`checked.ico` / `unchecked.ico`) upon toggle.
-** Suppresses startup chime playback (`media/sounds/start_app.wav`) on script launch and reload when enabled.
+** Suppresses startup chime playback (`assets/sounds/start_app.wav`) on script launch and reload when enabled.
 
 ==== 🔤 Heavy Line Tree & Diagramming Hotstrings
 * **Refined Pseudographics (`lib/hotstrings-mgmt.ahk`):**

@@ -1,4 +1,4 @@
-= image:media/images/mello-keycap.png[Mello-Workspace Logo,48,48,valign=middle] Mello-Workspace (MWS)
+= image:assets/images/mello-keycap.png[Mello-Workspace Logo,48,48,valign=middle] Mello-Workspace (MWS)
 Voltaire Toledo <https://github.com/voltaire-toledo>
 v0.4, 2026-08-26
 :toc: macro
@@ -291,7 +291,7 @@ Type short triggers anywhere in Windows to instantly expand Unicode diagrams, he
 ====
 If you use a gaming mouse with extra buttons (like the **Logitech G502X Lightspeed**), MWS automatically adapts onboard F13–F24 signals based on your active application.
 
-image::media/images/g502x-lightspeed-gallery-2-white.webp[Logitech G502X Top Profile,380,align=center]
+image::assets/images/g502x-lightspeed-gallery-2-white.webp[Logitech G502X Top Profile,380,align=center]
 
 [cols="^1,^1,^1,2", options="header"]
 |===
@@ -389,6 +389,7 @@ VT-Mello-Workspace/
 ├── 📄 CHANGELOG.adoc            <-- Version history & release notes
 ├── 📄 README.adoc               <-- User guide & documentation
 ├── 📁 ahkbin/                   <-- Portable AutoHotkey v2 binaries & WindowSpy
+├── 📁 assets/                   <-- Icons, audio assets, and UI imagery
 ├── 📁 custom/                   <-- Personal hotkeys & snippets (ignored by Git)
 │   └── 📄 _custom_functions.ahk
 ├── 📁 lib/                      <-- Core modular libraries
@@ -401,7 +402,6 @@ VT-Mello-Workspace/
 │   ├── 📄 hotstrings-mgmt.ahk   <-- Unicode boxes, heavy trees, kaomojis & date stamps
 │   ├── 📄 traymenu.ahk          <-- Context-aware system tray & theme engine
 │   └── 📄 winui-mgmt.ahk        <-- Window snapping, sizing & mouse gestures
-├── 📁 media/                    <-- Icons, audio assets, and UI imagery
 ├── 📁 plugins/                  <-- Modular application plugins
 │   └── 📁 QuickNoteMD/          <-- WebView2 floating Markdown scratchpad
 │       ├── 📄 QuickNoteMD.ahk   <-- Plugin entry point & IPC bridge
