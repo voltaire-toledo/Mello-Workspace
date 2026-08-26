@@ -219,7 +219,7 @@ ConstructAboutDialog(*) {
   ; │ Tab 1 - About                                                                         │
   ; ╰───────────────────────────────────────────────────────────────────────────────────────╯
   mainTab.UseTab(1)
-  aboutDlg.Add("Picture", "x16 y76 w92 h92", A_ScriptDir "\media\images\mello-keycap.png")
+  aboutDlg.Add("Picture", "x16 y76 w92 h92", A_ScriptDir "\assets\images\mello-keycap.png")
   aboutDlg.SetFont("c039314 Bold s21", guiFont)
   aboutDlg.Add("Text", "x120 y74 w450", "Mello-Workspace")
 
@@ -242,10 +242,10 @@ ConstructAboutDialog(*) {
   aboutDlg.Add("Link", "yp w400 h23",
     "AutoHotkey (version " A_AhkVersion ") is available at <a href=`"https://www.autohotkey.com`">autohotkey.com</a>")
 
-  aboutDlg.Add("Picture", "x70 yp+20 w20 h20", A_ScriptDir "\media\icons\icons8.ico")
+  aboutDlg.Add("Picture", "x70 yp+20 w20 h20", A_ScriptDir "\assets\icons\icons8.ico")
   aboutDlg.Add("Link", "yp w600 h23", "Icons by <a href=`"https://icons8.com`">icons8.com</a>")
 
-  aboutDlg.Add("Picture", "x70 yp+20 w20 h20", A_ScriptDir "\media\icons\icons8-github-windows-10-16.png")
+  aboutDlg.Add("Picture", "x70 yp+20 w20 h20", A_ScriptDir "\assets\icons\icons8-github-windows-10-16.png")
   aboutDlg.Add("Link", "yp w300 h23",
     "<a href=`"https://github.com/FuPeiJiang/VD.ahk/tree/v2_port`">VD.ahk library</a> by <a href=`"https://github.com/FuPeiJiang`">FuPeiJiang</a>")
 
@@ -618,7 +618,7 @@ ConstructAboutDialog(*) {
   aboutDlg.Add("Text", "x28 y" yPos " w90", "Host Name:")
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtHost", A_ComputerName)
-  btnCopyHost := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyHost := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyHost.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtHost"].Text))
 
   yPos += spacing
@@ -626,7 +626,7 @@ ConstructAboutDialog(*) {
   aboutDlg.Add("Text", "x28 y" yPos " w90", "Current User:")
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtUser", A_UserName . (A_IsAdmin ? " (Admin)" : ""))
-  btnCopyUser := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyUser := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyUser.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtUser"].Text))
 
   yPos += spacing
@@ -634,7 +634,7 @@ ConstructAboutDialog(*) {
   aboutDlg.Add("Text", "x28 y" yPos " w90", "OS Version:")
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtOS", A_OSVersion)
-  btnCopyOS := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyOS := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyOS.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtOS"].Text))
 
   yPos += spacing
@@ -642,7 +642,7 @@ ConstructAboutDialog(*) {
   aboutDlg.Add("Text", "x28 y" yPos " w90", "Architecture:")
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtArch", A_Is64bitOS ? "64-bit" : "32-bit")
-  btnCopyArch := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyArch := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyArch.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtArch"].Text))
 
   yPos += spacing
@@ -651,7 +651,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtUptime := aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtUptime", "Click 'Load System Info'")
   txtUptime.OnEvent("Click", PopulateTelemetry)
-  btnCopyUptime := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyUptime Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyUptime := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyUptime Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyUptime.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtUptime"].Text))
 
   ; Group 2: Hardware (Left Bottom)
@@ -664,7 +664,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtCPU := aboutDlg.Add("Text", "x122 y" yPos " w230 r2 vtxtCPU", "Click 'Load System Info'")
   txtCPU.OnEvent("Click", PopulateTelemetry)
-  btnCopyCPU := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyCPU Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyCPU := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyCPU Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyCPU.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtCPU"].Text))
 
   yPos += 40
@@ -673,7 +673,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtMB := aboutDlg.Add("Text", "x122 y" yPos " w230 r2 vtxtMB", "Click 'Load System Info'")
   txtMB.OnEvent("Click", PopulateTelemetry)
-  btnCopyMB := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyMB Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyMB := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyMB Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyMB.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtMB"].Text))
 
   yPos += 40
@@ -682,7 +682,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtRAM := aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtRAM", "Click 'Load System Info'")
   txtRAM.OnEvent("Click", PopulateTelemetry)
-  btnCopyRAM := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyRAM Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyRAM := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyRAM Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyRAM.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtRAM"].Text))
 
   yPos += spacing
@@ -691,7 +691,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtBat := aboutDlg.Add("Text", "x122 y" yPos " w230 vtxtBat", "Click 'Load System Info'")
   txtBat.OnEvent("Click", PopulateTelemetry)
-  btnCopyBat := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyBat Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyBat := aboutDlg.Add("Picture", "x358 y" (yPos+2) " w14 h14 vbtnCopyBat Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyBat.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtBat"].Text))
 
   ; Group 3: Network & Adapters (Right)
@@ -704,7 +704,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtExtIP := aboutDlg.Add("Text", "x508 y" yPos " w245 vtxtExtIP", "Click 'Load System Info'")
   txtExtIP.OnEvent("Click", PopulateTelemetry)
-  btnCopyExtIP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyExtIP Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyExtIP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyExtIP Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyExtIP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtExtIP"].Text))
 
   yPos += spacing
@@ -720,7 +720,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtNIC1IP := aboutDlg.Add("Text", "x508 y" yPos " w245 vtxtNIC1IP", "Click 'Load System Info'")
   txtNIC1IP.OnEvent("Click", PopulateTelemetry)
-  btnCopyNIC1IP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC1IP Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC1IP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC1IP Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyNIC1IP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC1IP"].Text))
 
   yPos += spacing
@@ -729,7 +729,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtNIC1GW := aboutDlg.Add("Text", "x508 y" yPos " w245 vtxtNIC1GW", "Click 'Load System Info'")
   txtNIC1GW.OnEvent("Click", PopulateTelemetry)
-  btnCopyNIC1GW := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC1GW Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC1GW := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC1GW Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyNIC1GW.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC1GW"].Text))
 
   yPos += spacing
@@ -738,7 +738,7 @@ ConstructAboutDialog(*) {
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtNIC1MAC := aboutDlg.Add("Text", "x508 y" yPos " w245 vtxtNIC1MAC", "Click 'Load System Info'")
   txtNIC1MAC.OnEvent("Click", PopulateTelemetry)
-  btnCopyNIC1MAC := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC1MAC Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC1MAC := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC1MAC Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyNIC1MAC.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC1MAC"].Text))
 
   yPos += 36
@@ -752,7 +752,7 @@ ConstructAboutDialog(*) {
   aboutDlg.Add("Text", "x408 y" yPos " w95", "Secondary IP:")
   aboutDlg.SetFont("c000000 Norm s10", guiFont)
   txtNIC2IP := aboutDlg.Add("Text", "x508 y" yPos " w245 vtxtNIC2IP", "-")
-  btnCopyNIC2IP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC2IP Hidden", A_ScriptDir "\media\icons\icons8-copy-16.png")
+  btnCopyNIC2IP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC2IP Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyNIC2IP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC2IP"].Text))
 
   aboutDlg.Title := "Mello-Workspace - About"
