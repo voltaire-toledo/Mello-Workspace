@@ -1,9 +1,9 @@
-= image:media/images/mello-keycap.png[Mello-Workspace Logo,64,64,valign=middle] Mello-Workspace (MWS)
+= image:media/images/mello-keycap.png[Mello-Workspace Logo,48,48,valign=middle] Mello-Workspace (MWS)
 Voltaire Toledo <https://github.com/voltaire-toledo>
-v0.1, 2026-08-25
+v0.4, 2026-08-26
 :toc: macro
 :toc-title: Table of Contents
-:toclevels: 3
+:toclevels: 2
 :icons: font
 :experimental:
 :source-highlighter: rouge
@@ -13,73 +13,56 @@ v0.1, 2026-08-25
 image:https://img.shields.io/badge/AutoHotkey-v2.0+-334455.svg[AutoHotkey v2,link=https://www.autohotkey.com/]
 image:https://img.shields.io/badge/Platform-Windows%2011%20%7C%20RDP-0078D6.svg[Windows 11]
 image:https://img.shields.io/badge/License-GPL--2.0-blue.svg[License: GPL-2.0,link=LICENSE]
-image:https://img.shields.io/badge/Version-0.1-emerald.svg[Version 0.1]
+image:https://img.shields.io/badge/Version-0.4-emerald.svg[Version 0.4]
 
 [quote]
 ____
-*Chill. Flow. Repeat.* — An opinionated, always-on productivity toolkit and window management orchestration layer built on AutoHotkey v2.
+*A calm, always-on productivity toolkit for Windows.* — Chill. Flow. Repeat.
 ____
+
+Mello-Workspace (MWS) is an unobtrusive background companion that bridges the gap between your intent and your actions. It is built to keep you in the flow by eliminating repetitive clicks, organizing your desktop clutter, and providing consistent keyboard muscle memory across all your daily apps.
+
+Whether you are a developer, power user, or managing ADHD focus and time blindness, MWS reduces friction so you can focus on the work that matters.
 
 ---
 
 toc::[]
 
-== 🎯 Overview & Philosophy
+== 🌟 What Mello-Workspace Does for You
 
-*Mello-Workspace (MWS)* bridges the gap between intent and action. Designed for developers, power users, and neurodivergent workflows (ADHD focus management, time-blindness mitigation), MWS provides consistent muscle memory, multi-monitor window control, intelligent text replacements, and hardware-accelerated context routing.
-
-Unlike traditional launchers, MWS acts as an ambient automation layer that dynamically adapts across local displays, multi-monitor setups, and remote sessions (RDP/Hyper-V).
+* **Perfect Window Snapping:** Stop wrestling with window borders. Press kbd:[Alt+Win+P] to turn your Numpad into a spatial 9-zone screen controller. One tap snaps your window to the exact half, quarter, or center of your display.
+* **Floating QuickNote MD Scratchpad:** Need to jot down a quick idea or paste an image? Press kbd:[Win+Alt+M] to summon an instant Markdown scratchpad powered by Edge WebView2. It auto-dims when you switch tasks and remembers your notes automatically.
+* **Smart Text Automation:** Never retype the same templates or hunt for characters. Type simple triggers like `:yyyy` for the current year, `:rtable` for a formatted table, or `:shrug` for `¯\_(ツ)_/¯`.
+* **Adaptive Mouse Buttons:** Using a multi-button mouse like the Logitech G502X? MWS dynamically adapts your extra buttons to the focused app (e.g., code indenting in VS Code, navigation in Notion, or tab switching in Edge).
+* **Calm & Accessible:** Lose your cursor on multiple 4K monitors? Scale it up instantly with kbd:[Ctrl+Alt+Win+\]]. Need to pause all shortcuts for gaming? Suspend MWS with a single keystroke.
 
 [TIP]
 ====
-MWS eliminates hardcoded absolute paths by resolving applications dynamically through Windows COM `shell:AppsFolder` namespaces and standard Windows environment variables.
+MWS operates quietly in the Windows background without requiring admin rights for daily usage. It dynamically discovers your installed tools without hardcoded paths.
 ====
 
 ---
 
-== 🚀 Installation & Setup
+== 🚀 One-Step Installation
 
-MWS provides streamlined installation methods tailored for both rapid deployment and active development.
-
-=== Installation Method Comparison Matrix
-
-[cols="^1,^1,2,2", options="header"]
-|===
-| Method | Target Use Case | Provisioning Actions | Deployment Location
-
-.1+| *PowerShell One-Liner*
-| Standard User / Quick Deploy
-| Downloads latest zip, fetches official AutoHotkey v2 into `ahkbin/`, creates automatic backups, and registers Start Menu shortcut.
-| `%LOCALAPPDATA%\Mello-Workspace`
-
-.2+| *Git Clone & Local*
-| Power User / Customizer
-| Clones full Git history, runs `Mello-Workspace.ps1` locally, provisions missing `ahkbin/` runtime, and creates Start Menu shortcut.
-.2+| Current Git Repository Directory
-
-| Contributing Developer
-| Provisions pre-commit hooks, validates environment via `setup-dev.ps1` or `task setup`, and symlinks custom functions.
-|===
-
-=== Method 1: PowerShell Command-Line Quick Install (Recommended)
-
-Install and configure Mello-Workspace directly from PowerShell without manual cloning. This downloads the latest archive, provisions AutoHotkey v2 binaries into `ahkbin/`, configures the Start Menu shortcut, and starts the workspace.
+The easiest way to get started is with our automated PowerShell installer. It downloads the required files, configures AutoHotkey v2 into a self-contained folder, creates your Start Menu shortcut, and launches MWS immediately.
 
 [source,powershell]
 ----
-# Launch PowerShell and run the remote installation one-liner:
+# 1. Open PowerShell and run this single command:
 irm https://raw.githubusercontent.com/voltaire-toledo/Mello-Workspace/main/Mello-Workspace.ps1 | iex <1>
 ----
-<1> Automatically invokes `Install-FromUrl`, backs up any previous installation to `%LOCALAPPDATA%\Mello-Workspace\backup-*`, downloads dependencies, and registers the application.
+<1> Downloads the latest release, creates safe backups of existing settings in `%LOCALAPPDATA%\Mello-Workspace\backup-*`, sets up Start Menu shortcuts, and starts the workspace.
 
 [NOTE]
 ====
-The installer stores application files in `%LOCALAPPDATA%\Mello-Workspace` and registers a clean shortcut under `Start Menu > Programs > Mello`.
+MWS installs safely into `%LOCALAPPDATA%\Mello-Workspace` without polluting system directories. A Start Menu shortcut is automatically registered under `Programs > Mello`.
 ====
 
-=== Method 2: Git Clone & Local Script Execution
-
-For users who prefer managing the repository via Git:
+=== 🛠️ Advanced & Developer Setup
+[%collapsible]
+====
+If you prefer managing the repository via Git or contributing to features:
 
 [source,powershell]
 ----
@@ -87,130 +70,105 @@ For users who prefer managing the repository via Git:
 git clone https://github.com/voltaire-toledo/Mello-Workspace.git
 cd Mello-Workspace
 
-# 2. Run the deployment script locally <1>
-.\Mello-Workspace.ps1
+# 2. Run locally (provisions portable AutoHotkey binaries into ahkbin/)
+.\Mello-Workspace.ps1 <1>
 
-# 3. (Alternative) Launch directly with AutoHotkey v2 <2>
-.\ahkbin\AutoHotkey32.exe .\Mello-Workspace.ahk
-----
-<1> When executed locally, `Mello-Workspace.ps1` detects the repository workspace, fetches required runtime binaries into `ahkbin/` if missing, sets up Start Menu shortcuts, and starts MWS.
-<2> Direct invocation when development binaries are already in place.
-
-=== Method 3: Developer Setup via Taskfile
-
-If you are contributing or customizing features, initialize your local environment using the included developer script or `task`:
-
-[source,powershell]
-----
-# Run developer provisioning and git pre-commit hook setup
-.\scripts\setup-dev.ps1
-
-# Or run using Task
+# 3. Optional: Initialize developer pre-commit hooks and tests
+.\scripts\setup-dev.ps1 <2>
+# Or use Taskfile:
 task setup
 ----
+<1> Detects repository context, downloads portable AutoHotkey v2 into `ahkbin/` if missing, and creates local Start Menu shortcuts.
+<2> Configures developer tooling, git hooks, and user custom function templates.
+====
 
 ---
 
-== 🌟 Feature Showcase
+== ⌨️ Getting Started: Your First Shortcuts
 
-Explore the core features below. Click on any section header to expand its interactive guide, keybindings, and diagrams.
+Once installed, try these essential shortcuts to experience how MWS streamlines your day:
 
-=== ⌨️ Core Hotkeys & System Navigation
-[%collapsible]
-====
-Core system hotkeys are `#SuspendExempt`, ensuring you can always reload, edit, or recover the script even when global hotkeys are paused.
-
-[cols="^1,^1,2,3", options="header"]
+[cols="^1,^1,3", options="header"]
 |===
-| Category | Shortcut | Action | Description
+| Feature | Shortcut | What It Does
 
-.3+| *Lifecycle*
-| kbd:[Ctrl+Alt+Win+S]
-| Toggle Suspend
-| Temporarily suspends or resumes hotkeys. Tray icon turns red when paused.
-
-| kbd:[Ctrl+Alt+Win+R]
-| Reload MWS
-| Instantly restarts and recompiles the AutoHotkey script.
-
-| kbd:[Ctrl+Alt+Win+E]
-| Edit Code
-| Opens the active script in your preferred editor.
-
-.4+| *Help & Diagnostics*
+.1+| *Help Dashboard*
 | kbd:[Ctrl+Alt+Win+F1]
-| Help & About
-| Displays the tabbed interactive cheat sheet and `ThisSystem.Info` dashboard.
+| Opens the interactive cheat sheet and hardware telemetry dashboard.
 
-| kbd:[Ctrl+Alt+Win+F2]
-| AutoHotkey Manual
-| Opens the compiled offline documentation (`AutoHotkey.chm`).
+.2+| *Window Control*
+| kbd:[Alt+Win+P]
+| Enters Window Management Mode. Press any Numpad key (`1`–`9`) to snap the active window.
 
-| kbd:[Ctrl+Alt+Win+F3]
-| WindowSpy
-| Launches the AutoHotkey WindowSpy inspection utility.
+| kbd:[Ctrl+Alt+Win+MButton]
+| Middle-click and drag any window to snap, maximize, or pin Always-on-Top.
 
-| kbd:[Ctrl+Alt+Win+F12]
-| System Sleep
-| Immediately places the computer into low-power sleep state via `powrprof.dll`.
+.1+| *Quick Note-Taking*
+| kbd:[Win+Alt+M]
+| Summons the floating Markdown scratchpad. Press kbd:[Esc] to switch between Edit and View modes.
 
-.3+| *Navigation*
-| kbd:[Ctrl+Alt+Win+F]
-| Open MWS Folder
-| Opens the root script directory in File Explorer.
+.2+| *Quick Launchers*
+| kbd:[Ctrl+Alt+T]
+| Launches or switches to Windows Terminal (with smart shell fallbacks).
 
-| kbd:[Win+F]
-| Home Directory
-| Replaces Windows Feedback with instant navigation to user home directory (`~`).
+| Double-tap kbd:[RCtrl]
+| Instantly opens or focuses the Windows Calculator.
 
-| kbd:[RCtrl + Arrows]
-| TKL Navigation Remap
-| Emulates kbd:[PgUp], kbd:[PgDn], kbd:[Home], and kbd:[End] on Tenkeyless keyboards.
+.2+| *Accessibility & Focus*
+| kbd:[Ctrl+Alt+Win+\]] / kbd:[\[]
+| Scales mouse cursor size up or down in real time (from 32px to 256px).
+
+| kbd:[Ctrl+Alt+Win+S]
+| Suspends or resumes all MWS hotkeys (tray icon turns red when paused).
 |===
-====
 
-=== 🪟 Window Management & Modal Grid Snapping
+---
+
+== 🔍 Feature Deep Dive
+
+Click any section below to expand detailed guides, diagrams, and cheatsheets.
+
+=== 🪟 Spatial Window Snapping & Mouse Gestures
 [%collapsible]
 ====
-Control window dimensions, multi-monitor quadrant snapping, and dynamic mouse pointer sizes with precision.
+Stop dragging windows across screens. MWS gives you two effortless ways to organize your workspace:
 
-==== Numpad & Modal Snap Grid (kbd:[Alt+Win+P])
-
-When activating Window Management HUD mode (kbd:[Alt+Win+P]), your Numpad acts as a direct spatial grid controller:
+==== 1. Numpad Spatial Snapping (kbd:[Alt+Win+P])
+Press kbd:[Alt+Win+P] to display the HUD overlay, then hit any Numpad key:
 
 [cols="^1,^1,^1", options="header"]
 |===
 | Left Column | Center Column | Right Column
 
 | *Numpad 7* +
-Top-Left Corner (Quarter)
+Top-Left Corner
 | *Numpad 8* +
 Top Half (Full Width)
 | *Numpad 9* +
-Top-Right Corner (Quarter)
+Top-Right Corner
 
 | *Numpad 4* +
 Left Half (Full Height)
 | *Numpad 5* +
-Maximize / Center Full Screen
+Maximize / Full Screen
 | *Numpad 6* +
 Right Half (Full Height)
 
 | *Numpad 1* +
-Bottom-Left Corner (Quarter)
+Bottom-Left Corner
 | *Numpad 2* +
 Bottom Half (Full Width)
 | *Numpad 3* +
-Bottom-Right Corner (Quarter)
+Bottom-Right Corner
 
-3+| Hit kbd:[Tab] to exit Modal Window Management Mode
+3+| Hit kbd:[Tab] to exit Window Management Mode
 |===
 
-==== Window Sizing & Mouse Gestures Matrix
+==== 2. Window Sizing & Mouse Gestures
 
 [cols="^1,^1,2", options="header"]
 |===
-| Control Type | Input | Resulting Window Transformation
+| Input Method | Action | Result
 
 .2+| *Incremental Sizing*
 | kbd:[Ctrl + Arrow Keys] (in HUD mode)
@@ -219,78 +177,95 @@ Bottom-Right Corner (Quarter)
 | kbd:[Alt + Arrow Keys] (in HUD mode)
 | Extends active window edge to the closest monitor boundary.
 
-.5+| *Middle-Click Gestures*
-| Drag Up
-| Toggle Maximize / Restore window state.
+.5+| *Mouse Gestures*
+| kbd:[Ctrl+Alt+Win+MButton] Drag Up
+| Toggle Maximize / Restore active window.
 
-| Drag Down
-| Toggle Pin Window Always-on-Top (`WinSetAlwaysOnTop`).
+| kbd:[Ctrl+Alt+Win+MButton] Drag Down
+| Pin window Always-on-Top.
 
-| Drag Left / Right
-| Snap active window to Left or Right display half.
+| kbd:[Ctrl+Alt+Win+MButton] Drag Left / Right
+| Snap window to Left or Right display half.
 
-| Drag Diagonals (↖ ↗ ↙ ↘)
-| Snap active window to corresponding quadrant corner.
+| kbd:[Ctrl+Alt+Win+MButton] Drag Diagonals (↖ ↗ ↙ ↘)
+| Snap window to corresponding quarter corner.
 
-| Stationary Click
+| kbd:[Ctrl+Alt+Win+MButton] Click (no drag)
 | Minimize active window to Taskbar.
-
-.1+| *Cursor Scaling*
-| kbd:[Ctrl+Alt+Win+\]] / kbd:[\[]
-| Dynamically scales mouse cursor from 32px up to 256px with live ToolTip feedback.
 |===
 ====
 
-=== 🔤 Hotstrings & Text Automation
+=== 📝 QuickNote MD (Floating Markdown Scratchpad)
 [%collapsible]
 ====
-Type standard triggers anywhere in Windows to immediately expand ASCII diagrams, directory trees, Kaomojis, and Unicode symbols.
+QuickNote MD provides a distraction-free scratchpad built directly into Windows using Microsoft Edge WebView2 and Marked.js.
 
-[cols="^1,^1,2,3", options="header"]
+* **Summon Instantly:** Press kbd:[Win+Alt+M] from any app. The scratchpad appears immediately with the text cursor focused.
+* **Edit <-> Preview:** Press kbd:[Esc] to toggle between live Markdown editing and rendered HTML preview.
+* **Fast Formatting:**
+** kbd:[Ctrl+B] – Wrap text in `**bold**`.
+** kbd:[Ctrl+I] – Wrap text in `*italic*`.
+** kbd:[Ctrl+Shift+C] – Wrap text in inline `code`.
+* **Clipboard Image Paste:** Press kbd:[Ctrl+V] while an image is on your clipboard to instantly embed it inline.
+* **Auto-Dim & Opacity:**
+** Dims to 50% opacity when unfocused so it never obscures your primary work.
+** Adjust active opacity using kbd:[Alt+WheelUp] and kbd:[Alt+WheelDown] (25%–100%).
+* **Theme Modes:** Right-click the tray icon to choose between *Auto (Follow System)*, *Light*, or *Dark* theme.
+* **Auto-Save:** Notes and window positions are saved automatically to `%APPDATA%\Mello-Workspace\QuickNoteMD\`.
+====
+
+=== 🔤 Smart Text Automation & Pseudographics
+[%collapsible]
+====
+Type short triggers anywhere in Windows to instantly expand Unicode diagrams, heavy directory trees, Kaomojis, and dynamic timestamps.
+
+[cols="^1,^1,2,2", options="header"]
 |===
-| Domain | Trigger | Expanded Output | Use Case
+| Category | Trigger | Expanded Output | What It's For
 
-.3+| *ASCII Box Drawing*
+.3+| *Box Drawing*
 | `:box`
 | `┌──┐` +
 `│  │` +
 `└──┘`
-| Standard single-line Unicode box
+| Clean single-line Unicode box
 
 | `##tbox-thick##`
 | `╔══╗` +
 `║  ║` +
 `╚══╝`
-| Heavy double-line Unicode emphasis box
+| Double-line emphasis box
 
 | `:rtable`
 | `╭──┬──╮` +
 `│  │  │` +
+`├──┼──┤` +
+`│  │  │` +
 `╰──┴──╯`
-| Rounded table grid template
+| Rounded table grid (safe kbd:[Shift+Enter] multiline entry)
 
 .2+| *Tree Diagramming*
-| `:tree-add-dir` / `:tree-end-dir`
-| `├──📁` / `└──📁`
-| Directory branch node in documentation
+| `:|-d` / `:Ld`
+| `┣━━📁` / `┗━━📁`
+| Directory branch and terminal folder node
 
-| `:tree-add-file` / `:tree-end-file`
-| `├──📄` / `└──📄`
-| File leaf node in documentation
+| `:|-f` / `:Lf`
+| `┣━━📄` / `┗━━📄`
+| File leaf and terminal document node
 
 .4+| *Kaomoji Emoticons*
 | `:shrug`
 | `¯\_(ツ)_/¯`
-.4+| Conversational and inline text expressions
+.4+| Inline expressive reactions
 
 | `:tableflip`
 | `(ノಠ益ಠ)ノ彡┻━┻`
 
+| `:fuckoff` / `:fuckyou`
+| `୧༼ಠ益ಠ╭∩╮༽` / `┌П┐(ಠ_ಠ)`
+
 | `:idk`
 | `¯\(°_o)/¯`
-
-| `:ohshit`
-| `( º﹃º )`
 
 .2+| *Monospaced Keys*
 | `:keywin` / `:keycmd`
@@ -302,124 +277,136 @@ Type standard triggers anywhere in Windows to immediately expand ASCII diagrams,
 
 .1+| *Dynamic Timestamps*
 | `:yyyy` / `:yy` / `:mm` / `:dd`
-2+| Outputs formatted current date component based on system clock (e.g. `2026`, `26`, `08`, `25`).
+| `2026` / `26` / `08` / `26`
+| Inserts current date components from system clock
+
+.1+| *Interactive Cheatsheet*
+| `:Hotstrings`
+2+| Displays a popup quick-reference table of all pseudographic characters
 |===
 ====
 
-=== 🖱️ Logitech G502X Hardware Context Routing
+=== 🖱️ Logitech G502X Adaptive Mouse Profiles
 [%collapsible]
 ====
-MWS integrates deeply with multi-button gaming hardware like the **Logitech G502X Lightspeed**, routing onboard F13–F24 key signals based on the currently active application.
+If you use a gaming mouse with extra buttons (like the **Logitech G502X Lightspeed**), MWS automatically adapts onboard F13–F24 signals based on your active application.
 
-image::media/images/g502x-lightspeed-gallery-2-white.webp[Logitech G502X Top Profile,420,align=center]
+image::media/images/g502x-lightspeed-gallery-2-white.webp[Logitech G502X Top Profile,380,align=center]
 
 [cols="^1,^1,^1,2", options="header"]
 |===
-| Mouse Button | Signal | Focused App Context | Routed Action
+| Mouse Button | Signal | Active App | Mapped Action
 
-.4+| *Top Forward (Thumb)*
-.4+| `F17`
-| Visual Studio Code
+.3+| *Top Forward (Thumb)*
+.3+| `F17`
+| VS Code
 | Navigate forward (`Alt+Right`)
-
-| Notion
-| Forward page (`Cmd/Ctrl+]`)
 
 | Web Browsers
 | Forward in browser history (`Alt+Right`)
 
-| Default Fallback
-| Standard forward navigation
+| Default
+| System forward navigation
 
-.4+| *Top Back (Thumb)*
-.4+| `F19`
-| Visual Studio Code
+.3+| *Top Back (Thumb)*
+.3+| `F19`
+| VS Code
 | Navigate backward (`Alt+Left`)
-
-| Notion
-| Backward page (`Cmd/Ctrl+[` )
 
 | Web Browsers
 | Backward in history (`Alt+Left`)
 
-| Default Fallback
-| Standard backward navigation
+| Default
+| System backward navigation
 
 .2+| *Scroll Wheel Tilt*
-| `F14` (Left)
-2+| Previous Tab / Item in focused window (kbd:[Ctrl+Shift+Tab])
+| `F14` (Tilt Left)
+2+| Previous Tab in active app (kbd:[Ctrl+Shift+Tab])
 
-| `F16` (Right)
-2+| Next Tab / Item in focused window (kbd:[Ctrl+Tab])
+| `F16` (Tilt Right)
+2+| Next Tab in active app (kbd:[Ctrl+Tab])
 
 .1+| *Middle Click*
 | `F23`
-2+| Dismiss / Close active tab (kbd:[Ctrl+W])
+2+| Close active tab (kbd:[Ctrl+W])
 
 .1+| *Profile Switcher*
 | `G-Shift Cycle`
-2+| Seamlessly cycles system default audio output endpoint
+2+| Cycles system default audio output endpoint
 |===
 ====
 
-=== 💻 System Tray & ThisSystem.Info Dashboard
+=== 💻 System Tray & ThisPC Diagnostics Dashboard
 [%collapsible]
 ====
-MWS features a dark-themed tray notification suite that automatically updates its visual identity depending on whether you are running locally, over RDP, or with macOS keyboard mappings enabled.
+MWS lives quietly in your system tray, featuring an adaptive icon that shows your current session mode (Standard, Remote Desktop / RDP, macOS keyboard mapping mode, or Paused).
 
-image::docs/assets/mws/PowerToys_Paste_20260222230648.png[MWS Help and Telemetry UI,550,align=center]
+image::docs/assets/mws/PowerToys_Paste_20260222230648.png[MWS Help and Telemetry UI,520,align=center]
 
-Hit kbd:[Ctrl+Alt+Win+F1] to access the tabbed **Help & About** dashboard:
-* **Live System Metrics:** Hostname, current user, OS build, CPU core topology, RAM capacity, and uptime.
-* **One-Click Copy:** Click the copy icon next to any hardware field to copy its exact specification to your clipboard.
+* **Tray Menu Features:**
+** **Launch at Startup:** Automatically runs MWS on user logon via registry Run key (`HKCU\Software\Microsoft\Windows\CurrentVersion\Run`).
+** **Disable Startup Sound:** Mutes the startup audio chime, saved in `HKCU\Software\Mello-Workspace`.
+** **Using Mac Keyboard Layout:** Remaps macOS Command shortcuts inside remote sessions.
+
+Hit kbd:[Ctrl+Alt+Win+F1] to open the **Help & About** dashboard:
+* **Live System Metrics:** View Motherboard model, CPU cores, RAM capacity, Network adapters (MAC, Local IP, Gateway), on-demand Public IP, Battery status, and Uptime.
+* **One-Click Copy:** Click the copy button next to any field to copy its value directly to your clipboard.
 ====
 
 ---
 
-== ⚙️ Customization & Extensibility
+== ⚙️ Make It Your Own
 
-MWS is architected to keep your personal configurations clean and separated from version control.
+MWS is designed so you can add your own personal shortcuts and hotstrings without editing core files or creating merge conflicts.
 
 [source,autohotkey]
 ----
-; Custom overrides in custom/.mslrc.ahk or custom/_custom_functions.ahk
+; Add your personal customizations to custom/_custom_functions.ahk or custom/.mslrc.ahk
 
-; Example: Add a custom workspace shortcut
+; Example 1: Add a personal hotkey to launch your favorite tool <1>
 ^!j::MsgBox("Custom workspace action executed!")
 
-; Example: Personal snippet
+; Example 2: Add an email expansion snippet <2>
 :*::myemail::developer@domain.com
 ----
+<1> Custom hotkey triggers an AutoHotkey action without modifying core files.
+<2> Instantly replaces `myemail` with your actual email address anywhere you type.
 
 [IMPORTANT]
 ====
-Do not modify core files in `lib/` directly for personal macros. Instead, add your routines to `custom/_custom_functions.ahk` or `.mslrc.ahk`. These files are ignored by git and will never conflict with upstream updates.
+Always put your personal macros in `custom/_custom_functions.ahk` or `.mslrc.ahk`. These files are ignored by Git, ensuring your customizations remain intact when updating MWS.
 ====
 
 ---
 
-== 📂 Project Architecture
+== 📂 Project Layout
 
 [source,text]
 ----
 VT-Mello-Workspace/
-├── 📄 Mello-Workspace.ahk       <-- Application entry point and orchestrator
-├── 📄 Mello-Workspace.ps1       <-- Dual-mode installation & deployment engine
+├── 📄 Mello-Workspace.ahk       <-- Main application entry point & startup orchestrator
+├── 📄 Mello-Workspace.ps1       <-- One-liner installer & local deployment script
 ├── 📄 CHANGELOG.adoc            <-- Version history & release notes
-├── 📄 README.adoc               <-- Comprehensive documentation
+├── 📄 README.adoc               <-- User guide & documentation
 ├── 📁 ahkbin/                   <-- Portable AutoHotkey v2 binaries & WindowSpy
-├── 📁 custom/                   <-- User-defined overrides and personal hotstrings
+├── 📁 custom/                   <-- Personal hotkeys & snippets (ignored by Git)
 │   └── 📄 _custom_functions.ahk
-├── 📁 lib/                      <-- Modular subsystem libraries
-│   ├── 📄 app-automate.ahk      <-- App launching & shell COM automation
+├── 📁 lib/                      <-- Core modular libraries
+│   ├── 📄 app-automate.ahk      <-- App launchers, shell automation & terminal cascade
+│   ├── 📄 app-dyn.ahk           <-- App-specific hotkeys & Logitech G502X routing
 │   ├── 📄 arpeggios.ahk         <-- Modal sequence HUD & grid management
 │   ├── 📄 cursor-mgmt.ahk       <-- Real-time cursor scaling engine
-│   ├── 📄 help_about.ahk        <-- Help GUI & ThisSystem.Info telemetry
+│   ├── 📄 help_about.ahk        <-- Help GUI & ThisPC telemetry dashboard
 │   ├── 📄 hotkeys-core.ahk      <-- Core system shortcuts & suspend exemptions
-│   ├── 📄 hotstrings-mgmt.ahk   <-- Unicode boxes, trees, kaomojis, and text macros
+│   ├── 📄 hotstrings-mgmt.ahk   <-- Unicode boxes, heavy trees, kaomojis & date stamps
 │   ├── 📄 traymenu.ahk          <-- Context-aware system tray & theme engine
 │   └── 📄 winui-mgmt.ahk        <-- Window snapping, sizing & mouse gestures
 ├── 📁 media/                    <-- Icons, audio assets, and UI imagery
+├── 📁 plugins/                  <-- Modular application plugins
+│   └── 📁 QuickNoteMD/          <-- WebView2 floating Markdown scratchpad
+│       ├── 📄 QuickNoteMD.ahk   <-- Plugin entry point & IPC bridge
+│       ├── 📁 assets/           <-- HTML editor, Marked.js & icons
+│       └── 📁 vendor/           <-- WebView2 loader DLLs & AHK wrappers
 └── 📁 scripts/                  <-- Developer provisioning & testing scripts
 ----
 
@@ -427,7 +414,7 @@ VT-Mello-Workspace/
 
 == 📜 License & Acknowledgements
 
-* **License:** This project is licensed under the link:LICENSE[GNU General Public License v2.0 (GPLv2)].
+* **License:** Licensed under the link:LICENSE[GNU General Public License v2.0 (GPLv2)].
 * **AutoHotkey:** Powered by the link:https://www.autohotkey.com/[AutoHotkey v2] language.
 * **Icons:** Visual assets provided by link:https://icons8.com[Icons8].
-* **Window Management:** Inspired by open-source AHK window-tiling research and the AutoHotkey community.
+* **Community:** Inspired by the open-source AutoHotkey productivity community.

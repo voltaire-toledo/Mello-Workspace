@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc maxdepth="3"?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title><inlinemediaobject>
+<imageobject>
+<imagedata fileref="media/images/mello-keycap.png" contentwidth="64" contentdepth="64"/>
+</imageobject>
+<textobject><phrase>Mello-Workspace Logo</phrase></textobject>
+</inlinemediaobject> Mello-Workspace (MWS)</title>
+<date>2026-08-25</date>
+<author>
+<personname>
+<firstname>Voltaire</firstname>
+<surname>Toledo</surname>
+</personname>
+<email>https://github.com/voltaire-toledo</email>
+</author>
+<authorinitials>VT</authorinitials>
+<revhistory>
+<revision>
+<revnumber>0.1</revnumber>
+<date>2026-08-25</date>
+<authorinitials>VT</authorinitials>
+</revision>
+</revhistory>
+</info>
+<simpara><link xl:href="https://www.autohotkey.com/"><inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/AutoHotkey-v2.0+-334455.svg"/>
+</imageobject>
+<textobject><phrase>AutoHotkey v2</phrase></textobject>
+</inlinemediaobject></link>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/Platform-Windows%2011%20%7C%20RDP-0078D6.svg"/>
+</imageobject>
+<textobject><phrase>Windows 11</phrase></textobject>
+</inlinemediaobject>
+<link xl:href="LICENSE"><inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/License-GPL&#8212;&#8203;2.0-blue.svg"/>
+</imageobject>
+<textobject><phrase>License: GPL-2.0</phrase></textobject>
+</inlinemediaobject></link>
+<inlinemediaobject>
+<imageobject>
+<imagedata fileref="https://img.shields.io/badge/Version-0.1-emerald.svg"/>
+</imageobject>
+<textobject><phrase>Version 0.1</phrase></textobject>
+</inlinemediaobject></simpara>
+<blockquote>
+<simpara><emphasis role="strong">Chill. Flow. Repeat.</emphasis> — An opinionated, always-on productivity toolkit and window management orchestration layer built on AutoHotkey v2.</simpara>
+</blockquote>
+<simpara><?asciidoc-hr?></simpara>
+
+<section xml:id="_overview_philosophy">
+<title>🎯 Overview &amp; Philosophy</title>
+<simpara><emphasis role="strong">Mello-Workspace (MWS)</emphasis> bridges the gap between intent and action. Designed for developers, power users, and neurodivergent workflows (ADHD focus management, time-blindness mitigation), MWS provides consistent muscle memory, multi-monitor window control, intelligent text replacements, and hardware-accelerated context routing.</simpara>
+<simpara>Unlike traditional launchers, MWS acts as an ambient automation layer that dynamically adapts across local displays, multi-monitor setups, and remote sessions (RDP/Hyper-V).</simpara>
+<tip>
+<simpara>MWS eliminates hardcoded absolute paths by resolving applications dynamically through Windows COM <literal>shell:AppsFolder</literal> namespaces and standard Windows environment variables.</simpara>
+</tip>
+<simpara><?asciidoc-hr?></simpara>
+</section>
+<section xml:id="_installation_setup">
+<title>🚀 Installation &amp; Setup</title>
+<simpara>MWS provides streamlined installation methods tailored for both rapid deployment and active development.</simpara>
+<section xml:id="_installation_method_comparison_matrix">
+<title>Installation Method Comparison Matrix</title>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="4">
+<colspec colname="col_1" colwidth="16.6666*"/>
+<colspec colname="col_2" colwidth="16.6666*"/>
+<colspec colname="col_3" colwidth="33.3333*"/>
+<colspec colname="col_4" colwidth="33.3335*"/>
+<thead>
+<row>
+<entry align="center" valign="top">Method</entry>
+<entry align="center" valign="top">Target Use Case</entry>
+<entry align="left" valign="top">Provisioning Actions</entry>
+<entry align="left" valign="top">Deployment Location</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">PowerShell One-Liner</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara>Standard User / Quick Deploy</simpara></entry>
+<entry align="left" valign="top"><simpara>Downloads latest zip, fetches official AutoHotkey v2 into <literal>ahkbin/</literal>, creates automatic backups, and registers Start Menu shortcut.</simpara></entry>
+<entry align="left" valign="top"><simpara><literal>%LOCALAPPDATA%\Mello-Workspace</literal></simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="1"><simpara><emphasis role="strong">Git Clone &amp; Local</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara>Power User / Customizer</simpara></entry>
+<entry align="left" valign="top"><simpara>Clones full Git history, runs <literal>Mello-Workspace.ps1</literal> locally, provisions missing <literal>ahkbin/</literal> runtime, and creates Start Menu shortcut.</simpara></entry>
+<entry align="left" valign="top" morerows="1"><simpara>Current Git Repository Directory</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Contributing Developer</simpara></entry>
+<entry align="center" valign="top"><simpara>Provisions pre-commit hooks, validates environment via <literal>setup-dev.ps1</literal> or <literal>task setup</literal>, and symlinks custom functions.</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</section>
+<section xml:id="_method_1_powershell_command_line_quick_install_recommended">
+<title>Method 1: PowerShell Command-Line Quick Install (Recommended)</title>
+<simpara>Install and configure Mello-Workspace directly from PowerShell without manual cloning. This downloads the latest archive, provisions AutoHotkey v2 binaries into <literal>ahkbin/</literal>, configures the Start Menu shortcut, and starts the workspace.</simpara>
+<programlisting language="powershell" linenumbering="unnumbered"># Launch PowerShell and run the remote installation one-liner:
+irm https://raw.githubusercontent.com/voltaire-toledo/Mello-Workspace/main/Mello-Workspace.ps1 | iex <co xml:id="CO1-1"/></programlisting>
+<calloutlist>
+<callout arearefs="CO1-1">
+<para>Automatically invokes <literal>Install-FromUrl</literal>, backs up any previous installation to <literal>%LOCALAPPDATA%\Mello-Workspace\backup-*</literal>, downloads dependencies, and registers the application.</para>
+</callout>
+</calloutlist>
+<note>
+<simpara>The installer stores application files in <literal>%LOCALAPPDATA%\Mello-Workspace</literal> and registers a clean shortcut under <literal>Start Menu &gt; Programs &gt; Mello</literal>.</simpara>
+</note>
+</section>
+<section xml:id="_method_2_git_clone_local_script_execution">
+<title>Method 2: Git Clone &amp; Local Script Execution</title>
+<simpara>For users who prefer managing the repository via Git:</simpara>
+<programlisting language="powershell" linenumbering="unnumbered"># 1. Clone the repository
+git clone https://github.com/voltaire-toledo/Mello-Workspace.git
+cd Mello-Workspace
+
+# 2. Run the deployment script locally <co xml:id="CO2-1"/>
+.\Mello-Workspace.ps1
+
+# 3. (Alternative) Launch directly with AutoHotkey v2 <co xml:id="CO2-2"/>
+.\ahkbin\AutoHotkey32.exe .\Mello-Workspace.ahk</programlisting>
+<calloutlist>
+<callout arearefs="CO2-1">
+<para>When executed locally, <literal>Mello-Workspace.ps1</literal> detects the repository workspace, fetches required runtime binaries into <literal>ahkbin/</literal> if missing, sets up Start Menu shortcuts, and starts MWS.</para>
+</callout>
+<callout arearefs="CO2-2">
+<para>Direct invocation when development binaries are already in place.</para>
+</callout>
+</calloutlist>
+</section>
+<section xml:id="_method_3_developer_setup_via_taskfile">
+<title>Method 3: Developer Setup via Taskfile</title>
+<simpara>If you are contributing or customizing features, initialize your local environment using the included developer script or <literal>task</literal>:</simpara>
+<programlisting language="powershell" linenumbering="unnumbered"># Run developer provisioning and git pre-commit hook setup
+.\scripts\setup-dev.ps1
+
+# Or run using Task
+task setup</programlisting>
+<simpara><?asciidoc-hr?></simpara>
+</section>
+</section>
+<section xml:id="_feature_showcase">
+<title>🌟 Feature Showcase</title>
+<simpara>Explore the core features below. Click on any section header to expand its interactive guide, keybindings, and diagrams.</simpara>
+<section xml:id="_core_hotkeys_system_navigation">
+<title>⌨️ Core Hotkeys &amp; System Navigation</title>
+<informalexample>
+<simpara>Core system hotkeys are <literal>#SuspendExempt</literal>, ensuring you can always reload, edit, or recover the script even when global hotkeys are paused.</simpara>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="4">
+<colspec colname="col_1" colwidth="14.2857*"/>
+<colspec colname="col_2" colwidth="14.2857*"/>
+<colspec colname="col_3" colwidth="28.5714*"/>
+<colspec colname="col_4" colwidth="42.8572*"/>
+<thead>
+<row>
+<entry align="center" valign="top">Category</entry>
+<entry align="center" valign="top">Shortcut</entry>
+<entry align="left" valign="top">Action</entry>
+<entry align="left" valign="top">Description</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="center" valign="top" morerows="2"><simpara><emphasis role="strong">Lifecycle</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>S</keycap></keycombo></simpara></entry>
+<entry align="left" valign="top"><simpara>Toggle Suspend</simpara></entry>
+<entry align="left" valign="top"><simpara>Temporarily suspends or resumes hotkeys. Tray icon turns red when paused.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>R</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>Reload MWS</simpara></entry>
+<entry align="left" valign="top"><simpara>Instantly restarts and recompiles the AutoHotkey script.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>E</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>Edit Code</simpara></entry>
+<entry align="left" valign="top"><simpara>Opens the active script in your preferred editor.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="3"><simpara><emphasis role="strong">Help &amp; Diagnostics</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>F1</keycap></keycombo></simpara></entry>
+<entry align="left" valign="top"><simpara>Help &amp; About</simpara></entry>
+<entry align="left" valign="top"><simpara>Displays the tabbed interactive cheat sheet and <literal>ThisSystem.Info</literal> dashboard.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>F2</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>AutoHotkey Manual</simpara></entry>
+<entry align="left" valign="top"><simpara>Opens the compiled offline documentation (<literal>AutoHotkey.chm</literal>).</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>F3</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>WindowSpy</simpara></entry>
+<entry align="left" valign="top"><simpara>Launches the AutoHotkey WindowSpy inspection utility.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>F12</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>System Sleep</simpara></entry>
+<entry align="left" valign="top"><simpara>Immediately places the computer into low-power sleep state via <literal>powrprof.dll</literal>.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="2"><simpara><emphasis role="strong">Navigation</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>F</keycap></keycombo></simpara></entry>
+<entry align="left" valign="top"><simpara>Open MWS Folder</simpara></entry>
+<entry align="left" valign="top"><simpara>Opens the root script directory in File Explorer.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Win</keycap><keycap>F</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>Home Directory</simpara></entry>
+<entry align="left" valign="top"><simpara>Replaces Windows Feedback with instant navigation to user home directory (<literal>~</literal>).</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>RCtrl</keycap><keycap>Arrows</keycap></keycombo></simpara></entry>
+<entry align="center" valign="top"><simpara>TKL Navigation Remap</simpara></entry>
+<entry align="left" valign="top"><simpara>Emulates <keycap>PgUp</keycap>, <keycap>PgDn</keycap>, <keycap>Home</keycap>, and <keycap>End</keycap> on Tenkeyless keyboards.</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</informalexample>
+</section>
+<section xml:id="_window_management_modal_grid_snapping">
+<title>🪟 Window Management &amp; Modal Grid Snapping</title>
+<informalexample>
+<simpara>Control window dimensions, multi-monitor quadrant snapping, and dynamic mouse pointer sizes with precision.</simpara>
+<simpara>==== Numpad &amp; Modal Snap Grid (<keycombo><keycap>Alt</keycap><keycap>Win</keycap><keycap>P</keycap></keycombo>)</simpara>
+<simpara>When activating Window Management HUD mode (<keycombo><keycap>Alt</keycap><keycap>Win</keycap><keycap>P</keycap></keycombo>), your Numpad acts as a direct spatial grid controller:</simpara>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="3">
+<colspec colname="col_1" colwidth="33.3333*"/>
+<colspec colname="col_2" colwidth="33.3333*"/>
+<colspec colname="col_3" colwidth="33.3334*"/>
+<thead>
+<row>
+<entry align="center" valign="top">Left Column</entry>
+<entry align="center" valign="top">Center Column</entry>
+<entry align="center" valign="top">Right Column</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 7</emphasis><?asciidoc-br?>
+Top-Left Corner (Quarter)</simpara></entry>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 8</emphasis><?asciidoc-br?>
+Top Half (Full Width)</simpara></entry>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 9</emphasis><?asciidoc-br?>
+Top-Right Corner (Quarter)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 4</emphasis><?asciidoc-br?>
+Left Half (Full Height)</simpara></entry>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 5</emphasis><?asciidoc-br?>
+Maximize / Center Full Screen</simpara></entry>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 6</emphasis><?asciidoc-br?>
+Right Half (Full Height)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 1</emphasis><?asciidoc-br?>
+Bottom-Left Corner (Quarter)</simpara></entry>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 2</emphasis><?asciidoc-br?>
+Bottom Half (Full Width)</simpara></entry>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Numpad 3</emphasis><?asciidoc-br?>
+Bottom-Right Corner (Quarter)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" namest="col_1" nameend="col_3"><simpara>Hit <keycap>Tab</keycap> to exit Modal Window Management Mode</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+<simpara>==== Window Sizing &amp; Mouse Gestures Matrix</simpara>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="3">
+<colspec colname="col_1" colwidth="25*"/>
+<colspec colname="col_2" colwidth="25*"/>
+<colspec colname="col_3" colwidth="50*"/>
+<thead>
+<row>
+<entry align="center" valign="top">Control Type</entry>
+<entry align="center" valign="top">Input</entry>
+<entry align="left" valign="top">Resulting Window Transformation</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="center" valign="top" morerows="1"><simpara><emphasis role="strong">Incremental Sizing</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Arrow Keys</keycap></keycombo> (in HUD mode)</simpara></entry>
+<entry align="left" valign="top"><simpara>Expands or shrinks active window borders in 5% increments.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Alt</keycap><keycap>Arrow Keys</keycap></keycombo> (in HUD mode)</simpara></entry>
+<entry align="center" valign="top"><simpara>Extends active window edge to the closest monitor boundary.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="4"><simpara><emphasis role="strong">Middle-Click Gestures</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara>Drag Up</simpara></entry>
+<entry align="left" valign="top"><simpara>Toggle Maximize / Restore window state.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Drag Down</simpara></entry>
+<entry align="center" valign="top"><simpara>Toggle Pin Window Always-on-Top (<literal>WinSetAlwaysOnTop</literal>).</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Drag Left / Right</simpara></entry>
+<entry align="center" valign="top"><simpara>Snap active window to Left or Right display half.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Drag Diagonals (↖ ↗ ↙ ↘)</simpara></entry>
+<entry align="center" valign="top"><simpara>Snap active window to corresponding quadrant corner.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Stationary Click</simpara></entry>
+<entry align="center" valign="top"><simpara>Minimize active window to Taskbar.</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Cursor Scaling</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>]</keycap></keycombo> / <keycap>\[</keycap></simpara></entry>
+<entry align="left" valign="top"><simpara>Dynamically scales mouse cursor from 32px up to 256px with live ToolTip feedback.</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</informalexample>
+</section>
+<section xml:id="_hotstrings_text_automation">
+<title>🔤 Hotstrings &amp; Text Automation</title>
+<informalexample>
+<simpara>Type standard triggers anywhere in Windows to immediately expand ASCII diagrams, directory trees, Kaomojis, and Unicode symbols.</simpara>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="4">
+<colspec colname="col_1" colwidth="14.2857*"/>
+<colspec colname="col_2" colwidth="14.2857*"/>
+<colspec colname="col_3" colwidth="28.5714*"/>
+<colspec colname="col_4" colwidth="42.8572*"/>
+<thead>
+<row>
+<entry align="center" valign="top">Domain</entry>
+<entry align="center" valign="top">Trigger</entry>
+<entry align="left" valign="top">Expanded Output</entry>
+<entry align="left" valign="top">Use Case</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="center" valign="top" morerows="2"><simpara><emphasis role="strong">ASCII Box Drawing</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>:box</literal></simpara></entry>
+<entry align="left" valign="top"><simpara><literal>┌──┐</literal><?asciidoc-br?>
+<literal>│  │</literal><?asciidoc-br?>
+<literal>└──┘</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>Standard single-line Unicode box</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal><emphasis role="marked">tbox-thick</emphasis></literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>╔══╗</literal><?asciidoc-br?>
+<literal>║  ║</literal><?asciidoc-br?>
+<literal>╚══╝</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>Heavy double-line Unicode emphasis box</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>:rtable</literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>╭──┬──╮</literal><?asciidoc-br?>
+<literal>│  │  │</literal><?asciidoc-br?>
+<literal>╰──┴──╯</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>Rounded table grid template</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="1"><simpara><emphasis role="strong">Tree Diagramming</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>:tree-add-dir</literal> / <literal>:tree-end-dir</literal></simpara></entry>
+<entry align="left" valign="top"><simpara><literal>├──📁</literal> / <literal>└──📁</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>Directory branch node in documentation</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>:tree-add-file</literal> / <literal>:tree-end-file</literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>├──📄</literal> / <literal>└──📄</literal></simpara></entry>
+<entry align="left" valign="top"><simpara>File leaf node in documentation</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="3"><simpara><emphasis role="strong">Kaomoji Emoticons</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>:shrug</literal></simpara></entry>
+<entry align="left" valign="top"><simpara><literal>¯_(ツ)_/¯</literal></simpara></entry>
+<entry align="left" valign="top" morerows="3"><simpara>Conversational and inline text expressions</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>:tableflip</literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>(ノಠ益ಠ)ノ彡┻━┻</literal></simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>:idk</literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>¯\(°_o)/¯</literal></simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>:ohshit</literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>( º﹃º )</literal></simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="1"><simpara><emphasis role="strong">Monospaced Keys</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>:keywin</literal> / <literal>:keycmd</literal></simpara></entry>
+<entry align="left" valign="top"><simpara><literal>⊞</literal> / <literal>⌘</literal></simpara></entry>
+<entry align="left" valign="top" morerows="1"><simpara>Keyboard shortcut documentation</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>:keyctrl</literal> / <literal>:keyalt</literal> / <literal>:keyshift</literal></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>∧</literal> / <literal>⌥</literal> / <literal>⇧</literal></simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Dynamic Timestamps</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>:yyyy</literal> / <literal>:yy</literal> / <literal>:mm</literal> / <literal>:dd</literal></simpara></entry>
+<entry align="left" valign="top" namest="col_3" nameend="col_4"><simpara>Outputs formatted current date component based on system clock (e.g. <literal>2026</literal>, <literal>26</literal>, <literal>08</literal>, <literal>25</literal>).</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</informalexample>
+</section>
+<section xml:id="_logitech_g502x_hardware_context_routing">
+<title>🖱️ Logitech G502X Hardware Context Routing</title>
+<informalexample>
+<simpara>MWS integrates deeply with multi-button gaming hardware like the <emphasis role="strong">Logitech G502X Lightspeed</emphasis>, routing onboard F13–F24 key signals based on the currently active application.</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="media/images/g502x-lightspeed-gallery-2-white.webp" contentwidth="420" align="center"/>
+</imageobject>
+<textobject><phrase>Logitech G502X Top Profile</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<informaltable frame="all" rowsep="1" colsep="1">
+<tgroup cols="4">
+<colspec colname="col_1" colwidth="20*"/>
+<colspec colname="col_2" colwidth="20*"/>
+<colspec colname="col_3" colwidth="20*"/>
+<colspec colname="col_4" colwidth="40*"/>
+<thead>
+<row>
+<entry align="center" valign="top">Mouse Button</entry>
+<entry align="center" valign="top">Signal</entry>
+<entry align="center" valign="top">Focused App Context</entry>
+<entry align="left" valign="top">Routed Action</entry>
+</row>
+</thead>
+<tbody>
+<row>
+<entry align="center" valign="top" morerows="3"><simpara><emphasis role="strong">Top Forward (Thumb)</emphasis></simpara></entry>
+<entry align="center" valign="top" morerows="3"><simpara><literal>F17</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>Visual Studio Code</simpara></entry>
+<entry align="left" valign="top"><simpara>Navigate forward (<literal>Alt+Right</literal>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Notion</simpara></entry>
+<entry align="center" valign="top"><simpara>Forward page (<literal>Cmd/Ctrl+]</literal>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Web Browsers</simpara></entry>
+<entry align="center" valign="top"><simpara>Forward in browser history (<literal>Alt+Right</literal>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Default Fallback</simpara></entry>
+<entry align="center" valign="top"><simpara>Standard forward navigation</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="3"><simpara><emphasis role="strong">Top Back (Thumb)</emphasis></simpara></entry>
+<entry align="center" valign="top" morerows="3"><simpara><literal>F19</literal></simpara></entry>
+<entry align="center" valign="top"><simpara>Visual Studio Code</simpara></entry>
+<entry align="left" valign="top"><simpara>Navigate backward (<literal>Alt+Left</literal>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Notion</simpara></entry>
+<entry align="center" valign="top"><simpara>Backward page (<literal>Cmd/Ctrl+[</literal> )</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Web Browsers</simpara></entry>
+<entry align="center" valign="top"><simpara>Backward in history (<literal>Alt+Left</literal>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara>Default Fallback</simpara></entry>
+<entry align="center" valign="top"><simpara>Standard backward navigation</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top" morerows="1"><simpara><emphasis role="strong">Scroll Wheel Tilt</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>F14</literal> (Left)</simpara></entry>
+<entry align="center" valign="top" namest="col_3" nameend="col_4"><simpara>Previous Tab / Item in focused window (<keycombo><keycap>Ctrl</keycap><keycap>Shift</keycap><keycap>Tab</keycap></keycombo>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><literal>F16</literal> (Right)</simpara></entry>
+<entry align="center" valign="top" namest="col_2" nameend="col_3"><simpara>Next Tab / Item in focused window (<keycombo><keycap>Ctrl</keycap><keycap>Tab</keycap></keycombo>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Middle Click</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>F23</literal></simpara></entry>
+<entry align="center" valign="top" namest="col_3" nameend="col_4"><simpara>Dismiss / Close active tab (<keycombo><keycap>Ctrl</keycap><keycap>W</keycap></keycombo>)</simpara></entry>
+</row>
+<row>
+<entry align="center" valign="top"><simpara><emphasis role="strong">Profile Switcher</emphasis></simpara></entry>
+<entry align="center" valign="top"><simpara><literal>G-Shift Cycle</literal></simpara></entry>
+<entry align="center" valign="top" namest="col_3" nameend="col_4"><simpara>Seamlessly cycles system default audio output endpoint</simpara></entry>
+</row>
+</tbody>
+</tgroup>
+</informaltable>
+</informalexample>
+</section>
+<section xml:id="_system_tray_thissystem_info_dashboard">
+<title>💻 System Tray &amp; ThisSystem.Info Dashboard</title>
+<informalexample>
+<simpara>MWS features a dark-themed tray notification suite that automatically updates its visual identity depending on whether you are running locally, over RDP, or with macOS keyboard mappings enabled.</simpara>
+<informalfigure>
+<mediaobject>
+<imageobject>
+<imagedata fileref="docs/assets/mws/PowerToys_Paste_20260222230648.png" contentwidth="550" align="center"/>
+</imageobject>
+<textobject><phrase>MWS Help and Telemetry UI</phrase></textobject>
+</mediaobject>
+</informalfigure>
+<simpara>Hit <keycombo><keycap>Ctrl</keycap><keycap>Alt</keycap><keycap>Win</keycap><keycap>F1</keycap></keycombo> to access the tabbed <emphasis role="strong">Help &amp; About</emphasis> dashboard:
+* <emphasis role="strong">Live System Metrics:</emphasis> Hostname, current user, OS build, CPU core topology, RAM capacity, and uptime.
+* <emphasis role="strong">One-Click Copy:</emphasis> Click the copy icon next to any hardware field to copy its exact specification to your clipboard.</simpara>
+</informalexample>
+<simpara><?asciidoc-hr?></simpara>
+</section>
+</section>
+<section xml:id="_customization_extensibility">
+<title>⚙️ Customization &amp; Extensibility</title>
+<simpara>MWS is architected to keep your personal configurations clean and separated from version control.</simpara>
+<programlisting language="autohotkey" linenumbering="unnumbered">; Custom overrides in custom/.mslrc.ahk or custom/_custom_functions.ahk
+
+; Example: Add a custom workspace shortcut
+^!j::MsgBox("Custom workspace action executed!")
+
+; Example: Personal snippet
+:*::myemail::developer@domain.com</programlisting>
+<important>
+<simpara>Do not modify core files in <literal>lib/</literal> directly for personal macros. Instead, add your routines to <literal>custom/_custom_functions.ahk</literal> or <literal>.mslrc.ahk</literal>. These files are ignored by git and will never conflict with upstream updates.</simpara>
+</important>
+<simpara><?asciidoc-hr?></simpara>
+</section>
+<section xml:id="_project_architecture">
+<title>📂 Project Architecture</title>
+<programlisting language="text" linenumbering="unnumbered">VT-Mello-Workspace/
+├── 📄 Mello-Workspace.ahk       &lt;-- Application entry point and orchestrator
+├── 📄 Mello-Workspace.ps1       &lt;-- Dual-mode installation &amp; deployment engine
+├── 📄 CHANGELOG.adoc            &lt;-- Version history &amp; release notes
+├── 📄 README.adoc               &lt;-- Comprehensive documentation
+├── 📁 ahkbin/                   &lt;-- Portable AutoHotkey v2 binaries &amp; WindowSpy
+├── 📁 custom/                   &lt;-- User-defined overrides and personal hotstrings
+│   └── 📄 _custom_functions.ahk
+├── 📁 lib/                      &lt;-- Modular subsystem libraries
+│   ├── 📄 app-automate.ahk      &lt;-- App launching &amp; shell COM automation
+│   ├── 📄 arpeggios.ahk         &lt;-- Modal sequence HUD &amp; grid management
+│   ├── 📄 cursor-mgmt.ahk       &lt;-- Real-time cursor scaling engine
+│   ├── 📄 help_about.ahk        &lt;-- Help GUI &amp; ThisSystem.Info telemetry
+│   ├── 📄 hotkeys-core.ahk      &lt;-- Core system shortcuts &amp; suspend exemptions
+│   ├── 📄 hotstrings-mgmt.ahk   &lt;-- Unicode boxes, trees, kaomojis, and text macros
+│   ├── 📄 traymenu.ahk          &lt;-- Context-aware system tray &amp; theme engine
+│   └── 📄 winui-mgmt.ahk        &lt;-- Window snapping, sizing &amp; mouse gestures
+├── 📁 media/                    &lt;-- Icons, audio assets, and UI imagery
+└── 📁 scripts/                  &lt;-- Developer provisioning &amp; testing scripts</programlisting>
+<simpara><?asciidoc-hr?></simpara>
+</section>
+<section xml:id="_license_acknowledgements">
+<title>📜 License &amp; Acknowledgements</title>
+<itemizedlist>
+<listitem>
+<simpara><emphasis role="strong">License:</emphasis> This project is licensed under the <link xl:href="LICENSE">GNU General Public License v2.0 (GPLv2)</link>.</simpara>
+</listitem>
+<listitem>
+<simpara><emphasis role="strong">AutoHotkey:</emphasis> Powered by the <link xl:href="https://www.autohotkey.com/">AutoHotkey v2</link> language.</simpara>
+</listitem>
+<listitem>
+<simpara><emphasis role="strong">Icons:</emphasis> Visual assets provided by <link xl:href="https://icons8.com">Icons8</link>.</simpara>
+</listitem>
+<listitem>
+<simpara><emphasis role="strong">Window Management:</emphasis> Inspired by open-source AHK window-tiling research and the AutoHotkey community.</simpara>
+</listitem>
+</itemizedlist>
+</section>
+</article>
