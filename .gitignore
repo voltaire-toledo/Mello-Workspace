@@ -21,6 +21,7 @@ custom/.mslrc.ahk
 **/Mello*.exe
 **/assets/*.dll
 **/*.md
+!.github/**/*.md
 .gemini/GEMINI.md
 docs/*
 !docs/README.md
