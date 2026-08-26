@@ -1,0 +1,72 @@
+name: Release Build and Publish
+
+on:
+  push:
+    tags:
+      - 'v*'
+      - '[0-9]+.[0-9]+*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Asciidoctor
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y asciidoctor
+
+      - name: Convert AsciiDoc documentation to HTML
+        run: |
+          asciidoctor -D dist/docs README.adoc -o README.html
+          asciidoctor -D dist/docs CHANGELOG.adoc -o CHANGELOG.html
+
+      - name: Prepare Release Artifacts
+        run: |
+          mkdir -p release-staging
+          
+          # Copy release directories
+          cp -r assets release-staging/
+          cp -r custom release-staging/
+          cp -r lib release-staging/
+          cp -r plugins release-staging/
+          cp -r scripts release-staging/
+          
+          # Clean any ignored personal files from staging if present
+          rm -f release-staging/custom/.mslrc.ahk
+          
+          # Copy release files
+          cp CHANGELOG.adoc release-staging/
+          cp dist/docs/CHANGELOG.html release-staging/
+          cp LICENSE release-staging/
+          cp Mello-Workspace.ahk release-staging/
+          cp Mello-Workspace.ps1 release-staging/
+          cp README.adoc release-staging/
+          cp dist/docs/README.html release-staging/
+
+      - name: Create Release Zip Archive
+        run: |
+          TAG_NAME="${{ github.ref_name }}"
+          ZIP_NAME="Mello-Workspace-${TAG_NAME}.zip"
+          cd release-staging
+          zip -r "../${ZIP_NAME}" ./*
+          cd ..
+          echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ env.ZIP_NAME }}
+            dist/docs/README.html
+            dist/docs/CHANGELOG.html
+          draft: false
+          prerelease: false
+          generate_release_notes: true

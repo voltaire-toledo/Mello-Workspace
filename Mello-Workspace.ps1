@@ -20,7 +20,7 @@ $AHKExecutableName = "AutoHotkey32.exe"
 $AHKBinPath = Join-Path -Path $InstallDir -ChildPath "ahkbin"
 $Arguments = Join-Path -Path $InstallDir -ChildPath "$ThisAppName.ahk"
 $Description = "Start $ThisAppName"
-$IconPath = Join-Path -Path $InstallDir -ChildPath "media\icons\$ThisAppName.ico"
+$IconPath = Join-Path -Path $InstallDir -ChildPath "assets\icons\$ThisAppName.ico"
 $StartMenuFolderName = "Mello"
 $AHKZipUrl = "https://github.com/AutoHotkey/AutoHotkey/releases/download/v2.0.19/AutoHotkey_2.0.19.zip"
 $AHKZipPath = Join-Path -Path $InstallDir -ChildPath "AutoHotkey.zip"
@@ -291,7 +291,7 @@ function Run-FromLocal {
   $AHKBinPath = Join-Path -Path $InstallDir -ChildPath "ahkbin"
   $AHKZipPath = Join-Path -Path $InstallDir -ChildPath "AutoHotkey.zip"
   $Arguments = Join-Path -Path $InstallDir -ChildPath "$ThisAppName.ahk"
-  $IconPath = Join-Path -Path $InstallDir -ChildPath "media\icons\$ThisAppName.ico"
+  $IconPath = Join-Path -Path $InstallDir -ChildPath "assets\icons\$ThisAppName.ico"
   $TargetPath = Join-Path -Path $InstallDir -ChildPath $ShortcutExecutableName
 
   # Ensure AutoHotkey is downloaded and extracted to the local ahkbin.
