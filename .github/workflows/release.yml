@@ -4,8 +4,13 @@ on:
   push:
     tags:
       - 'v*'
-      - '[0-9]+.[0-9]+*'
+      - '[0-9]*'
   workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for the release (e.g. 0.4)'
+        required: false
+        default: '0.4'
 
 permissions:
   contents: write
@@ -53,16 +58,22 @@ jobs:
 
       - name: Create Release Zip Archive
         run: |
-          TAG_NAME="${{ github.ref_name }}"
+          if [ "${{ github.ref_type }}" = "tag" ]; then
+            TAG_NAME="${{ github.ref_name }}"
+          else
+            TAG_NAME="${{ inputs.tag_name || '0.4' }}"
+          fi
           ZIP_NAME="Mello-Workspace-${TAG_NAME}.zip"
           cd release-staging
           zip -r "../${ZIP_NAME}" ./*
           cd ..
           echo "ZIP_NAME=${ZIP_NAME}" >> $GITHUB_ENV
+          echo "TARGET_TAG=${TAG_NAME}" >> $GITHUB_ENV
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ env.TARGET_TAG }}
           files: |
             ${{ env.ZIP_NAME }}
             dist/docs/README.html
