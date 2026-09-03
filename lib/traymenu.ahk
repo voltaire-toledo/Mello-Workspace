@@ -46,6 +46,7 @@ try {
 }
 
 trayitem_disablestartupsound_ico := IsStartupSoundDisabled ? traymenu_icon_checked : traymenu_icon_unchecked
+trayitem_usingmackeybd_ico := IsMacKeyboard ? traymenu_icon_checked : traymenu_icon_unchecked
 
 ; ╭───────────────────────────────────────────────────────────────────╮
 ; │  Helper: SetMenuIcon                                             │
@@ -85,7 +86,7 @@ BuildTrayMenu() {
   SetMenuIcon(A_TrayMenu, trayitem_runatstartup, trayitem_runatstartup_ico)
 
   A_TrayMenu.Add(trayitem_usingmackeybd, ToggleMacKeyboard)
-  SetMenuIcon(A_TrayMenu, trayitem_usingmackeybd, traymenu_icon_unchecked)
+  SetMenuIcon(A_TrayMenu, trayitem_usingmackeybd, trayitem_usingmackeybd_ico)
 
   A_TrayMenu.Add(trayitem_disablestartupsound, ToggleDisableStartupSound)
   SetMenuIcon(A_TrayMenu, trayitem_disablestartupsound, trayitem_disablestartupsound_ico)
@@ -187,7 +188,10 @@ ToggleRunAtStartup(*) {
 }
 
 ToggleMacKeyboard(*) {
-  global IsMacKeyboard := !IsMacKeyboard
+  global IsMacKeyboard, trayitem_usingmackeybd_ico
+  IsMacKeyboard := !IsMacKeyboard
+  trayitem_usingmackeybd_ico := IsMacKeyboard ? traymenu_icon_checked : traymenu_icon_unchecked
+  SetMenuIcon(A_TrayMenu, trayitem_usingmackeybd, trayitem_usingmackeybd_ico)
   SetNotificationIcon(IsRemoteSession(), IsMacKeyboard)
 }
 
