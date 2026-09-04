@@ -3,9 +3,9 @@
 SendMode "Input"
 ; =============================================================================
 ; QuickNote MD — floating Markdown scratchpad with Edit/View modes + image paste
-;   Win+Alt+M : show/hide (invoking brings the window to focus)
-;   X         : hide (contents are never destroyed)
-;   Esc       : toggle Edit mode <-> View mode (rendered, read-only Markdown)
+;   Win+Alt+M / Win+Ctrl+M : show/hide (invoking brings the window to focus)
+;   Esc / X   : hide window (contents are never destroyed)
+;   Alt+V     : toggle Edit mode <-> View mode (rendered, read-only Markdown)
 ;   Ctrl+B / Ctrl+I : wrap selection in **bold** / *italic*   Ctrl+Shift+C : `code`
 ;   (edit mode only; View mode is read-only and reports so in the status bar)
 ;   Ctrl+V an image on the clipboard to embed it inline as a Markdown image.
@@ -36,10 +36,15 @@ if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
 
 OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
-OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 50% opacity / focused restore
+OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 20% opacity reduction / focused restore
 OnExit(QNMD_SaveGeometry)
 
-#!m::QNMD_Toggle()
+#!m::QNMD_Toggle()   ; Win+Alt+M
+^#m::QNMD_Toggle()   ; Win+Ctrl+M
+
+#HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
+Esc::QNMD_Hide()
+#HotIf
 
 QNMD_IsMouseOver() {
     global qnmd
@@ -101,13 +106,6 @@ QNMD_Hide(*) {
     return true     ; consume Close so the GUI is never destroyed
 }
 
-; Escape no longer hides the window — editor.html handles it client-side to
-; toggle Edit/View mode. This just consumes the key so the native Gui default
-; (closing the window) never fires if WebView2 forwards it as an accelerator.
-QNMD_SuppressEscape(*) {
-    return true
-}
-
 ; ---- construction ------------------------------------------------------------
 QNMD_Create() {
     global qnmd, QNMD_USERDATA_DIR, QNMD_MIN_W, QNMD_MIN_H, QNMD_DEFAULT_W, QNMD_DEFAULT_H
@@ -118,7 +116,7 @@ QNMD_Create() {
 
     g.OnEvent("Size", QNMD_OnSize)
     g.OnEvent("Close", QNMD_Hide)
-    g.OnEvent("Escape", QNMD_SuppressEscape)
+    g.OnEvent("Escape", QNMD_Hide)
 
     iconPath := QNMD_SELF_DIR "\assets\markdown.ico"
     if FileExist(iconPath) {
@@ -228,6 +226,10 @@ QNMD_OnWebMessage(sender, args) {
     global QNMD_NOTE_FILE
     try {
         text := args.TryGetWebMessageAsString()
+        if (text = "__QNMD_HIDE__") {
+            QNMD_Hide()
+            return
+        }
         f := FileOpen(QNMD_NOTE_FILE, "w", "UTF-8")
         f.Write(text)
         f.Close()

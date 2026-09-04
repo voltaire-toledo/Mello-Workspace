@@ -108,11 +108,11 @@
 
   function updateHint() {
     hint.classList.remove('notice');
-    hint.textContent = 'Esc to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to adjust font size \u2022 Alt + Scroll to adjust transparency';
+    hint.textContent = 'Alt+V to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to adjust font size \u2022 Alt + Scroll to adjust transparency';
   }
 
   function flashReadonlyNotice() {
-    hint.textContent = 'Read-only in Preview mode \u2014 press Esc to toggle Edit mode';
+    hint.textContent = 'Read-only in Preview mode \u2014 press Alt+V to toggle Edit mode';
     hint.classList.add('notice');
     clearTimeout(noticeTimer);
     noticeTimer = setTimeout(updateHint, 1500);
@@ -218,9 +218,16 @@
     'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'PageUp', 'PageDown', 'Home', 'End'
   ]);
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
+    if (e.altKey && !e.ctrlKey && e.key.toLowerCase() === 'v') {
       e.preventDefault();
       toggleMode();
+      return;
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      if (window.chrome && window.chrome.webview) {
+        window.chrome.webview.postMessage('__QNMD_HIDE__');
+      }
       return;
     }
     if (mode !== 'view') return;
