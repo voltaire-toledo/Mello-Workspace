@@ -31,7 +31,7 @@ toc::[]
 == 🌟 What Mello-Workspace Does for You
 
 * **Perfect Window Snapping:** Stop wrestling with window borders. Press kbd:[Alt+Win+P] to turn your Numpad into a spatial 9-zone screen controller. One tap snaps your window to the exact half, quarter, or center of your display.
-* **Floating QuickNote MD Scratchpad:** Need to jot down a quick idea or paste an image? Press kbd:[Win+Alt+M] to summon an instant Markdown scratchpad powered by Edge WebView2. It auto-dims when you switch tasks and remembers your notes automatically.
+* **Floating QuickNote MD Scratchpad:** Need to jot down a quick idea or paste an image? Press kbd:[Win+Ctrl+M] or kbd:[Win+Alt+M] to summon an instant Markdown scratchpad powered by Edge WebView2. It auto-dims when you switch tasks and remembers your notes automatically.
 * **Smart Text Automation:** Never retype the same templates or hunt for characters. Type simple triggers like `:yyyy` for the current year, `:rtable` for a formatted table, or `:shrug` for `¯\_(ツ)_/¯`.
 * **Adaptive Mouse Buttons:** Using a multi-button mouse like the Logitech G502X? MWS dynamically adapts your extra buttons to the focused app (e.g., code indenting in VS Code, navigation in Notion, or tab switching in Edge).
 * **Calm & Accessible:** Lose your cursor on multiple 4K monitors? Scale it up instantly with kbd:[Ctrl+Alt+Win+\]]. Need to pause all shortcuts for gaming? Suspend MWS with a single keystroke.
@@ -104,8 +104,8 @@ Once installed, try these essential shortcuts to experience how MWS streamlines 
 | Middle-click and drag any window to snap, maximize, or pin Always-on-Top.
 
 .1+| *Quick Note-Taking*
-| kbd:[Win+Alt+M]
-| Summons the floating Markdown scratchpad. Press kbd:[Esc] to switch between Edit and View modes.
+| kbd:[Win+Ctrl+M] / kbd:[Win+Alt+M]
+| Summons the floating Markdown scratchpad. Press kbd:[Alt+V] to switch between Edit and View modes, or kbd:[Esc] to hide.
 
 .2+| *Quick Launchers*
 | kbd:[Ctrl+Alt+T]
@@ -200,16 +200,17 @@ Bottom-Right Corner
 ====
 QuickNote MD provides a distraction-free scratchpad built directly into Windows using Microsoft Edge WebView2 and Marked.js.
 
-* **Summon Instantly:** Press kbd:[Win+Alt+M] from any app. The scratchpad appears immediately with the text cursor focused.
-* **Edit <-> Preview:** Press kbd:[Esc] to toggle between live Markdown editing and rendered HTML preview.
+* **Summon Instantly:** Press kbd:[Win+Ctrl+M] or kbd:[Win+Alt+M] from any app. The scratchpad appears immediately with the text cursor focused.
+* **Edit <-> Preview:** Press kbd:[Alt+V] to toggle between live Markdown editing and rendered HTML preview.
+* **Hide Window:** Press kbd:[Esc] to hide the window without losing your note.
 * **Fast Formatting:**
 ** kbd:[Ctrl+B] – Wrap text in `**bold**`.
 ** kbd:[Ctrl+I] – Wrap text in `*italic*`.
 ** kbd:[Ctrl+Shift+C] – Wrap text in inline `code`.
 * **Clipboard Image Paste:** Press kbd:[Ctrl+V] while an image is on your clipboard to instantly embed it inline.
-* **Auto-Dim & Opacity:**
-** Dims to 50% opacity when unfocused so it never obscures your primary work.
-** Adjust active opacity using kbd:[Alt+WheelUp] and kbd:[Alt+WheelDown] (25%–100%).
+* **Dynamic Opacity & Hover:**
+** Reduces opacity by 20% when unfocused so it never obscures your primary work.
+** Adjust opacity using kbd:[Alt+WheelUp] and kbd:[Alt+WheelDown] (25%–100%) while active or simply hovering over the window. Live opacity is displayed in the status bar (`#% tr`).
 * **Theme Modes:** Right-click the tray icon to choose between *Auto (Follow System)*, *Light*, or *Dark* theme.
 * **Auto-Save:** Notes and window positions are saved automatically to `%APPDATA%\Mello-Workspace\QuickNoteMD\`.
 ====

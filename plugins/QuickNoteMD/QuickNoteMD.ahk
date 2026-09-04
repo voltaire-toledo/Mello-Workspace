@@ -3,9 +3,9 @@
 SendMode "Input"
 ; =============================================================================
 ; QuickNote MD — floating Markdown scratchpad with Edit/View modes + image paste
-;   Win+Alt+M : show/hide (invoking brings the window to focus)
-;   X         : hide (contents are never destroyed)
-;   Esc       : toggle Edit mode <-> View mode (rendered, read-only Markdown)
+;   Win+Alt+M / Win+Ctrl+M : show/hide (invoking brings the window to focus)
+;   Esc / X   : hide window (contents are never destroyed)
+;   Alt+V     : toggle Edit mode <-> View mode (rendered, read-only Markdown)
 ;   Ctrl+B / Ctrl+I : wrap selection in **bold** / *italic*   Ctrl+Shift+C : `code`
 ;   (edit mode only; View mode is read-only and reports so in the status bar)
 ;   Ctrl+V an image on the clipboard to embed it inline as a Markdown image.
@@ -36,12 +36,28 @@ if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
 
 OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
-OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 50% opacity / focused restore
+OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 20% opacity reduction / focused restore
 OnExit(QNMD_SaveGeometry)
 
-#!m::QNMD_Toggle()
+#!m::QNMD_Toggle()   ; Win+Alt+M
+^#m::QNMD_Toggle()   ; Win+Ctrl+M
 
 #HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
+Esc::QNMD_Hide()
+#HotIf
+
+QNMD_IsMouseOver() {
+    global qnmd
+    if (qnmd.gui = "" || !DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd))
+        return false
+    MouseGetPos(,, &winHwnd)
+    if (winHwnd = qnmd.gui.Hwnd)
+        return true
+    rootHwnd := DllCall("GetAncestor", "ptr", winHwnd, "uint", 2, "ptr")
+    return (rootHwnd = qnmd.gui.Hwnd)
+}
+
+#HotIf QNMD_IsMouseOver()
 !WheelUp::QNMD_AdjustOpacity(25)     ; Alt + Scroll Up = increase opacity
 !WheelDown::QNMD_AdjustOpacity(-25)  ; Alt + Scroll Down = decrease opacity
 #HotIf
@@ -60,17 +76,21 @@ QNMD_Toggle(*) {
 QNMD_Show(activate := true) {
     global qnmd, QNMD_DEFAULT_W, QNMD_DEFAULT_H
     g := qnmd.gui
-    qnmd.opacity := 255
     defaultGeom := "w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H
     g.Show((qnmd.geom != "" ? qnmd.geom : defaultGeom) (activate ? "" : " NoActivate"))
     if activate {
-        WinSetTransparent("Off", g.Hwnd)
+        if (qnmd.opacity >= 255)
+            WinSetTransparent("Off", g.Hwnd)
+        else
+            WinSetTransparent(qnmd.opacity, g.Hwnd)
         WinActivate("ahk_id " g.Hwnd)
     } else {
-        WinSetTransparent(128, g.Hwnd)
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
+        WinSetTransparent(unfocusedAlpha, g.Hwnd)
     }
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
+    QNMD_SyncTransparency()
     if activate
         try qnmd.wv.ExecuteScriptAsync("QN.focus()")
 }
@@ -81,18 +101,9 @@ QNMD_Hide(*) {
     if (g = "" || !DllCall("IsWindowVisible", "ptr", g.Hwnd))
         return true
     QNMD_SaveGeometry()
-    qnmd.opacity := 255
-    try WinSetTransparent("Off", g.Hwnd)
     try qnmd.wvc.IsVisible := false
     g.Hide()
     return true     ; consume Close so the GUI is never destroyed
-}
-
-; Escape no longer hides the window — editor.html handles it client-side to
-; toggle Edit/View mode. This just consumes the key so the native Gui default
-; (closing the window) never fires if WebView2 forwards it as an accelerator.
-QNMD_SuppressEscape(*) {
-    return true
 }
 
 ; ---- construction ------------------------------------------------------------
@@ -105,7 +116,7 @@ QNMD_Create() {
 
     g.OnEvent("Size", QNMD_OnSize)
     g.OnEvent("Close", QNMD_Hide)
-    g.OnEvent("Escape", QNMD_SuppressEscape)
+    g.OnEvent("Escape", QNMD_Hide)
 
     iconPath := QNMD_SELF_DIR "\assets\markdown.ico"
     if FileExist(iconPath) {
@@ -178,8 +189,8 @@ QNMD_OnActivate(wParam, lParam, msg, hwnd) {
 
     state := wParam & 0xFFFF
     if (state = 0) {
-        ; Window deactivated (lost focus) -> dim to 50% opacity (128)
-        unfocusedAlpha := Min(qnmd.opacity, 128)
+        ; Window deactivated (lost focus) -> reduce opacity by 20%, capped below max (255)
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
         WinSetTransparent(unfocusedAlpha, qnmd.gui.Hwnd)
     } else {
         ; Window activated (in focus) -> restore original configured opacity
@@ -198,14 +209,27 @@ QNMD_OnNavCompleted(sender, args) {
     content := ""
     try content := FileExist(QNMD_NOTE_FILE) ? FileRead(QNMD_NOTE_FILE, "UTF-8") : ""
     try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
+    QNMD_SyncTransparency()
     try qnmd.wv.ExecuteScriptAsync("QN.loadNote(" QNMD_JSStr(content) ")")
     qnmd.ready := true
+}
+
+QNMD_SyncTransparency() {
+    global qnmd
+    if (qnmd.wv = "")
+        return
+    pct := Round((qnmd.opacity / 255) * 100)
+    try qnmd.wv.ExecuteScriptAsync("QN.setTransparency(" pct ")")
 }
 
 QNMD_OnWebMessage(sender, args) {
     global QNMD_NOTE_FILE
     try {
         text := args.TryGetWebMessageAsString()
+        if (text = "__QNMD_HIDE__") {
+            QNMD_Hide()
+            return
+        }
         f := FileOpen(QNMD_NOTE_FILE, "w", "UTF-8")
         f.Write(text)
         f.Close()
@@ -288,12 +312,18 @@ QNMD_AdjustOpacity(delta) {
         return
 
     qnmd.opacity := newAlpha
-    if (qnmd.opacity >= 255)
-        WinSetTransparent("Off", qnmd.gui.Hwnd)
-    else
-        WinSetTransparent(qnmd.opacity, qnmd.gui.Hwnd)
+    if WinActive("ahk_id " qnmd.gui.Hwnd) {
+        if (qnmd.opacity >= 255)
+            WinSetTransparent("Off", qnmd.gui.Hwnd)
+        else
+            WinSetTransparent(qnmd.opacity, qnmd.gui.Hwnd)
+    } else {
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
+        WinSetTransparent(unfocusedAlpha, qnmd.gui.Hwnd)
+    }
 
     try IniWrite(qnmd.opacity, QNMD_INI, "window", "opacity")
+    QNMD_SyncTransparency()
 }
 
 ; ---- persistence ----------------------------------------------------------------

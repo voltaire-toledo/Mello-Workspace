@@ -60,14 +60,16 @@ Major feature and architecture release introducing the WebView2-powered QuickNot
 ** Seamless two-way asynchronous IPC bridge between AutoHotkey v2 and WebView2 (`WebView2.ahk`, `Promise.ahk`, `ComVar.ahk`).
 ** Bundled 32-bit and 64-bit `WebView2Loader.dll` for portable out-of-the-box operation.
 * **Editing & View Modes:**
-** kbd:[Win+Alt+M] – Summon or dismiss floating scratchpad (auto-focuses input upon opening).
-** kbd:[Esc] – Toggle between interactive Edit mode and rendered, read-only Markdown View mode.
+** kbd:[Win+Ctrl+M] / kbd:[Win+Alt+M] – Summon or dismiss floating scratchpad (auto-focuses input upon opening).
+** kbd:[Alt+V] – Toggle between interactive Edit mode and rendered, read-only Markdown View mode.
+** kbd:[Esc] – Hide the scratchpad without losing note content.
 ** Markdown shortcuts: kbd:[Ctrl+B] (bold `****`), kbd:[Ctrl+I] (italic `**`), and kbd:[Ctrl+Shift+C] (inline code ````).
 ** Clipboard Image Pasting: Paste images directly from clipboard (kbd:[Ctrl+V]) to embed as Markdown data URIs.
-* **Manual Theme Override & Transparency Controls (TASK-4):**
+* **Theme Overrides, Transparency & Hover Controls (TASK-4 & TASK-18):**
 ** Tray context menu theme selector supporting *Auto (Follow System)*, *Light Theme*, and *Dark Theme*, persisted to `%APPDATA%\Mello-Workspace\QuickNoteMD\window.ini`.
-** Dynamic window opacity adjustment using kbd:[Alt+WheelUp] and kbd:[Alt+WheelDown] while focused (clamped safely between 25% and 100%).
-** Auto-dimming: Scratchpad automatically dims to 50% opacity when unfocused (`WM_ACTIVATE`) and restores configured opacity when reactivated.
+** Dynamic window opacity adjustment using kbd:[Alt+WheelUp] and kbd:[Alt+WheelDown] (25%–100%) during active focus or hover, with real-time status bar counter (`#% tr`).
+** Auto-dimming: Scratchpad automatically reduces opacity by 20% when unfocused (`WM_ACTIVATE`) and restores configured opacity when reactivated.
+** Live font zoom adjustment using kbd:[Ctrl+WheelUp] and kbd:[Ctrl+WheelDown].
 ** Dynamic geometry retention across summon/hide actions with minimum window bounds (320x240) and starting defaults (800x600).
 ** High-resolution DPI-aware Markdown icon (`markdown.ico`) applied to window titlebar and taskbar.
 
