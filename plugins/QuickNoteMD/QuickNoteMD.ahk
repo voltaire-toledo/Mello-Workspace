@@ -41,7 +41,18 @@ OnExit(QNMD_SaveGeometry)
 
 #!m::QNMD_Toggle()
 
-#HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
+QNMD_IsMouseOver() {
+    global qnmd
+    if (qnmd.gui = "" || !DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd))
+        return false
+    MouseGetPos(,, &winHwnd)
+    if (winHwnd = qnmd.gui.Hwnd)
+        return true
+    rootHwnd := DllCall("GetAncestor", "ptr", winHwnd, "uint", 2, "ptr")
+    return (rootHwnd = qnmd.gui.Hwnd)
+}
+
+#HotIf QNMD_IsMouseOver()
 !WheelUp::QNMD_AdjustOpacity(25)     ; Alt + Scroll Up = increase opacity
 !WheelDown::QNMD_AdjustOpacity(-25)  ; Alt + Scroll Down = decrease opacity
 #HotIf
@@ -60,17 +71,21 @@ QNMD_Toggle(*) {
 QNMD_Show(activate := true) {
     global qnmd, QNMD_DEFAULT_W, QNMD_DEFAULT_H
     g := qnmd.gui
-    qnmd.opacity := 255
     defaultGeom := "w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H
     g.Show((qnmd.geom != "" ? qnmd.geom : defaultGeom) (activate ? "" : " NoActivate"))
     if activate {
-        WinSetTransparent("Off", g.Hwnd)
+        if (qnmd.opacity >= 255)
+            WinSetTransparent("Off", g.Hwnd)
+        else
+            WinSetTransparent(qnmd.opacity, g.Hwnd)
         WinActivate("ahk_id " g.Hwnd)
     } else {
-        WinSetTransparent(128, g.Hwnd)
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
+        WinSetTransparent(unfocusedAlpha, g.Hwnd)
     }
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
+    QNMD_SyncTransparency()
     if activate
         try qnmd.wv.ExecuteScriptAsync("QN.focus()")
 }
@@ -81,8 +96,6 @@ QNMD_Hide(*) {
     if (g = "" || !DllCall("IsWindowVisible", "ptr", g.Hwnd))
         return true
     QNMD_SaveGeometry()
-    qnmd.opacity := 255
-    try WinSetTransparent("Off", g.Hwnd)
     try qnmd.wvc.IsVisible := false
     g.Hide()
     return true     ; consume Close so the GUI is never destroyed
@@ -178,8 +191,8 @@ QNMD_OnActivate(wParam, lParam, msg, hwnd) {
 
     state := wParam & 0xFFFF
     if (state = 0) {
-        ; Window deactivated (lost focus) -> dim to 50% opacity (128)
-        unfocusedAlpha := Min(qnmd.opacity, 128)
+        ; Window deactivated (lost focus) -> reduce opacity by 20%, capped below max (255)
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
         WinSetTransparent(unfocusedAlpha, qnmd.gui.Hwnd)
     } else {
         ; Window activated (in focus) -> restore original configured opacity
@@ -198,8 +211,17 @@ QNMD_OnNavCompleted(sender, args) {
     content := ""
     try content := FileExist(QNMD_NOTE_FILE) ? FileRead(QNMD_NOTE_FILE, "UTF-8") : ""
     try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
+    QNMD_SyncTransparency()
     try qnmd.wv.ExecuteScriptAsync("QN.loadNote(" QNMD_JSStr(content) ")")
     qnmd.ready := true
+}
+
+QNMD_SyncTransparency() {
+    global qnmd
+    if (qnmd.wv = "")
+        return
+    pct := Round((qnmd.opacity / 255) * 100)
+    try qnmd.wv.ExecuteScriptAsync("QN.setTransparency(" pct ")")
 }
 
 QNMD_OnWebMessage(sender, args) {
@@ -288,12 +310,18 @@ QNMD_AdjustOpacity(delta) {
         return
 
     qnmd.opacity := newAlpha
-    if (qnmd.opacity >= 255)
-        WinSetTransparent("Off", qnmd.gui.Hwnd)
-    else
-        WinSetTransparent(qnmd.opacity, qnmd.gui.Hwnd)
+    if WinActive("ahk_id " qnmd.gui.Hwnd) {
+        if (qnmd.opacity >= 255)
+            WinSetTransparent("Off", qnmd.gui.Hwnd)
+        else
+            WinSetTransparent(qnmd.opacity, qnmd.gui.Hwnd)
+    } else {
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
+        WinSetTransparent(unfocusedAlpha, qnmd.gui.Hwnd)
+    }
 
     try IniWrite(qnmd.opacity, QNMD_INI, "window", "opacity")
+    QNMD_SyncTransparency()
 }
 
 ; ---- persistence ----------------------------------------------------------------

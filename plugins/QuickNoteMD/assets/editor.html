@@ -37,6 +37,10 @@
   #preview blockquote { margin: 0 0 0 4px; padding-left: 10px; border-left: 3px solid var(--border); color: var(--status-fg); }
   #preview table { border-collapse: collapse; }
   #preview th, #preview td { border: 1px solid var(--border); padding: 3px 8px; }
+  #preview h1 { font-size: 1.5em; margin: 0.6em 0 0.4em; }
+  #preview h2 { font-size: 1.35em; margin: 0.6em 0 0.4em; }
+  #preview h3 { font-size: 1.2em; margin: 0.5em 0 0.3em; }
+  #preview h4 { font-size: 1.10em; margin: 0.5em 0 0.3em; }
   #preview ul, #preview ol { padding-left: 20px; margin: 6px 0; }
   #preview li { margin: 3px 0; }
   #preview li:has(> input[type="checkbox"]),
@@ -72,7 +76,7 @@
   </div>
   <div id="statusbar">
     <span class="hint" id="hint"></span>
-    <span class="counts" id="counts">0 words, 0 chars</span>
+    <span class="counts" id="counts">0 words, 0 chars, 100% tr</span>
   </div>
 
 <script>
@@ -93,23 +97,22 @@
   let saveTimer = null, suppressSave = false;
   let mode = 'edit';
   let noticeTimer = null;
+  let transparencyPct = 100;
 
   function render() {
     preview.innerHTML = marked.parse(editor.value);
     const text = editor.value, trimmed = text.trim();
     const words = trimmed === '' ? 0 : trimmed.replace(/\s+/g, ' ').split(' ').length;
-    counts.textContent = words + ' words, ' + text.length + ' chars';
+    counts.textContent = words + ' words, ' + text.length + ' chars, ' + transparencyPct + '% tr';
   }
 
   function updateHint() {
     hint.classList.remove('notice');
-    hint.textContent = mode === 'edit'
-      ? 'Esc: switch to View  ·  Ctrl+B/I bold/italic  ·  Ctrl+V paste image'
-      : 'Esc: switch to Edit  ·  read-only in View mode';
+    hint.textContent = 'Esc to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to adjust font size \u2022 Alt + Scroll to adjust transparency';
   }
 
   function flashReadonlyNotice() {
-    hint.textContent = 'Read-only in View mode — press Esc to switch to Edit';
+    hint.textContent = 'Read-only in Preview mode \u2014 press Esc to toggle Edit mode';
     hint.classList.add('notice');
     clearTimeout(noticeTimer);
     noticeTimer = setTimeout(updateHint, 1500);
@@ -238,6 +241,10 @@
     setTheme(dark) {
       document.body.classList.toggle('dark', !!dark);
       document.body.classList.toggle('light', !dark);
+    },
+    setTransparency(pct) {
+      transparencyPct = pct;
+      render();
     },
     focus() {
       if (mode === 'edit') editor.focus();
