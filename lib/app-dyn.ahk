@@ -303,6 +303,24 @@ F20:: ModalMsg "", app_msedge
 F23:: Send "^{w}"                                     ; Ctrl+W to close the current tab
 #HotIf
 
+#HotIf WinActive("ahk_class Chrome_WidgetWin_1")
+; ╭──────────────────────────────────────────────────────────────────────╮
+; │  Chrome/Electron/Tauri Catch-all: ahk_class Chrome_WidgetWin_1       │
+; ╰──────────────────────────────────────────────────────────────────────╯
+app_msedge := "🌐 Chrome-ish"
+F13:: Send "^+{v}"                                    ; Ctrl+Shift+V to Paste as plain text
+F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab to switch to the previous tab
+F15:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
+F16:: Send "^{Tab}"                                   ; Ctrl+Tab to switch to the next tab
+F18:: ModalMsg "", app_msedge
+F17:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
+F19:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
+F20:: ModalMsg "", app_msedge
+; F21:: ModalMsg "", app_msedge
+; F22:: ModalMsg "", app_msedge
+F23:: Send "^{w}"                                     ; Ctrl+W to close the current tab
+#HotIf
+
 HotIfWinActive("ahk_exe paintdotnet.exe")
 ; ╭──────────────────────────────────────────────────────────────────────╮
 ; │  Microsoft Edge: PaintDotNet.exe                                     │
