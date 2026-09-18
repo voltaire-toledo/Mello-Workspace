@@ -1,0 +1,5 @@
+# SoundSwap only auto-switches away from the active device on physical removal, never on being filtered out
+
+Two situations can make the currently-active device ineligible for future cycling: the user edits the allow/block list to exclude it, or the device is physically unplugged. These were deliberately given different behavior.
+
+Editing the filter to exclude the active device does **not** force an immediate switch — it only changes what the *next* cycle lands on. Physical removal **does** force an immediate failover to the next eligible device. The two look similar (device becomes non-cyclable) but the right response differs: silently switching a user's live audio device the moment they save a config screen — possibly mid-call — is more surprising than useful, whereas a removed device can't keep playing audio regardless, so failing over is the only sane option. A future reader changing this behavior to be uniform (e.g. "always auto-switch when ineligible") would silently reintroduce the mid-call surprise this ADR exists to prevent.

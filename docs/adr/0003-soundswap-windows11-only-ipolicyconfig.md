@@ -1,0 +1,5 @@
+# SoundSwap hardcodes a single Windows 11 IPolicyConfig GUID, with no OS-version branching
+
+Switching the default audio device requires the undocumented `IPolicyConfig`/`IPolicyConfigVista` COM interface. Its GUID and vtable layout have historically differed across Windows versions (a distinct Vista/7-era interface predates the one used on 10/11). Community sound-switcher tools commonly branch on OS build number to pick the right interface.
+
+We chose to hardcode the single GUID (`{870af99c-171d-4f9e-af0d-e63df40c2bc9}`) known to work on Windows 10/11, with no version detection or fallback interface. Mello-Workspace is a personal, portable, single-user tool run on machines the maintainer controls (currently Windows 11), not a distributed product supporting arbitrary end-user environments — building version-branching logic for a legacy interface no target machine runs is speculative complexity with no one to benefit from it. If a future machine needs Windows 10 or earlier support, this is the first place to revisit.

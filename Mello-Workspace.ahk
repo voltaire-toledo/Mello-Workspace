@@ -74,6 +74,7 @@ WinSetRegion("0-0 w" . w . " h" . h . " r20-20", app_splashGUI.Hwnd)
 #Include <hotstrings-mgmt>
 #Include <app-dyn>
 #Include plugins\QuickNoteMD\QuickNoteMD.ahk
+#Include plugins\SoundSwap\SoundSwap.ahk
 
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ ** PERSONAL CUSTOMIZATIONS HERE **                           │

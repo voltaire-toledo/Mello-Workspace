@@ -122,17 +122,13 @@ BuildTrayMenu() {
 
   A_TrayMenu.Add() ; separator
 
-  ; Custom Tools submenu
-  ; CustomMenu := Menu()
-  ; A_TrayMenu.Add("Custom Tools", CustomMenu)
-  ; CustomMenu.Add("Custom Notes", ShowCustomNotes)
-  ; CustomMenu.Disable("Custom Notes")
-  ; CustomMenu.Add("Focus Window Highlighter", ToggleWindowHighlighter)
-  ; CustomMenu.Disable("Focus Window Highlighter")
-  ; CustomMenu.Add("OverFlow Notifier", ToggleOverflowNotifier)
-  ; CustomMenu.Disable("OverFlow Notifier")
-  ; CustomMenu.Add("Chime", ToggleChime)
-  ; CustomMenu.Disable("Chime")
+  ; Plugins submenu — repurposed from the former "Custom Tools" placeholder (task-17 design
+  ; session). Each plugin hooks in here via its own SWAP_/QNMD_-style call, not by touching
+  ; A_TrayMenu directly, since this function fully rebuilds the tray on every call.
+  PluginsMenu := Menu()
+  A_TrayMenu.Add("Plugins", PluginsMenu)
+  if IsSet(SWAP_BuildDeviceMenu)
+    SWAP_BuildDeviceMenu(PluginsMenu)
 
   ; Mello-Workspace Script-Related Actions submenu
   AHKActionsMenu := Menu()
