@@ -1,0 +1,15 @@
+<Configuration>
+  <vGPU>Default</vGPU>
+  <Networking>Default</Networking>
+  <MemoryInMB>4096</MemoryInMB>
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>D:\CODE\VT-Mello-Workspace.worktrees\feat-TASK-26-sandbox-harness</HostFolder>
+      <SandboxFolder>C:\Mello-Source</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>powershell.exe -ExecutionPolicy Bypass -NoProfile -NoExit -File C:\Mello-Source\tests\sandbox\guest-runner.ps1</Command>
+  </LogonCommand>
+</Configuration>
