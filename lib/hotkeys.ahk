@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════╮
-; ║  HOTKEYS-CORE.AHK                                                                      ║
+; ║  HOTKEYS.AHK                                                                           ║
 ; ║  Core, mandatory hotkeys that are usually exempt from suspend                          ║
 ; ╰════════════════════════════════════════════════════════════════════════════════════════╯
 

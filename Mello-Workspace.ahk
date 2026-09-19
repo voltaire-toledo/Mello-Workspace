@@ -65,14 +65,15 @@ WinSetRegion("0-0 w" . w . " h" . h . " r20-20", app_splashGUI.Hwnd)
 ; ╰──────────────────────────────────────────────────────────────╯
 #Include "*i %A_ScriptDir%\custom\.mslrc.ahk"
 #Include <traymenu>
-#Include <help_about>
-#Include <app-automate>
-#include <winui-mgmt>
-#include <arpeggios>
-#Include <cursor-mgmt>
-#Include <hotkeys-core>
-#Include <hotstrings-mgmt>
-#Include <app-dyn>
+#Include <dlg-help>
+#Include <apps>
+#Include <win-mgmt>
+#Include <prefx-hk>
+#Include <mcursor>
+#Include <hotkeys>
+#Include <hk-mgmt>
+#Include <hotstr>
+#Include <apps-hk>
 #Include plugins\QuickNoteMD\QuickNoteMD.ahk
 #Include plugins\SoundSwap\SoundSwap.ahk
 

@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  CURSOR-MGMT.AHK                                                                                                ║
+; ║  MCURSOR.AHK                                                                                                    ║
 ; ║    - Manages the location and dimensions of the Active Window using performant DllCalls.                        ║
 ; ║    - Refactored for maximum readability, maintainability, and performance.                                      ║
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯

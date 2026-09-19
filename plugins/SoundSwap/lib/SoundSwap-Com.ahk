@@ -38,7 +38,11 @@ SWAP_DEVICE_STATE_ACTIVE := 0x1
 ; FormFactor enum (subset — EndpointFormFactor in mmdeviceapi.h) mapped to a coarse icon key.
 ; ADR-0002: FormFactor is the sole classification source. Unknown/unmapped -> "generic".
 SWAP_FormFactorIconKey(formFactor) {
-  static map := Map(
+  ; NOTE: local var deliberately not named "map" — collides (case-insensitively) with the
+  ; built-in Map class, throwing "This static variable has not been assigned a value" on
+  ; every call (same class-name-collision pitfall as the "enumerator" var fixed elsewhere
+  ; in this file — see SWAP_EnumDevices/SWAP_GetDeviceById).
+  static ffMap := Map(
     0, "speakers",       ; RemoteNetworkDevice — treated generic below, overridden per-kind by caller
     1, "speakers",        ; Speakers
     2, "headphones",       ; LineLevel (treated as generic; rarely surfaced to users)
@@ -47,9 +51,9 @@ SWAP_FormFactorIconKey(formFactor) {
     5, "headphones",       ; Headset
     6, "speakers",         ; Handset
     8, "digital",          ; SPDIF
-    9, "digital",          ; DigitalAudioDisplayDevice (HDMI)
+    9, "digital"           ; DigitalAudioDisplayDevice (HDMI)
   )
-  return map.Has(formFactor) ? map[formFactor] : "generic"
+  return ffMap.Has(formFactor) ? ffMap[formFactor] : "generic"
 }
 
 ; Returns true if the Windows Audio service is running (Audiosrv). COM calls against a stopped
@@ -81,11 +85,14 @@ SWAP_EnumDevices(kind) {
   dataFlow := (kind = "Output") ? SWAP_eRender : SWAP_eCapture
 
   try {
-    enumerator := ComObject(SWAP_Guid.CLSID_MMDeviceEnumerator, SWAP_Guid.IID_IMMDeviceEnumerator)
-    collection := ComObjQuery(enumerator, SWAP_Guid.IID_IMMDeviceCollection)
+    ; NOTE: local var deliberately not named "enumerator" — that collides (case-insensitively)
+    ; with the built-in Enumerator class and throws "This Class cannot be used as an output
+    ; variable" at the ComCall below, silently swallowed by this function's own try/catch —
+    ; which is exactly why enumeration was returning zero devices with no visible error.
+    devEnum := ComObject(SWAP_Guid.CLSID_MMDeviceEnumerator, SWAP_Guid.IID_IMMDeviceEnumerator)
     ; IMMDeviceEnumerator::EnumAudioEndpoints (vtable slot 3)
     pCollection := 0
-    hr := ComCall(3, enumerator, "int", dataFlow, "uint", SWAP_DEVICE_STATE_ACTIVE, "ptr*", &pCollection)
+    hr := ComCall(3, devEnum, "int", dataFlow, "uint", SWAP_DEVICE_STATE_ACTIVE, "ptr*", &pCollection)
     if (hr != 0) || !pCollection
       return devices
     collection := ComValue(13, pCollection) ; VT_UNKNOWN wrapper
@@ -211,9 +218,9 @@ SWAP_IidBuf(guidStr) {
 }
 
 SWAP_GetDeviceById(deviceId) {
-  enumerator := ComObject(SWAP_Guid.CLSID_MMDeviceEnumerator, SWAP_Guid.IID_IMMDeviceEnumerator)
+  devEnum := ComObject(SWAP_Guid.CLSID_MMDeviceEnumerator, SWAP_Guid.IID_IMMDeviceEnumerator)
   pDevice := 0
-  hr := ComCall(5, enumerator, "wstr", deviceId, "ptr*", &pDevice) ; IMMDeviceEnumerator::GetDevice
+  hr := ComCall(5, devEnum, "wstr", deviceId, "ptr*", &pDevice) ; IMMDeviceEnumerator::GetDevice
   return (hr = 0 && pDevice) ? ComValue(13, pDevice) : ""
 }
 

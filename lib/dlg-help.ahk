@@ -1,6 +1,6 @@
 #Requires Autohotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  _HELP_ABOUT.AHK                                                                                                ║
+; ║  DLG-HELP.AHK                                                                                                   ║
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯
 
 ; ╭────────────────────────╮
@@ -213,7 +213,8 @@ ConstructAboutDialog(*) {
       "Hotstrings  ",
       "Window Management  ",
       "Chords  ",
-      "System Info"])
+      "System Info",
+      "Plugins  "])
 
   ; ╭───────────────────────────────────────────────────────────────────────────────────────╮
   ; │ Tab 1 - About                                                                         │
@@ -759,8 +760,131 @@ ConstructAboutDialog(*) {
   btnCopyNIC2IP := aboutDlg.Add("Picture", "x758 y" (yPos+2) " w14 h14 vbtnCopyNIC2IP Hidden", A_ScriptDir "\assets\icons\icons8-copy-16.png")
   btnCopyNIC2IP.OnEvent("Click", (c, *) => CopyToClipboard(c.Gui["txtNIC2IP"].Text))
 
+  ; ╭───────────────────────────────────────────────────────────────────────────────────────╮
+  ; │ Tab 7 - Plugins                                                                       │
+  ; │ Sections are built dynamically from each plugin's live in-memory state, so this tab   │
+  ; │ always reflects whatever is actually running (not a static snapshot) — the dialog is  │
+  ; │ reconstructed from scratch every time it's opened (see ShowHelpAbout), so "built at    │
+  ; │ startup/reload" falls out of that for free.                                            │
+  ; ╰───────────────────────────────────────────────────────────────────────────────────────╯
+  mainTab.UseTab(7)
+  aboutDlg.SetFont("c000000 Norm q5 s11", guiFont)
+  aboutDlg.Add("Text", "x16 y74 w768 h22", "Per-plugin settings. Changes apply immediately on Save — no reload needed.")
+
+  yPos := 100
+  if IsSet(QNMD_RegisterHotkeys)
+    yPos := BuildQuickNoteMDPluginSection(aboutDlg, guiFont, yPos) + 20
+  else {
+    aboutDlg.SetFont("Norm s10", guiFont)
+    iconPath := A_ScriptDir "\plugins\QuickNoteMD\assets\markdown.ico"
+    if FileExist(iconPath)
+      aboutDlg.Add("Picture", "x16 y" yPos " w16 h16", iconPath)
+    aboutDlg.Add("Text", (FileExist(iconPath) ? "x38 y" yPos : "x16 y" yPos) " w768", "QuickNoteMD is not loaded in this session.")
+    yPos += 30
+  }
+
+  if IsSet(SWAP_GetAboutState)
+    BuildSoundSwapPluginSection(aboutDlg, guiFont, yPos)
+  else {
+    aboutDlg.SetFont("Norm s10", guiFont)
+    aboutDlg.Add("Picture", "x16 y" yPos " w16 h16 Icon220", "shell32.dll")
+    aboutDlg.Add("Text", "x38 y" yPos " w768", "SoundSwap is not loaded in this session.")
+  }
+
   aboutDlg.Title := "Mello-Workspace - About"
   return aboutDlg
+}
+
+; Returns the y-coordinate just below the section (caller stacks the next section beneath it).
+BuildQuickNoteMDPluginSection(dlg, guiFont, yTop) {
+  dlg.SetFont("Norm s11", guiFont)
+  iconPath := A_ScriptDir "\plugins\QuickNoteMD\assets\markdown.ico"
+  hasIcon := FileExist(iconPath)
+  dlg.Add("GroupBox", "x16 y" yTop " w768 h90", hasIcon ? "       QuickNoteMD" : "QuickNoteMD")
+  if hasIcon
+    dlg.Add("Picture", "x24 y" (yTop - 1) " w16 h16", iconPath)
+
+  innerY := yTop + 24
+  dlg.SetFont("Norm s10", guiFont)
+  chkEnabled := dlg.Add("Checkbox", "x32 y" innerY " w100 vqnmd_chkEnabled", "Enabled")
+  chkEnabled.Value := QNMD_Enabled
+
+  dlg.Add("Text", "x32 y" (innerY + 32) " w110", "Toggle shortcut:")
+  editHotkey := dlg.Add("Edit", "x150 y" (innerY + 29) " w140 vqnmd_editHotkey", FormatHotkeyForDisplay(QNMD_HotkeyToggle))
+  dlg.Add("Text", "x300 y" (innerY + 32) " w380", "Combos like Win + Alt + M. Secondary shortcut Ctrl + Win + M is fixed.")
+
+  btnSave := dlg.Add("Button", "x680 y" (innerY + 28) " w90 h26", "Save")
+  btnSave.OnEvent("Click", (*) => (
+    QNMD_SetEnabled(chkEnabled.Value),
+    parsedHk := ParseHotkeyFromDisplay(editHotkey.Text),
+    (parsedHk != "" && parsedHk != QNMD_HotkeyToggle) ? QNMD_ReregisterHotkey(parsedHk) : "",
+    editHotkey.Text := FormatHotkeyForDisplay(QNMD_HotkeyToggle),
+    ToolTip("QuickNoteMD settings saved"),
+    SetTimer(() => ToolTip(), -1200)
+  ))
+
+  return yTop + 90
+}
+
+BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
+  state := SWAP_GetAboutState()
+
+  dlg.SetFont("Norm s11", guiFont)
+  dlg.Add("GroupBox", "x16 y" yTop " w768 h280", "       SoundSwap")
+  dlg.Add("Picture", "x24 y" (yTop - 1) " w16 h16 Icon220", "shell32.dll")
+
+  innerY := yTop + 24
+  dlg.SetFont("Norm s10", guiFont)
+  chkEnabled := dlg.Add("Checkbox", "x32 y" innerY " w100 vswap_chkEnabled", "Enabled")
+  chkEnabled.Value := state.enabled
+
+  dlg.Add("Text", "x32 y" (innerY + 32) " w110", "Output cycle:")
+  editOutHk := dlg.Add("Edit", "x150 y" (innerY + 29) " w140 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
+  dlg.Add("Text", "x32 y" (innerY + 62) " w110", "Input cycle:")
+  editInHk := dlg.Add("Edit", "x150 y" (innerY + 59) " w140 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
+  dlg.Add("Text", "x300 y" (innerY + 32) " w300", "Combos like Ctrl + Alt + F12.")
+
+  listY := innerY + 96
+  dlg.Add("Text", "x32 y" listY " w360", "Output device (select to switch):")
+  dlg.Add("Text", "x408 y" listY " w360", "Input device (select to switch):")
+
+  outNames := [], outSelIndex := 0
+  for i, dev in state.outputDevices {
+    outNames.Push(dev.name)
+    if (dev.id = state.lastOutputId)
+      outSelIndex := i
+  }
+  inNames := [], inSelIndex := 0
+  for i, dev in state.inputDevices {
+    inNames.Push(dev.name)
+    if (dev.id = state.lastInputId)
+      inSelIndex := i
+  }
+
+  lbOutput := dlg.Add("ListBox", "x32 y" (listY + 22) " w360 r6 vswap_lbOutput", outNames)
+  if outSelIndex
+    lbOutput.Choose(outSelIndex)
+  lbInput := dlg.Add("ListBox", "x408 y" (listY + 22) " w360 r6 vswap_lbInput", inNames)
+  if inSelIndex
+    lbInput.Choose(inSelIndex)
+
+  btnSave := dlg.Add("Button", "x680 y" (innerY + 28) " w90 h26", "Save")
+  btnSave.OnEvent("Click", (*) => (
+    SWAP_SetEnabled(chkEnabled.Value),
+    parsedOut := ParseHotkeyFromDisplay(editOutHk.Text),
+    parsedIn := ParseHotkeyFromDisplay(editInHk.Text),
+    outCombo := (parsedOut != "") ? parsedOut : state.hotkeyOutput,
+    inCombo := (parsedIn != "") ? parsedIn : state.hotkeyInput,
+    SWAP_ReregisterHotkeys(outCombo, inCombo),
+    editOutHk.Text := FormatHotkeyForDisplay(outCombo),
+    editInHk.Text := FormatHotkeyForDisplay(inCombo),
+    lbOutput.Value ? SWAP_SwitchTo("Output", state.outputDevices[lbOutput.Value]) : "",
+    lbInput.Value ? SWAP_SwitchTo("Input", state.inputDevices[lbInput.Value]) : "",
+    ToolTip("SoundSwap settings saved"),
+    SetTimer(() => ToolTip(), -1200)
+  ))
+
+  return yTop + 280
 }
 
 PopulateTelemetry(_GuiControlObj, *) {

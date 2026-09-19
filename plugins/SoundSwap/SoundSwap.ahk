@@ -43,18 +43,20 @@ SWAP_Init() {
   }
 
   SWAP_Config := SWAP_LoadConfig()
-  SWAP_RegisterHotkeys()
+  if SWAP_Config["Enabled"] {
+    SWAP_RegisterHotkeys()
+    ; ADR-0001: polling, not IMMNotificationClient, for hot-plug/default-change detection in v1.
+    SWAP_PollTimer := SetTimer(SWAP_PollDevices, 4000)
+  }
 
   if SWAP_IsStandalone
     SWAP_BuildStandaloneTray()
-
-  ; ADR-0001: polling, not IMMNotificationClient, for hot-plug/default-change detection in v1.
-  SWAP_PollTimer := SetTimer(SWAP_PollDevices, 4000)
 }
 
 ; ── Config persistence ───────────────────────────────────────────
 SWAP_DefaultConfig() {
   cfg := Map()
+  cfg["Enabled"] := true
   cfg["HotkeyOutput"] := "^!F12"
   cfg["HotkeyInput"] := "^!F11"
   cfg["OutputMode"] := "Block"
@@ -75,6 +77,7 @@ SWAP_LoadConfig() {
     return cfg
   }
   try {
+    cfg["Enabled"] := !!IniRead(SWAP_INI, "General", "Enabled", cfg["Enabled"] ? 1 : 0)
     cfg["HotkeyOutput"] := IniRead(SWAP_INI, "Hotkeys", "CycleOutput", cfg["HotkeyOutput"])
     cfg["HotkeyInput"] := IniRead(SWAP_INI, "Hotkeys", "CycleInput", cfg["HotkeyInput"])
     cfg["OutputMode"] := IniRead(SWAP_INI, "Output", "Mode", cfg["OutputMode"])
@@ -93,6 +96,7 @@ SWAP_LoadConfig() {
 SWAP_SaveConfig(cfg) {
   global SWAP_INI
   try {
+    IniWrite(cfg["Enabled"] ? 1 : 0, SWAP_INI, "General", "Enabled")
     IniWrite(cfg["HotkeyOutput"], SWAP_INI, "Hotkeys", "CycleOutput")
     IniWrite(cfg["HotkeyInput"], SWAP_INI, "Hotkeys", "CycleInput")
     IniWrite(cfg["OutputMode"], SWAP_INI, "Output", "Mode")
@@ -160,7 +164,24 @@ SWAP_ReregisterHotkeys(newOutputCombo, newInputCombo) {
   try Hotkey(SWAP_Config["HotkeyInput"], "Off")
   SWAP_Config["HotkeyOutput"] := newOutputCombo
   SWAP_Config["HotkeyInput"] := newInputCombo
-  SWAP_RegisterHotkeys()
+  if SWAP_Config["Enabled"]
+    SWAP_RegisterHotkeys()
+}
+
+; Toggles the plugin on/off at runtime (About dialog "Enabled" checkbox). Off = hotkeys
+; deregistered and poll timer stopped; On = re-registered and poll timer restarted.
+SWAP_SetEnabled(enabled) {
+  global SWAP_Config, SWAP_PollTimer
+  SWAP_Config["Enabled"] := enabled
+  SWAP_SaveConfig(SWAP_Config)
+  if enabled {
+    SWAP_RegisterHotkeys()
+    SWAP_PollTimer := SetTimer(SWAP_PollDevices, 4000)
+  } else {
+    try Hotkey(SWAP_Config["HotkeyOutput"], "Off")
+    try Hotkey(SWAP_Config["HotkeyInput"], "Off")
+    SetTimer(SWAP_PollDevices, 0)
+  }
 }
 
 ; Q1: alphabetical cycling. Q2: only advances through eligible + currently-active devices;
@@ -224,10 +245,11 @@ SWAP_PollDevices() {
     if !stillPresent {
       eligible := SWAP_EligibleDevices(kind)
       if eligible.Length
-        SWAP_SwitchTo(kind, eligible[1])
+        SWAP_SwitchTo(kind, eligible[1]) ; already refreshes the tray on its own
     }
   }
-  SWAP_RefreshTray()
+  ; No unconditional SWAP_RefreshTray() here — that used to rebuild (and yank focus from) the
+  ; tray menu on every 4s tick even when nothing changed, per user report during TASK-17 QA.
 }
 
 ; ── Tray integration ─────────────────────────────────────────────
@@ -273,6 +295,21 @@ SWAP_RefreshTray() {
   ; into Mello-Workspace), re-trigger it so the checkmarks reflect the new active device.
   if IsSet(BuildTrayMenu)
     BuildTrayMenu()
+}
+
+; Read-only snapshot for the About dialog's Plugins tab (dlg-help.ahk) — kept separate from
+; SWAP_OpenConfigWindowFromTray's state shape since the About tab has its own controls/layout.
+SWAP_GetAboutState() {
+  global SWAP_Config
+  return {
+    enabled: SWAP_Config["Enabled"],
+    hotkeyOutput: SWAP_Config["HotkeyOutput"],
+    hotkeyInput: SWAP_Config["HotkeyInput"],
+    outputDevices: SWAP_EnumDevices("Output"),
+    inputDevices: SWAP_EnumDevices("Input"),
+    lastOutputId: SWAP_Config["LastOutputId"],
+    lastInputId: SWAP_Config["LastInputId"]
+  }
 }
 
 SWAP_OpenConfigWindowFromTray() {

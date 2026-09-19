@@ -3,7 +3,7 @@
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ SoundSwap-Gui.ahk — OSD + standalone config window            │
 ; │ OSD mirrors ModalMsg's singleton/dark-styled shape (see        │
-; │ lib/app-dyn.ahk) per ADR — not a reuse of that function, since │
+; │ lib/apps-hk.ahk) per ADR — not a reuse of that function, since │
 ; │ ModalMsg is hardcoded to the per-app hotkey-help use case.     │
 ; ╰──────────────────────────────────────────────────────────────╯
 

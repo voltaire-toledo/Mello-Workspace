@@ -555,14 +555,16 @@ Bottom-Right Corner (Quarter)</simpara></entry>
 ├── 📁 custom/                   &lt;-- User-defined overrides and personal hotstrings
 │   └── 📄 _custom_functions.ahk
 ├── 📁 lib/                      &lt;-- Modular subsystem libraries
-│   ├── 📄 app-automate.ahk      &lt;-- App launching &amp; shell COM automation
-│   ├── 📄 arpeggios.ahk         &lt;-- Modal sequence HUD &amp; grid management
-│   ├── 📄 cursor-mgmt.ahk       &lt;-- Real-time cursor scaling engine
-│   ├── 📄 help_about.ahk        &lt;-- Help GUI &amp; ThisSystem.Info telemetry
-│   ├── 📄 hotkeys-core.ahk      &lt;-- Core system shortcuts &amp; suspend exemptions
-│   ├── 📄 hotstrings-mgmt.ahk   &lt;-- Unicode boxes, trees, kaomojis, and text macros
+│   ├── 📄 apps.ahk              &lt;-- App launching &amp; shell COM automation
+│   ├── 📄 apps-hk.ahk           &lt;-- App-specific hotkeys &amp; Logitech G502X routing
+│   ├── 📄 dlg-help.ahk          &lt;-- Help GUI &amp; ThisSystem.Info telemetry
+│   ├── 📄 hk-mgmt.ahk           &lt;-- Hotkey parsing, formatting &amp; string normalization
+│   ├── 📄 hotkeys.ahk           &lt;-- Core system shortcuts &amp; suspend exemptions
+│   ├── 📄 hotstr.ahk            &lt;-- Unicode boxes, trees, kaomojis, and text macros
+│   ├── 📄 mcursor.ahk           &lt;-- Real-time cursor scaling engine
+│   ├── 📄 prefx-hk.ahk          &lt;-- Modal sequence HUD &amp; grid management
 │   ├── 📄 traymenu.ahk          &lt;-- Context-aware system tray &amp; theme engine
-│   └── 📄 winui-mgmt.ahk        &lt;-- Window snapping, sizing &amp; mouse gestures
+│   └── 📄 win-mgmt.ahk          &lt;-- Window snapping, sizing &amp; mouse gestures
 ├── 📁 media/                    &lt;-- Icons, audio assets, and UI imagery
 └── 📁 scripts/                  &lt;-- Developer provisioning &amp; testing scripts</programlisting>
 <simpara><?asciidoc-hr?></simpara>

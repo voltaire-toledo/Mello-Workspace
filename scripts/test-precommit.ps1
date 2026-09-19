@@ -236,7 +236,7 @@ if ($settingsFound -gt 0) {
 Write-Host "`n[TEST 7] Checking library includes..." -ForegroundColor Cyan
 
 $mainContent = Get-Content 'Mello-Workspace.ahk' -Raw
-$libFiles = Get-ChildItem -Path 'lib' -Filter '*.ahk' | Where-Object { $_.Name -notmatch '^help_about' }
+$libFiles = Get-ChildItem -Path 'lib' -Filter '*.ahk' | Where-Object { $_.Name -notmatch '^dlg-help' }
 
 $includeMatches = $mainContent | Select-String -Pattern '#Include' -AllMatches
 $includeCount = if ($includeMatches) { $includeMatches.Matches.Count } else { 0 }
