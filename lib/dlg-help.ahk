@@ -773,7 +773,7 @@ ConstructAboutDialog(*) {
 
   yPos := 100
   if IsSet(QNMD_RegisterHotkeys)
-    yPos := BuildQuickNoteMDPluginSection(aboutDlg, guiFont, yPos) + 20
+    yPos := BuildQuickNoteMDPluginSection(aboutDlg, guiFont, yPos) + 16
   else {
     aboutDlg.SetFont("Norm s10", guiFont)
     iconPath := A_ScriptDir "\plugins\QuickNoteMD\assets\markdown.ico"
@@ -800,20 +800,23 @@ BuildQuickNoteMDPluginSection(dlg, guiFont, yTop) {
   dlg.SetFont("Norm s11", guiFont)
   iconPath := A_ScriptDir "\plugins\QuickNoteMD\assets\markdown.ico"
   hasIcon := FileExist(iconPath)
-  dlg.Add("GroupBox", "x16 y" yTop " w768 h90", hasIcon ? "       QuickNoteMD" : "QuickNoteMD")
   if hasIcon
-    dlg.Add("Picture", "x24 y" (yTop - 1) " w16 h16", iconPath)
+    dlg.Add("Picture", "x16 y" yTop " w16 h16", iconPath)
+  dlg.Add("Text", (hasIcon ? "x38 y" (yTop - 1) : "x16 y" (yTop - 1)) " w300 h20", "QuickNoteMD")
 
-  innerY := yTop + 24
+  boxY := yTop + 24
+  dlg.Add("GroupBox", "x16 y" boxY " w768 h76", "")
+
+  innerY := boxY + 12
   dlg.SetFont("Norm s10", guiFont)
   chkEnabled := dlg.Add("Checkbox", "x32 y" innerY " w100 vqnmd_chkEnabled", "Enabled")
   chkEnabled.Value := QNMD_Enabled
 
-  dlg.Add("Text", "x32 y" (innerY + 32) " w110", "Toggle shortcut:")
-  editHotkey := dlg.Add("Edit", "x150 y" (innerY + 29) " w140 vqnmd_editHotkey", FormatHotkeyForDisplay(QNMD_HotkeyToggle))
-  dlg.Add("Text", "x300 y" (innerY + 32) " w380", "Combos like Win + Alt + M. Secondary shortcut Ctrl + Win + M is fixed.")
+  dlg.Add("Text", "x32 y" (innerY + 30) " w110", "Toggle shortcut:")
+  editHotkey := dlg.Add("Edit", "x150 y" (innerY + 27) " w140 vqnmd_editHotkey", FormatHotkeyForDisplay(QNMD_HotkeyToggle))
+  dlg.Add("Text", "x300 y" (innerY + 30) " w380", "Combos like Win + Alt + M. Secondary shortcut Ctrl + Win + M is fixed.")
 
-  btnSave := dlg.Add("Button", "x680 y" (innerY + 28) " w90 h26", "Save")
+  btnSave := dlg.Add("Button", "x680 y" (innerY + 26) " w90 h26", "Save")
   btnSave.OnEvent("Click", (*) => (
     QNMD_SetEnabled(chkEnabled.Value),
     parsedHk := ParseHotkeyFromDisplay(editHotkey.Text),
@@ -823,28 +826,31 @@ BuildQuickNoteMDPluginSection(dlg, guiFont, yTop) {
     SetTimer(() => ToolTip(), -1200)
   ))
 
-  return yTop + 90
+  return boxY + 76
 }
 
 BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
   state := SWAP_GetAboutState()
 
   dlg.SetFont("Norm s11", guiFont)
-  dlg.Add("GroupBox", "x16 y" yTop " w768 h280", "       SoundSwap")
-  dlg.Add("Picture", "x24 y" (yTop - 1) " w16 h16 Icon220", "shell32.dll")
+  dlg.Add("Picture", "x16 y" yTop " w16 h16 Icon220", "shell32.dll")
+  dlg.Add("Text", "x38 y" (yTop - 1) " w300 h20", "SoundSwap")
 
-  innerY := yTop + 24
+  boxY := yTop + 24
+  dlg.Add("GroupBox", "x16 y" boxY " w768 h256", "")
+
+  innerY := boxY + 12
   dlg.SetFont("Norm s10", guiFont)
   chkEnabled := dlg.Add("Checkbox", "x32 y" innerY " w100 vswap_chkEnabled", "Enabled")
   chkEnabled.Value := state.enabled
 
-  dlg.Add("Text", "x32 y" (innerY + 32) " w110", "Output cycle:")
-  editOutHk := dlg.Add("Edit", "x150 y" (innerY + 29) " w140 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
-  dlg.Add("Text", "x32 y" (innerY + 62) " w110", "Input cycle:")
-  editInHk := dlg.Add("Edit", "x150 y" (innerY + 59) " w140 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
-  dlg.Add("Text", "x300 y" (innerY + 32) " w300", "Combos like Ctrl + Alt + F12.")
+  dlg.Add("Text", "x32 y" (innerY + 30) " w110", "Output cycle:")
+  editOutHk := dlg.Add("Edit", "x150 y" (innerY + 27) " w140 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
+  dlg.Add("Text", "x32 y" (innerY + 60) " w110", "Input cycle:")
+  editInHk := dlg.Add("Edit", "x150 y" (innerY + 57) " w140 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
+  dlg.Add("Text", "x300 y" (innerY + 30) " w300", "Combos like Ctrl + Alt + F12.")
 
-  listY := innerY + 96
+  listY := innerY + 92
   dlg.Add("Text", "x32 y" listY " w360", "Output device (select to switch):")
   dlg.Add("Text", "x408 y" listY " w360", "Input device (select to switch):")
 
@@ -868,7 +874,7 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
   if inSelIndex
     lbInput.Choose(inSelIndex)
 
-  btnSave := dlg.Add("Button", "x680 y" (innerY + 28) " w90 h26", "Save")
+  btnSave := dlg.Add("Button", "x680 y" (innerY + 26) " w90 h26", "Save")
   btnSave.OnEvent("Click", (*) => (
     SWAP_SetEnabled(chkEnabled.Value),
     parsedOut := ParseHotkeyFromDisplay(editOutHk.Text),
@@ -884,7 +890,7 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
     SetTimer(() => ToolTip(), -1200)
   ))
 
-  return yTop + 280
+  return boxY + 256
 }
 
 PopulateTelemetry(_GuiControlObj, *) {
