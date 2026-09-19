@@ -1,6 +1,6 @@
 = image:assets/images/mello-keycap.png[Mello-Workspace Logo,48,48,valign=middle] Mello-Workspace (MWS)
 Voltaire Toledo <https://github.com/voltaire-toledo>
-v0.4, 2026-08-26
+v0.5, 2026-09-19
 :toc: macro
 :toc-title: Table of Contents
 :toclevels: 2
@@ -13,7 +13,7 @@ v0.4, 2026-08-26
 image:https://img.shields.io/badge/AutoHotkey-v2.0+-334455.svg[AutoHotkey v2,link=https://www.autohotkey.com/]
 image:https://img.shields.io/badge/Platform-Windows%2011%20%7C%20RDP-0078D6.svg[Windows 11]
 image:https://img.shields.io/badge/License-GPL--2.0-blue.svg[License: GPL-2.0,link=LICENSE]
-image:https://img.shields.io/badge/Version-0.4-emerald.svg[Version 0.4]
+image:https://img.shields.io/badge/Version-0.5-emerald.svg[Version 0.5]
 
 [quote]
 ____
