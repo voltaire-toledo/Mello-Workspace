@@ -18,22 +18,39 @@ SWAP_ShowOsd(kind, deviceName, volumeScalar, iconKey) {
 
   isLight := false
   try isLight := !!AppsUseLightTheme()
-  bg := isLight ? "f3f3f3" : "232a2f"
+  bg := isLight ? "ffffff" : "232a2f"
   fg := isLight ? "1a2023" : "f3f3f3"
+  subFg := isLight ? "555555" : "9e9e9e"
 
   guiOsd := Gui("+AlwaysOnTop -Caption +ToolWindow", "SoundSwap OSD")
   guiOsd.BackColor := bg
-  guiOsd.SetFont("s11 bold c" . fg, "Segoe UI")
-  guiOsd.AddText("x16 y12 w280", kind . " switched")
-  guiOsd.SetFont("s13 norm c" . fg, "Segoe UI")
-  guiOsd.AddText("x16 y32 w280", deviceName)
-  guiOsd.SetFont("s9 norm c" . fg, "Segoe UI")
-  guiOsd.AddText("x16 y56 w280", "Volume: " . Round(volumeScalar * 100) . "%")
 
-  guiOsd.Show("w312 h84 NoActivate")
-  guiOsd.GetPos(,, &w, &h)
-  try WinSetRegion("0-0 w" . w . " h" . h . " r12-12", guiOsd.Hwnd)
+  iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+  hasIcon := FileExist(iconPath)
+  if hasIcon
+    guiOsd.Add("Picture", "x24 y20 w32 h32", iconPath)
 
+  textX := hasIcon ? 72 : 24
+  textW := 320
+
+  guiOsd.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
+  guiOsd.Add("Text", "x" textX " y14 w" textW, kind . " Device Switched")
+
+  guiOsd.SetFont("s12 bold c" . fg, "Segoe UI Variable")
+  guiOsd.Add("Text", "x" textX " y34 w" textW, deviceName)
+
+  guiOsd.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
+  volPct := Round(volumeScalar * 100)
+  guiOsd.Add("Text", "x" textX " y56 w" textW, "Volume: " . volPct . "%")
+
+  totalW := textX + textW + 24
+  totalH := 86
+
+  guiOsd.Show("w" totalW " h" totalH " Center")
+  guiOsd.GetClientPos(,, &w, &h)
+  try WinSetRegion("0-0 w" . w . " h" . h . " r16-16", guiOsd.Hwnd)
+
+  guiOsd.OnEvent("Click", (*) => (IsObject(guiOsd) ? guiOsd.Destroy() : ""))
   SetTimer(() => (IsObject(guiOsd) ? guiOsd.Destroy() : ""), -2200)
 }
 
@@ -46,16 +63,26 @@ SWAP_ShowStatusOsd(message) {
   }
   isLight := false
   try isLight := !!AppsUseLightTheme()
-  bg := isLight ? "f3f3f3" : "232a2f"
+  bg := isLight ? "ffffff" : "232a2f"
   fg := isLight ? "1a2023" : "f3f3f3"
 
   guiStatus := Gui("+AlwaysOnTop -Caption +ToolWindow", "SoundSwap Status")
   guiStatus.BackColor := bg
-  guiStatus.SetFont("s11 norm c" . fg, "Segoe UI")
-  guiStatus.AddText("x16 y16 w280", message)
-  guiStatus.Show("w312 h56 NoActivate")
-  guiStatus.GetPos(,, &w, &h)
-  try WinSetRegion("0-0 w" . w . " h" . h . " r12-12", guiStatus.Hwnd)
+
+  iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+  hasIcon := FileExist(iconPath)
+  if hasIcon
+    guiStatus.Add("Picture", "x20 y18 w24 h24", iconPath)
+
+  textX := hasIcon ? 56 : 20
+  guiStatus.SetFont("s11 norm c" . fg, "Segoe UI Variable")
+  guiStatus.Add("Text", "x" textX " y20 w320", message)
+
+  totalW := textX + 340
+  guiStatus.Show("w" totalW " h60 Center")
+  guiStatus.GetClientPos(,, &w, &h)
+  try WinSetRegion("0-0 w" . w . " h" . h . " r16-16", guiStatus.Hwnd)
+  guiStatus.OnEvent("Click", (*) => (IsObject(guiStatus) ? guiStatus.Destroy() : ""))
   SetTimer(() => (IsObject(guiStatus) ? guiStatus.Destroy() : ""), -2200)
 }
 

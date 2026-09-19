@@ -191,7 +191,8 @@ SWAP_Cycle(kind) {
   devices := SWAP_EligibleDevices(kind)
   if !devices.Length {
     SWAP_RefreshTray()
-    return ; no eligible devices — silent, tray already reflects this via greyed items (Q5)
+    SWAP_ShowStatusOsd("No eligible " . kind . " devices to cycle.")
+    return
   }
 
   lastId := (kind = "Output") ? SWAP_Config["LastOutputId"] : SWAP_Config["LastInputId"]
@@ -211,8 +212,10 @@ SWAP_Cycle(kind) {
 SWAP_SwitchTo(kind, device) {
   global SWAP_Config
   ok := SWAP_SetDefaultDevice(device.id)
-  if !ok
-    return ; failed COM call — leave prior state alone rather than confirm a switch that didn't happen
+  if !ok {
+    SWAP_ShowStatusOsd("Failed to switch " . kind . " to " . device.name)
+    return
+  }
 
   if (kind = "Output")
     SWAP_Config["LastOutputId"] := device.id
@@ -356,5 +359,7 @@ SWAP_BuildStandaloneTray() {
   A_TrayMenu.Add()
   A_TrayMenu.Add("Exit", (*) => ExitApp())
   A_TrayMenu.Default := "Configure Filtered Devices..."
-  TraySetIcon("shell32.dll", 220) ; generic speaker icon, standalone mode only
+  iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+  if FileExist(iconPath)
+    TraySetIcon(iconPath)
 }

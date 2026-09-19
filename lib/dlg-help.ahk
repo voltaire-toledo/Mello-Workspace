@@ -787,8 +787,11 @@ ConstructAboutDialog(*) {
     BuildSoundSwapPluginSection(aboutDlg, guiFont, yPos)
   else {
     aboutDlg.SetFont("Norm s10", guiFont)
-    aboutDlg.Add("Picture", "x16 y" yPos " w16 h16 Icon220", "shell32.dll")
-    aboutDlg.Add("Text", "x38 y" yPos " w768", "SoundSwap is not loaded in this session.")
+    iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+    hasIcon := FileExist(iconPath)
+    if hasIcon
+      aboutDlg.Add("Picture", "x16 y" yPos " w16 h16", iconPath)
+    aboutDlg.Add("Text", (hasIcon ? "x38 y" yPos : "x16 y" yPos) " w768", "SoundSwap is not loaded in this session.")
   }
 
   aboutDlg.Title := "Mello-Workspace - About"
@@ -833,8 +836,11 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
   state := SWAP_GetAboutState()
 
   dlg.SetFont("Norm s11", guiFont)
-  dlg.Add("Picture", "x16 y" yTop " w16 h16 Icon220", "shell32.dll")
-  dlg.Add("Text", "x38 y" (yTop - 1) " w300 h20", "SoundSwap")
+  iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+  hasIcon := FileExist(iconPath)
+  if hasIcon
+    dlg.Add("Picture", "x16 y" yTop " w16 h16", iconPath)
+  dlg.Add("Text", (hasIcon ? "x38 y" (yTop - 1) : "x16 y" (yTop - 1)) " w300 h20", "SoundSwap")
 
   boxY := yTop + 24
   dlg.Add("GroupBox", "x16 y" boxY " w768 h256", "")
