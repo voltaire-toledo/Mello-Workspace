@@ -22,6 +22,7 @@ SendMode "Input"
 ; this plugin's own folder so its assets load correctly whether run standalone
 ; or #Include'd from elsewhere (see A_LineFile usage in WebView2.ahk itself).
 global QNMD_SELF_DIR := SubStr(A_LineFile, 1, InStr(A_LineFile, "\",, -1) - 1)
+global QNMD_IsStandalone := !InStr(A_ScriptFullPath, "QuickNoteMD.ahk") ? false : (A_ScriptFullPath = QNMD_SELF_DIR . "\QuickNoteMD.ahk")
 
 global QNMD_DIR := A_AppData "\Mello-Workspace\QuickNoteMD"
 global QNMD_NOTE_FILE := QNMD_DIR "\note.md"
@@ -84,6 +85,7 @@ QNMD_WriteConfig(enabled, hotkeyToggle) {
 ; ── Hotkeys ───────────────────────────────────────────────────────
 QNMD_RegisterHotkeys() {
     global QNMD_Enabled, QNMD_HotkeyToggle
+    HotIf()
     try Hotkey(QNMD_HotkeyToggle, "Off")
     try Hotkey("^#m", "Off")
     if !QNMD_Enabled
@@ -440,22 +442,24 @@ QNMD_RestoreGeometry() {
 }
 
 ; ---- tray menu ------------------------------------------------------------------
-ThemeMenu := Menu()
-ThemeMenu.Add("Auto (Follow System)", (*) => QNMD_SetThemeMode("auto"))
-ThemeMenu.Add("Light Theme", (*) => QNMD_SetThemeMode("light"))
-ThemeMenu.Add("Dark Theme", (*) => QNMD_SetThemeMode("dark"))
+if QNMD_IsStandalone {
+    ThemeMenu := Menu()
+    ThemeMenu.Add("Auto (Follow System)", (*) => QNMD_SetThemeMode("auto"))
+    ThemeMenu.Add("Light Theme", (*) => QNMD_SetThemeMode("light"))
+    ThemeMenu.Add("Dark Theme", (*) => QNMD_SetThemeMode("dark"))
 
-A_TrayMenu.Delete()
-A_TrayMenu.Add("Show / Hide QuickNote MD`tWin+Alt+M", QNMD_Toggle)
-A_TrayMenu.Add("Toggle Light/Dark Theme", QNMD_ToggleTheme)
-A_TrayMenu.Add("Theme Mode", ThemeMenu)
-A_TrayMenu.Add("Open notes folder", (*) => Run(QNMD_DIR))
-A_TrayMenu.Add()
-A_TrayMenu.Add("Reload script", (*) => Reload())
-A_TrayMenu.Add("Exit", (*) => ExitApp())
-A_TrayMenu.Default := "Show / Hide QuickNote MD`tWin+Alt+M"
-if FileExist(QNMD_SELF_DIR "\assets\markdown.ico")
-    TraySetIcon(QNMD_SELF_DIR "\assets\markdown.ico")
-else
-    TraySetIcon("shell32.dll", 174)
-A_IconTip := "QuickNote MD (Win+Alt+M)"
+    A_TrayMenu.Delete()
+    A_TrayMenu.Add("Show / Hide QuickNote MD`tWin+Alt+M", QNMD_Toggle)
+    A_TrayMenu.Add("Toggle Light/Dark Theme", QNMD_ToggleTheme)
+    A_TrayMenu.Add("Theme Mode", ThemeMenu)
+    A_TrayMenu.Add("Open notes folder", (*) => Run(QNMD_DIR))
+    A_TrayMenu.Add()
+    A_TrayMenu.Add("Reload script", (*) => Reload())
+    A_TrayMenu.Add("Exit", (*) => ExitApp())
+    A_TrayMenu.Default := "Show / Hide QuickNote MD`tWin+Alt+M"
+    if FileExist(QNMD_SELF_DIR "\assets\markdown.ico")
+        TraySetIcon(QNMD_SELF_DIR "\assets\markdown.ico")
+    else
+        TraySetIcon("shell32.dll", 174)
+    A_IconTip := "QuickNote MD (Win+Alt+M)"
+}

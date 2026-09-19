@@ -154,12 +154,14 @@ SWAP_EligibleDevices(kind) {
 ; ── Hotkeys ───────────────────────────────────────────────────────
 SWAP_RegisterHotkeys() {
   global SWAP_Config
+  HotIf()
   try Hotkey(SWAP_Config["HotkeyOutput"], (*) => SWAP_Cycle("Output"))
   try Hotkey(SWAP_Config["HotkeyInput"], (*) => SWAP_Cycle("Input"))
 }
 
 SWAP_ReregisterHotkeys(newOutputCombo, newInputCombo) {
   global SWAP_Config
+  HotIf()
   try Hotkey(SWAP_Config["HotkeyOutput"], "Off")
   try Hotkey(SWAP_Config["HotkeyInput"], "Off")
   SWAP_Config["HotkeyOutput"] := newOutputCombo
