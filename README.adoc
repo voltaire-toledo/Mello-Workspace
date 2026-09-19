@@ -394,15 +394,16 @@ VT-Mello-Workspace/
 ├── 📁 custom/                   <-- Personal hotkeys & snippets (ignored by Git)
 │   └── 📄 _custom_functions.ahk
 ├── 📁 lib/                      <-- Core modular libraries
-│   ├── 📄 app-automate.ahk      <-- App launchers, shell automation & terminal cascade
-│   ├── 📄 app-dyn.ahk           <-- App-specific hotkeys & Logitech G502X routing
-│   ├── 📄 arpeggios.ahk         <-- Modal sequence HUD & grid management
-│   ├── 📄 cursor-mgmt.ahk       <-- Real-time cursor scaling engine
-│   ├── 📄 help_about.ahk        <-- Help GUI & ThisPC telemetry dashboard
-│   ├── 📄 hotkeys-core.ahk      <-- Core system shortcuts & suspend exemptions
-│   ├── 📄 hotstrings-mgmt.ahk   <-- Unicode boxes, heavy trees, kaomojis & date stamps
+│   ├── 📄 apps.ahk              <-- App launchers, shell automation & terminal cascade
+│   ├── 📄 apps-hk.ahk           <-- App-specific hotkeys & Logitech G502X routing
+│   ├── 📄 dlg-help.ahk          <-- Help GUI & ThisPC telemetry dashboard
+│   ├── 📄 hk-mgmt.ahk           <-- Hotkey parsing, formatting & string normalization
+│   ├── 📄 hotkeys.ahk           <-- Core system shortcuts & suspend exemptions
+│   ├── 📄 hotstr.ahk            <-- Unicode boxes, heavy trees, kaomojis & date stamps
+│   ├── 📄 mcursor.ahk           <-- Real-time cursor scaling engine
+│   ├── 📄 prefx-hk.ahk          <-- Modal sequence HUD & grid management
 │   ├── 📄 traymenu.ahk          <-- Context-aware system tray & theme engine
-│   └── 📄 winui-mgmt.ahk        <-- Window snapping, sizing & mouse gestures
+│   └── 📄 win-mgmt.ahk          <-- Window snapping, sizing & mouse gestures
 ├── 📁 plugins/                  <-- Modular application plugins
 │   └── 📁 QuickNoteMD/          <-- WebView2 floating Markdown scratchpad
 │       ├── 📄 QuickNoteMD.ahk   <-- Plugin entry point & IPC bridge

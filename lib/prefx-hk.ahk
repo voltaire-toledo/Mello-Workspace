@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  ARPEGGIOS.AHK                                                                                                  ║
+; ║  PREFX-HK.AHK                                                                                                   ║
 ; ║    Hit the [CapsLock]+[?] To enter the MODE, then follow it with another key to complete the ARPEGGIO.          ║
 ; ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ; ║  MODES:                                                                                                         ║
@@ -266,7 +266,7 @@ ShowArpeggioSplash(message, icon := "none") {
   ; Movement deltas for arrow keys
   deltas := { Left: { dx: -50, dy: 0 }, Right: { dx: 50, dy: 0 }, Up: { dx: 0, dy: -50 }, Down: { dx: 0, dy: 50 } }
 
-  ; Numpad -> Snap mapping (uses SnapActiveWindow from winui-mgmt.ahk)
+  ; Numpad -> Snap mapping (uses SnapActiveWindow from win-mgmt.ahk)
   numpadMap := {}
   numpadMap["Numpad7"] := { zone: "top", side: "left", size: "half" }
   numpadMap["Numpad8"] := { zone: "top", side: "full", size: "half" }
@@ -293,7 +293,7 @@ ShowArpeggioSplash(message, icon := "none") {
       state := GetKeyState(key, "P")
       if state && !prev[key] {
         if ctrl {
-          ; Resize via percentages (matches winui-mgmt.ahk conventions)
+          ; Resize via percentages (matches win-mgmt.ahk conventions)
           if (key = "Up")
             ResizeWindowBorders(0, 5, 5, 0)
           else if (key = "Down")

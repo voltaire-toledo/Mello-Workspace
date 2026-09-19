@@ -7,6 +7,7 @@
 ; ╰──────────────────────────────────────────────────────────────╯
 
 #SingleInstance Force
+Persistent()
 SendMode "Input"    ; Use default Windows response to built-in responses to keyboard shortcutsm, e.g. [Alt/⌥]+[<-]
 SetTitleMatchMode 2 ; Default matching behavior for searches using WinTitle, e.g. WinWait
 InstallKeybdHook  ; Install the keyboard hook to capture key events
@@ -65,15 +66,17 @@ WinSetRegion("0-0 w" . w . " h" . h . " r20-20", app_splashGUI.Hwnd)
 ; ╰──────────────────────────────────────────────────────────────╯
 #Include "*i %A_ScriptDir%\custom\.mslrc.ahk"
 #Include <traymenu>
-#Include <help_about>
-#Include <app-automate>
-#include <winui-mgmt>
-#include <arpeggios>
-#Include <cursor-mgmt>
-#Include <hotkeys-core>
-#Include <hotstrings-mgmt>
-#Include <app-dyn>
+#Include <dlg-help>
+#Include <apps>
+#Include <win-mgmt>
+#Include <prefx-hk>
+#Include <mcursor>
+#Include <hotkeys>
+#Include <hk-mgmt>
+#Include <hotstr>
+#Include <apps-hk>
 #Include plugins\QuickNoteMD\QuickNoteMD.ahk
+#Include plugins\SoundSwap\SoundSwap.ahk
 
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ ** PERSONAL CUSTOMIZATIONS HERE **                           │

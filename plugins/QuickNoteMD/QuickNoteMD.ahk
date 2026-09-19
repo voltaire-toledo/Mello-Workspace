@@ -22,13 +22,17 @@ SendMode "Input"
 ; this plugin's own folder so its assets load correctly whether run standalone
 ; or #Include'd from elsewhere (see A_LineFile usage in WebView2.ahk itself).
 global QNMD_SELF_DIR := SubStr(A_LineFile, 1, InStr(A_LineFile, "\",, -1) - 1)
+global QNMD_IsStandalone := !InStr(A_ScriptFullPath, "QuickNoteMD.ahk") ? false : (A_ScriptFullPath = QNMD_SELF_DIR . "\QuickNoteMD.ahk")
 
 global QNMD_DIR := A_AppData "\Mello-Workspace\QuickNoteMD"
 global QNMD_NOTE_FILE := QNMD_DIR "\note.md"
 global QNMD_INI := QNMD_DIR "\window.ini"
+global QNMD_CONFIG_INI := QNMD_DIR "\config.ini"
 global QNMD_USERDATA_DIR := QNMD_DIR "\webview2-data"
 global QNMD_DEFAULT_W := 800, QNMD_DEFAULT_H := 600
 global QNMD_MIN_W := 320, QNMD_MIN_H := 240
+global QNMD_Enabled := true
+global QNMD_HotkeyToggle := "#!m"
 
 global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, themeMode: "auto", opacity: 255, ready: false }
 
@@ -39,8 +43,72 @@ OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
 OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 20% opacity reduction / focused restore
 OnExit(QNMD_SaveGeometry)
 
-#!m::QNMD_Toggle()   ; Win+Alt+M
-^#m::QNMD_Toggle()   ; Win+Ctrl+M
+QNMD_LoadConfig()
+QNMD_RegisterHotkeys()   ; ^#m (Win+Ctrl+M) is the fixed secondary toggle; QNMD_HotkeyToggle is
+                          ; the configurable primary one (About dialog Plugins tab). Both are
+                          ; skipped entirely when QNMD_Enabled is false.
+
+; ── Config persistence ───────────────────────────────────────────
+QNMD_DefaultConfig() {
+    cfg := Map()
+    cfg["Enabled"] := true
+    cfg["HotkeyToggle"] := "#!m"
+    return cfg
+}
+
+; Missing/corrupt ini -> regenerate defaults, never crash (mirrors SoundSwap-Com.ahk's pattern).
+QNMD_LoadConfig() {
+    global QNMD_CONFIG_INI, QNMD_Enabled, QNMD_HotkeyToggle
+    cfg := QNMD_DefaultConfig()
+    if !FileExist(QNMD_CONFIG_INI) {
+        QNMD_Enabled := cfg["Enabled"], QNMD_HotkeyToggle := cfg["HotkeyToggle"]
+        QNMD_WriteConfig(QNMD_Enabled, QNMD_HotkeyToggle)
+        return
+    }
+    try {
+        QNMD_Enabled := !!IniRead(QNMD_CONFIG_INI, "General", "Enabled", cfg["Enabled"] ? 1 : 0)
+        QNMD_HotkeyToggle := IniRead(QNMD_CONFIG_INI, "Hotkeys", "Toggle", cfg["HotkeyToggle"])
+    } catch {
+        QNMD_Enabled := cfg["Enabled"], QNMD_HotkeyToggle := cfg["HotkeyToggle"]
+        QNMD_WriteConfig(QNMD_Enabled, QNMD_HotkeyToggle)
+    }
+}
+
+QNMD_WriteConfig(enabled, hotkeyToggle) {
+    global QNMD_CONFIG_INI
+    try {
+        IniWrite(enabled ? 1 : 0, QNMD_CONFIG_INI, "General", "Enabled")
+        IniWrite(hotkeyToggle, QNMD_CONFIG_INI, "Hotkeys", "Toggle")
+    }
+}
+
+; ── Hotkeys ───────────────────────────────────────────────────────
+QNMD_RegisterHotkeys() {
+    global QNMD_Enabled, QNMD_HotkeyToggle
+    HotIf()
+    try Hotkey(QNMD_HotkeyToggle, "Off")
+    try Hotkey("^#m", "Off")
+    if !QNMD_Enabled
+        return
+    try Hotkey(QNMD_HotkeyToggle, (*) => QNMD_Toggle())
+    try Hotkey("^#m", (*) => QNMD_Toggle())
+}
+
+; Called from the About dialog's Plugins tab (SoundSwap-style config: Save applies without a
+; reload). Persists then re-registers so Off/On and a new combo take effect immediately.
+QNMD_SetEnabled(enabled) {
+    global QNMD_HotkeyToggle
+    QNMD_Enabled := enabled
+    QNMD_WriteConfig(QNMD_Enabled, QNMD_HotkeyToggle)
+    QNMD_RegisterHotkeys()
+}
+
+QNMD_ReregisterHotkey(newCombo) {
+    global QNMD_Enabled
+    QNMD_HotkeyToggle := newCombo
+    QNMD_WriteConfig(QNMD_Enabled, QNMD_HotkeyToggle)
+    QNMD_RegisterHotkeys()
+}
 
 #HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
 Esc::QNMD_Hide()
@@ -374,22 +442,24 @@ QNMD_RestoreGeometry() {
 }
 
 ; ---- tray menu ------------------------------------------------------------------
-ThemeMenu := Menu()
-ThemeMenu.Add("Auto (Follow System)", (*) => QNMD_SetThemeMode("auto"))
-ThemeMenu.Add("Light Theme", (*) => QNMD_SetThemeMode("light"))
-ThemeMenu.Add("Dark Theme", (*) => QNMD_SetThemeMode("dark"))
+if QNMD_IsStandalone {
+    ThemeMenu := Menu()
+    ThemeMenu.Add("Auto (Follow System)", (*) => QNMD_SetThemeMode("auto"))
+    ThemeMenu.Add("Light Theme", (*) => QNMD_SetThemeMode("light"))
+    ThemeMenu.Add("Dark Theme", (*) => QNMD_SetThemeMode("dark"))
 
-A_TrayMenu.Delete()
-A_TrayMenu.Add("Show / Hide QuickNote MD`tWin+Alt+M", QNMD_Toggle)
-A_TrayMenu.Add("Toggle Light/Dark Theme", QNMD_ToggleTheme)
-A_TrayMenu.Add("Theme Mode", ThemeMenu)
-A_TrayMenu.Add("Open notes folder", (*) => Run(QNMD_DIR))
-A_TrayMenu.Add()
-A_TrayMenu.Add("Reload script", (*) => Reload())
-A_TrayMenu.Add("Exit", (*) => ExitApp())
-A_TrayMenu.Default := "Show / Hide QuickNote MD`tWin+Alt+M"
-if FileExist(QNMD_SELF_DIR "\assets\markdown.ico")
-    TraySetIcon(QNMD_SELF_DIR "\assets\markdown.ico")
-else
-    TraySetIcon("shell32.dll", 174)
-A_IconTip := "QuickNote MD (Win+Alt+M)"
+    A_TrayMenu.Delete()
+    A_TrayMenu.Add("Show / Hide QuickNote MD`tWin+Alt+M", QNMD_Toggle)
+    A_TrayMenu.Add("Toggle Light/Dark Theme", QNMD_ToggleTheme)
+    A_TrayMenu.Add("Theme Mode", ThemeMenu)
+    A_TrayMenu.Add("Open notes folder", (*) => Run(QNMD_DIR))
+    A_TrayMenu.Add()
+    A_TrayMenu.Add("Reload script", (*) => Reload())
+    A_TrayMenu.Add("Exit", (*) => ExitApp())
+    A_TrayMenu.Default := "Show / Hide QuickNote MD`tWin+Alt+M"
+    if FileExist(QNMD_SELF_DIR "\assets\markdown.ico")
+        TraySetIcon(QNMD_SELF_DIR "\assets\markdown.ico")
+    else
+        TraySetIcon("shell32.dll", 174)
+    A_IconTip := "QuickNote MD (Win+Alt+M)"
+}

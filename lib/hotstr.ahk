@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  HOTSTRINGS-MGMT.AHK                                                                                            ║
+; ║  HOTSTR.AHK                                                                                                     ║
 ; ║    Hotstrings that can be enabled or disabled without closing the utility.                                      ║
 ; ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ; ║  NOTE: Hotstrings are not working for certain apps like Windows 11 22H2 Notepad                                 ║
@@ -274,6 +274,7 @@ Gen1 Box of ole' with THICK lines (tbox-thick)
 :X:`:udots:: PasteWith("⋰")
 
 ; Tree / Box Drawing  — prefix ":" + ASCII shape hint
+; NOTE: Use the 128 Unicode characteers (U+2500 to U+257F or https://www.compart.com/en/unicode/block/U+2500)
 :XC:`:|::   PasteWith("┃")          ; '|' = vertical line
 :XC:`:-::   PasteWith("━")          ; '-' = horizontal line
 :XC:`:|-::  PasteWith("┣")          ; '|' + '-' = branch right
@@ -283,15 +284,125 @@ Gen1 Box of ole' with THICK lines (tbox-thick)
 :XC:`:+::   PasteWith("╋")          ; cross
 :XC:`:-v-:: PasteWith("┳")          ; T down
 :XC:`:-^-:: PasteWith("┻")          ; T up
-:XC:`:-|::  PasteWith("┫")          ; branch left
-:XC:`:r::   PasteWith("┏")          ; corner top-left
-:XC:`:7::   PasteWith("┓")          ; corner top-right
-:XC:`:L::   PasteWith("┗")          ; corner bottom-left
-:XC:`:J::   PasteWith("┛")          ; corner bottom-right
+:XC:`:-|::  PasteWith("┫")          ; '_' + '|' = branch left
+:XC:`:r::   PasteWith("┏")          ; corner: 'r' = top-left
+:XC:`:7::   PasteWith("┓")          ; corner: '7' = top-right
+:XC:`:L::   PasteWith("┗")          ; corner: 'L' = bottom-left
+:XC:`:J::   PasteWith("┛")          ; corner: 'J' = bottom-right   
 :XC:`:|-d:: PasteWith("┣━━📁")      ; branch dir
 :XC:`:|-f:: PasteWith("┣━━📄")      ; branch file
 :XC:`:Ld::  PasteWith("┗━━📁")      ; end dir
 :XC:`:Lf::  PasteWith("┗━━📄")      ; end file
+
+; Character Sets that have no homes
+/*
+  #### 1. All Light (Classic Single)                                                                       
+                                                                                                           
+  • Characters: Corners: ┌ ┐ └ ┘ | Tees: ┬ ┴ ├ ┤ | Cross: ┼ | Lines: ─ │                                   
+                                                                                                           
+    ┌─────┬─────┐                                                                                          
+    │  A  │  B  │                                                                                          
+    ├─────┼─────┤                                                                                          
+    │  C  │  D  │                                                                                          
+    └─────┴─────┘                                                                                          
+                                                                                                           
+  #### 2. All Heavy (Bold / Thick)                                                                         
+                                                                                                           
+  • Characters: Corners: ┏ ┓ ┗ ┛ | Tees: ┳ ┻ ┣ ┫ | Cross: ╋ | Lines: ━ ┃                                   
+                                                                                                           
+    ┏━━━━━┳━━━━━┓                                                                                          
+    ┃  A  ┃  B  ┃                                                                                          
+    ┣━━━━━╋━━━━━┫                                                                                          
+    ┃  C  ┃  D  ┃                                                                                          
+    ┗━━━━━┻━━━━━┛                                                                                          
+                                                                                                           
+  #### 3. All Double (Retro / Framed)                                                                      
+                                                                                                           
+  • Characters: Corners: ╔ ╗ ╚ ╝ | Tees: ╦ ╩ ╠ ╣ | Cross: ╬ | Lines: ═ ║                                   
+                                                                                                           
+    ╔═════╦═════╗                                                                                          
+    ║  A  ║  B  ║                                                                                          
+    ╠═════╬═════╣                                                                                          
+    ║  C  ║  D  ║                                                                                          
+    ╚═════╩═════╝                                                                                          
+  ──────                                                                                                   
+  ### Group 2: Accent Outer Borders (2 Tables)                                                             
+                                                                                                           
+  Thick or double outer border to frame the table, with subtle light inner dividers.                       
+                                                                                                           
+  #### 4. Heavy Outer / Light Inner                                                                        
+                                                                                                           
+  • Key Transitions: Top/Bot Tees: ┯ ┷ | Left/Right Tees: ┠ ┨ | Center Cross: ┼                            
+                                                                                                           
+    ┏━━━━━┯━━━━━┓                                                                                          
+    ┃  A  │  B  ┃                                                                                          
+    ┠─────┼─────┨                                                                                          
+    ┃  C  │  D  ┃                                                                                          
+    ┗━━━━━┷━━━━━┛                                                                                          
+                                                                                                           
+  #### 5. Double Outer / Light Inner                                                                       
+                                                                                                           
+  • Key Transitions: Top/Bot Tees: ╤ ╧ | Left/Right Tees: ╟ ╢ | Center Cross: ┼                            
+                                                                                                           
+    ╔═════╤═════╗                                                                                          
+    ║  A  │  B  ║                                                                                          
+    ╟─────┼─────╢                                                                                          
+    ║  C  │  D  ║                                                                                          
+    ╚═════╧═════╝                                                                                          
+  ──────                                                                                                   
+  ### Group 3: Accent Inner Dividers (2 Tables)                                                            
+                                                                                                           
+  Light perimeter with pronounced inner dividers to emphasize the grid matrix.                             
+                                                                                                           
+  #### 6. Light Outer / Heavy Inner                                                                        
+                                                                                                           
+  • Key Transitions: Top/Bot Tees: ┰ ┸ | Left/Right Tees: ┝ ┥ | Center Cross: ╋                            
+                                                                                                           
+    ┌─────┰─────┐                                                                                          
+    │  A  ┃  B  │                                                                                          
+    ┝━━━━━╋━━━━━┥                                                                                          
+    │  C  ┃  D  │                                                                                          
+    └─────┸─────┘                                                                                          
+                                                                                                           
+  #### 7. Light Outer / Double Inner                                                                       
+                                                                                                           
+  • Key Transitions: Top/Bot Tees: ╥ ╨ | Left/Right Tees: ╞ ╡ | Center Cross: ╬                            
+                                                                                                           
+    ┌─────╥─────┐                                                                                          
+    │  A  ║  B  │                                                                                          
+    ╞═════╬═════╡                                                                                          
+    │  C  ║  D  │                                                                                          
+    └─────╨─────┘                                                                                          
+  ──────                                                                                                   
+  ### Group 4: Rounded Outer Borders (3 Tables)                                                            
+                                                                                                           
+  Light outer perimeter using rounded arc corners (╭ ╮ ╰ ╯).                                               
+                                                                                                           
+  #### 8. Rounded Outer / Light Inner                                                                      
+                                                                                                           
+    ╭─────┬─────╮                                                                                          
+    │  A  │  B  │                                                                                          
+    ├─────┼─────┤                                                                                          
+    │  C  │  D  │                                                                                          
+    ╰─────┴─────╯                                                                                          
+                                                                                                           
+  #### 9. Rounded Outer / Heavy Inner                                                                      
+                                                                                                           
+    ╭─────┰─────╮                                                                                          
+    │  A  ┃  B  │                                                                                          
+    ┝━━━━━╋━━━━━┥                                                                                          
+    │  C  ┃  D  │                                                                                          
+    ╰─────┸─────╯                                                                                          
+                                                                                                           
+  #### 10. Rounded Outer / Double Inner                                                                    
+                                                                                                           
+    ╭─────╥─────╮                                                                                          
+    │  A  ║  B  │                                                                                          
+    ╞═════╬═════╡                                                                                          
+    │  C  ║  D  │                                                                                          
+    ╰─────╨─────╯                  
+
+*/
 
 ; Now() 
 :X:`:yyyy:: PasteWith(FormatTime(A_Now, "yyyy"))
@@ -306,11 +417,11 @@ Gen1 Box of ole' with THICK lines (tbox-thick)
 ; #HotIf
 
 ; {
-; ╭────────────────────────────────────────────────────────────────────────────────────╮
-; │AUXILLARY HOTSTRINGS                                                                │
-; ├────────────────────────────────────────────────────────────────────────────────────┤
-; │ NOTE: Short length hotstrings better in UWP apps like the Win11 version of Notepad.|
-; ╰────────────────────────────────────────────────────────────────────────────────────╯
+; ╭─────────────────────────────────────────────────────────────────────────────────────╮
+; │AUXILLARY HOTSTRINGS                                                                 │
+; ├─────────────────────────────────────────────────────────────────────────────────────┤
+; │ NOTE: Short length hotstrings better in UWP apps like the Win11 version of Notepad. │
+; ╰─────────────────────────────────────────────────────────────────────────────────────╯
 ; #HotString SI K-1
 ; Common Emojis (trimmed)
 ::/ask-q::😀

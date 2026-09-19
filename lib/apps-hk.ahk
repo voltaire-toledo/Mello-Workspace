@@ -1,6 +1,6 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  APP-DYN.AHK                                                                                                    ║
+; ║  APPS-HK.AHK                                                                                                    ║
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯
 ; ╭─────────────────────────────────────────────────────────────╮
 ; │  Helper Function: Wrapper for MsgBox for undefined HotClix  │
@@ -303,24 +303,42 @@ F20:: ModalMsg "", app_msedge
 F23:: Send "^{w}"                                     ; Ctrl+W to close the current tab
 #HotIf
 
-HotIfWinActive("ahk_exe paintdotnet.exe")
+#HotIf WinActive("ahk_class Chrome_WidgetWin_1")
 ; ╭──────────────────────────────────────────────────────────────────────╮
-; │  Microsoft Edge: PaintDotNet.exe                                     │
+; │  Chrome/Electron/Tauri Catch-all: ahk_class Chrome_WidgetWin_1       │
 ; ╰──────────────────────────────────────────────────────────────────────╯
-appInUse := "🎨 Paint.NET"
-Hotkey "F13", (*) => ModalMsg("", appInUse)             ; [G502X: Onboard Cycle][G604: Side #1][NumPad ?]
-Hotkey "F14", (*) => ModalMsg("", appInUse)             ; [G502X: G + Scroll_Left][G604: Side #1][NumPad ?]
-Hotkey "F15", (*) => ModalMsg("", appInUse)             ; [G502X: G + Middle_Click][G604: Side #1][NumPad ?]
-Hotkey "F16", (*) => ModalMsg("", appInUse)             ; [G502X: G + Scroll_Right][G604: Side #1][NumPad ?]
-Hotkey "F17", (*) => ModalMsg("", appInUse)             ; [G502X: Top_Forward][G604: Side #1][NumPad ?]
-Hotkey "F18", (*) => ModalMsg("", appInUse)             ; [G502X: G + Top_Forward][G604: Side #1][NumPad ?]
-Hotkey "F19", (*) => ModalMsg("", appInUse)             ; [G502X: Top_Back][G604: Side #1][NumPad ?]
-Hotkey "F20", (*) => ModalMsg("", appInUse)             ; [G502X: G + Top_Back][G604: Side #1][NumPad ?]
-Hotkey "F21", (*) => Send("]")                          ; [G502X: G + Scroll_Up][G604: Side #1][NumPad ?]
-Hotkey "F22", (*) => Send("[")                          ; [G502X: G + Scroll_Down][G604: Side #1][NumPad ?]
-Hotkey "F23", (*) => ModalMsg("", appInUse)             ; [G502X: G + Right_Click][G604: Side #1][NumPad ?]
+app_msedge := "🌐 Chrome-ish"
+F13:: Send "^+{v}"                                    ; Ctrl+Shift+V to Paste as plain text
+F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab to switch to the previous tab
+F15:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
+F16:: Send "^{Tab}"                                   ; Ctrl+Tab to switch to the next tab
+F18:: ModalMsg "", app_msedge
+F17:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
+F19:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
+F20:: ModalMsg "", app_msedge
+; F21:: ModalMsg "", app_msedge
+; F22:: ModalMsg "", app_msedge
+F23:: Send "^{w}"                                     ; Ctrl+W to close the current tab
 #HotIf
-; HotIfWinActive()
+
+#HotIf WinActive("ahk_exe paintdotnet.exe")
+; ╭──────────────────────────────────────────────────────────────────────╮
+; │  Paint.NET: PaintDotNet.exe                                          │
+; ╰──────────────────────────────────────────────────────────────────────╯
+app_paintdotnet := "🎨 Paint.NET"
+F13:: ModalMsg("", app_paintdotnet)             ; [G502X: Onboard Cycle][G604: Side #1][NumPad ?]
+F14:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Scroll_Left][G604: Side #1][NumPad ?]
+F15:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Middle_Click][G604: Side #1][NumPad ?]
+F16:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Scroll_Right][G604: Side #1][NumPad ?]
+F17:: ModalMsg("", app_paintdotnet)             ; [G502X: Top_Forward][G604: Side #1][NumPad ?]
+F18:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Top_Forward][G604: Side #1][NumPad ?]
+F19:: ModalMsg("", app_paintdotnet)             ; [G502X: Top_Back][G604: Side #1][NumPad ?]
+F20:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Top_Back][G604: Side #1][NumPad ?]
+F21:: Send("]")                                 ; [G502X: G + Scroll_Up][G604: Side #1][NumPad ?]
+F22:: Send("[")                                 ; [G502X: G + Scroll_Down][G604: Side #1][NumPad ?]
+F23:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Right_Click][G604: Side #1][NumPad ?]
+#HotIf
+HotIf()
 
 ; ╭──────────────────────────────────────────────────────────────────────╮
 ; │ EVERYTHING ELSE: Default Mouse Button Hotkeys                        │
