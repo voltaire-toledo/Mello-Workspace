@@ -7,6 +7,7 @@
 ; ╰──────────────────────────────────────────────────────────────╯
 
 #SingleInstance Force
+Persistent()
 SendMode "Input"    ; Use default Windows response to built-in responses to keyboard shortcutsm, e.g. [Alt/⌥]+[<-]
 SetTitleMatchMode 2 ; Default matching behavior for searches using WinTitle, e.g. WinWait
 InstallKeybdHook  ; Install the keyboard hook to capture key events
