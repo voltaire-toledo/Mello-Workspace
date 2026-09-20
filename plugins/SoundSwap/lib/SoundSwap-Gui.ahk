@@ -25,33 +25,35 @@ SWAP_ShowOsd(kind, deviceName, volumeScalar, iconKey) {
   guiOsd := Gui("+AlwaysOnTop -Caption +ToolWindow", "SoundSwap OSD")
   guiOsd.BackColor := bg
 
-  iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+  dismiss(*) => (IsObject(guiOsd) ? guiOsd.Destroy() : "")
+  guiOsd.OnEvent("Escape", dismiss)
+
+  iconPath := (IsSet(SWAP_SELF_DIR) && SWAP_SELF_DIR != "") ? SWAP_SELF_DIR "\assets\sound.ico" : A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
   hasIcon := FileExist(iconPath)
   if hasIcon
-    guiOsd.Add("Picture", "x24 y20 w32 h32", iconPath)
+    guiOsd.Add("Picture", "x24 y20 w32 h32", iconPath).OnEvent("Click", dismiss)
 
   textX := hasIcon ? 72 : 24
   textW := 320
 
   guiOsd.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
-  guiOsd.Add("Text", "x" textX " y14 w" textW, kind . " Device Switched")
+  guiOsd.Add("Text", "x" textX " y14 w" textW, kind . " Device Switched").OnEvent("Click", dismiss)
 
   guiOsd.SetFont("s12 bold c" . fg, "Segoe UI Variable")
-  guiOsd.Add("Text", "x" textX " y34 w" textW, deviceName)
+  guiOsd.Add("Text", "x" textX " y34 w" textW, deviceName).OnEvent("Click", dismiss)
 
   guiOsd.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
   volPct := Round(volumeScalar * 100)
-  guiOsd.Add("Text", "x" textX " y56 w" textW, "Volume: " . volPct . "%")
+  guiOsd.Add("Text", "x" textX " y+4 w" textW, "Volume: " . volPct . "%").OnEvent("Click", dismiss)
 
   totalW := textX + textW + 24
-  totalH := 86
+  totalH := 110
 
   guiOsd.Show("w" totalW " h" totalH " Center")
   guiOsd.GetClientPos(,, &w, &h)
   try WinSetRegion("0-0 w" . w . " h" . h . " r16-16", guiOsd.Hwnd)
 
-  guiOsd.OnEvent("Click", (*) => (IsObject(guiOsd) ? guiOsd.Destroy() : ""))
-  SetTimer(() => (IsObject(guiOsd) ? guiOsd.Destroy() : ""), -2200)
+  SetTimer(dismiss, -2200)
 }
 
 ; Shows a one-shot low-noise OSD when no devices/Audiosrv is down — separate from the per-switch
@@ -69,21 +71,23 @@ SWAP_ShowStatusOsd(message) {
   guiStatus := Gui("+AlwaysOnTop -Caption +ToolWindow", "SoundSwap Status")
   guiStatus.BackColor := bg
 
-  iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
+  dismiss(*) => (IsObject(guiStatus) ? guiStatus.Destroy() : "")
+  guiStatus.OnEvent("Escape", dismiss)
+
+  iconPath := (IsSet(SWAP_SELF_DIR) && SWAP_SELF_DIR != "") ? SWAP_SELF_DIR "\assets\sound.ico" : A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
   hasIcon := FileExist(iconPath)
   if hasIcon
-    guiStatus.Add("Picture", "x20 y18 w24 h24", iconPath)
+    guiStatus.Add("Picture", "x20 y18 w24 h24", iconPath).OnEvent("Click", dismiss)
 
   textX := hasIcon ? 56 : 20
   guiStatus.SetFont("s11 norm c" . fg, "Segoe UI Variable")
-  guiStatus.Add("Text", "x" textX " y20 w320", message)
+  guiStatus.Add("Text", "x" textX " y20 w320", message).OnEvent("Click", dismiss)
 
   totalW := textX + 340
   guiStatus.Show("w" totalW " h60 Center")
   guiStatus.GetClientPos(,, &w, &h)
   try WinSetRegion("0-0 w" . w . " h" . h . " r16-16", guiStatus.Hwnd)
-  guiStatus.OnEvent("Click", (*) => (IsObject(guiStatus) ? guiStatus.Destroy() : ""))
-  SetTimer(() => (IsObject(guiStatus) ? guiStatus.Destroy() : ""), -2200)
+  SetTimer(dismiss, -2200)
 }
 
 ; Standalone config window: two ListViews (Output / Input), each with an allow/block checkbox
@@ -133,7 +137,8 @@ SWAP_OpenConfigWindow(state, onSave) {
     guiConfig := ""
   ))
 
-  guiConfig.OnEvent("Close", (*) => (guiConfig := ""))
+  guiConfig.OnEvent("Escape", (*) => (guiConfig.Destroy(), guiConfig := ""))
+  guiConfig.OnEvent("Close", (*) => (guiConfig.Destroy(), guiConfig := ""))
   guiConfig.Show("w600 h480")
 }
 
