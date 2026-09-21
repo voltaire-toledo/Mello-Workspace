@@ -69,7 +69,7 @@ WinSetRegion("0-0 w" . w . " h" . h . " r20-20", app_splashGUI.Hwnd)
 #Include <dlg-help>
 #Include <apps>
 #Include <win-mgmt>
-#Include <prefx-hk>
+#Include <TRIGGRD>
 #Include <mcursor>
 #Include <hotkeys>
 #Include <hk-mgmt>

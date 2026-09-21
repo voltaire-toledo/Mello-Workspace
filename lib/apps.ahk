@@ -79,33 +79,84 @@ LaunchTerminal(asAdmin := false, *) {
 }
 
 
-ShowActionSplash(actionMessage, appPath := "") {
-  ; This function displays a splash screen with a message in the center of the screen.
-  ; It uses a GUI to show the message and positions it at the center of the active monitor.
-  global triggerActionGUI, triggerGUIWidth, triggerGUIHeight
+; ╭─────────────────────────────────────────────────────────────╮
+; │ Modern HUD / Splash Helpers (SoundSwap & Fluent-styled)     │
+; ╰─────────────────────────────────────────────────────────────╯
+ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "") {
+  ; Shared HUD component styled consistently with SoundSwap OSD:
+  ; - Windows light/dark theme aware (Segoe UI Variable font)
+  ; - Soft rounded corners (WinSetRegion r16-16)
+  ; - Flexible positioning: "center", "bottom-right", etc.
+  ; - Optional auto-dismiss timer or persistent until destroyed
+  isLight := false
+  try isLight := !!AppsUseLightTheme()
 
-  if IsSet(triggerActionGUI) {
-    triggerActionGUI.Destroy()
+  bg := isLight ? "ffffff" : "232a2f"
+  fg := isLight ? "1a2023" : "f3f3f3"
+  subFg := isLight ? "555555" : "9e9e9e"
+
+  hudGui := Gui("+AlwaysOnTop -Caption +ToolWindow")
+  hudGui.BackColor := bg
+
+  dismissHud(*) => (IsObject(hudGui) ? hudGui.Destroy() : "")
+  hudGui.OnEvent("Escape", dismissHud)
+
+  hasIcon := (iconPath != "" && FileExist(iconPath))
+  if hasIcon {
+    hudGui.Add("Picture", "x20 y18 w28 h28", iconPath).OnEvent("Click", dismissHud)
+  }
+
+  textX := hasIcon ? 58 : 22
+
+  if (title != "") {
+    ; Use smaller secondary style if body exists, otherwise prominent title
+    if (body != "") {
+      hudGui.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
+      hudGui.Add("Text", "x" textX " y16 left", title).OnEvent("Click", dismissHud)
+      hudGui.SetFont("s11 bold c" . fg, "Segoe UI Variable")
+      hudGui.Add("Text", "x" textX " y+6 left", body).OnEvent("Click", dismissHud)
+    } else {
+      hudGui.SetFont("s11 bold c" . fg, "Segoe UI Variable")
+      hudGui.Add("Text", "x" textX " y18 left", title).OnEvent("Click", dismissHud)
+    }
+  }
+
+  ; Padding on right and bottom
+  hudGui.Add("Text", "x+20 y+16 w0 h0", "")
+
+  hudGui.Show("NoActivate AutoSize Hide")
+  hudGui.GetPos(,, &hudW, &hudH)
+
+  ; Position calculation
+  MonitorGetWorkArea(, &monLeft, &monTop, &monRight, &monBottom)
+  if (position = "bottom-right") {
+    posX := monRight - hudW - 24
+    posY := monBottom - hudH - 24
+  } else { ; default "center"
+    posX := (monRight - monLeft - hudW) // 2
+    posY := (monBottom - monTop - hudH) // 2
+  }
+
+  hudGui.Show("NoActivate x" posX " y" posY)
+  try WinSetRegion("0-0 w" . hudW . " h" . hudH . " r16-16", hudGui.Hwnd)
+
+  if (autoDismissMs > 0) {
+    SetTimer(dismissHud, -autoDismissMs)
+  }
+
+  return hudGui
+}
+
+ShowActionSplash(actionMessage, appPath := "") {
+  ; Displays a modern action splash in the center of the screen
+  global triggerActionGUI
+
+  if IsSet(triggerActionGUI) && IsObject(triggerActionGUI) {
+    try triggerActionGUI.Destroy()
     triggerActionGUI := ""
   }
-  triggerActionGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
-  ; Detect dark mode and set colors accordingly
-  isDarkMode := AppsUseLightTheme() = 0
-  bgColor := isDarkMode ? "364249" : "cWhite"
-  textColor := isDarkMode ? "cWhite" : "364249"
 
-  ; Set the background and text colors for the GUI
-  triggerActionGUI.BackColor := bgColor
-  triggerActionGUI.SetFont(textColor . " s11", "Segoe UI")
-  triggerActionGUI.AddText("w250 left", "Action in progress:")
-  triggerActionGUI.SetFont(textColor . " s13", "Segoe UI")
-  triggerActionGUI.AddText("w250 left", actionMessage)
-  triggerActionGUI.Show("NoActivate AutoSize Center")
-  ; Position center of active monitor
-  thisMonitor := MonitorGetWorkArea(, &thisMonLeft, &thisMonTop, &thisMonRight, &thisMonBottom)
-  triggerActionGUI.GetPos(&__, &__, &triggerGUIWidth, &triggerGUIHeight)
-  triggerActionGUI.Move((thisMonRight - thisMonLeft - triggerGUIWidth) // 2, (thisMonBottom - thisMonTop - triggerGUIHeight) //
-    2)
+  triggerActionGUI := ShowModernHud("Action in progress:", actionMessage, "center", 2500)
 }
 
 LaunchApp(appName, asAdmin := 0) {

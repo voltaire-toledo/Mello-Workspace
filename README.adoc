@@ -401,7 +401,7 @@ VT-Mello-Workspace/
 │   ├── 📄 hotkeys.ahk           <-- Core system shortcuts & suspend exemptions
 │   ├── 📄 hotstr.ahk            <-- Unicode boxes, heavy trees, kaomojis & date stamps
 │   ├── 📄 mcursor.ahk           <-- Real-time cursor scaling engine
-│   ├── 📄 prefx-hk.ahk          <-- Modal sequence HUD & grid management
+│   ├── 📄 TRIGGRD.ahk           <-- Modal sequence HUD & grid management
 │   ├── 📄 traymenu.ahk          <-- Context-aware system tray & theme engine
 │   └── 📄 win-mgmt.ahk          <-- Window snapping, sizing & mouse gestures
 ├── 📁 plugins/                  <-- Modular application plugins

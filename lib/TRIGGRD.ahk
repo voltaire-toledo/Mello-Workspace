@@ -1,12 +1,12 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  PREFX-HK.AHK                                                                                                   ║
-; ║    Hit the [CapsLock]+[?] To enter the MODE, then follow it with another key to complete the TRIGGER.            ║
+; ║   TRIGGRD.AHK                                                                                                   ║
+; ║    1. Hit the [Win][Alt][Trigger-key] To enter a MODEfollow it with another key to complete the TRIGGER.    ║
+; ║    2. Then follow it with another key to complete the TRIGGER.    ║
 ; ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ; ║  MODES:                                                                                                         ║
-; ║  [B] BROWSE WEB     Open your favorite sites                                                                    ║
-; ║  [O] OPEN APP       Open Application Mode                                                                       ║
-; ║  [P] POWERTOYS      Shortcuts to PowerToys utils                                                                ║
+; ║  [O] App-Launcher   (O)pen Common Applications by a single key                                                  ║
+; ║  [?] Window-Snapper Move and resize active windows with your numpads                                            ║
 ; ║  [C] CLIP UTILs     Cliboard Utilities                                                                          ║
 ; ║  [U] UTILITIES      Utilities                                                                                   ║
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯
@@ -40,35 +40,20 @@ KeyWaitAny(*) {
   return ih.Input  ; Return the input string
 }
 
-ShowTriggerSplash(message, icon := "none") {
-  ; This function displays a splash screen with a message in the bottom right corner.
-  ; It uses a GUI to show the message and positions it at the bottom right of the active monitor.
-  ; The GUI will fade in and out, and it will not activate the window.
-  global triggerGUI, triggerGUIWidth, triggerGUIHeight
+ShowTriggerSplash(message, title := "Press a Key to start an application:") {
+  ; This function displays a HUD in the bottom right corner styled consistently with SoundSwap OSD:
+  ; - Theme responsive (light/dark)
+  ; - Segoe UI Variable font typography
+  ; - Rounded corners (r16-16)
+  global triggerGUI
 
   ; If the GUI already exists, destroy it first
-  if IsSet(triggerGUI) {
-    triggerGUI.Destroy()
+  if IsSet(triggerGUI) && IsObject(triggerGUI) {
+    try triggerGUI.Destroy()
     triggerGUI := ""
   }
 
-  ; Detect dark mode and set colors accordingly
-  isDarkMode := AppsUseLightTheme() = 0
-  bgColor := isDarkMode ? "364249" : "cWhite"
-  textColor := isDarkMode ? "cWhite" : "364249"
-
-  ; Display a dialog in the bottom right corner with a list, fade in/out
-  triggerGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
-  triggerGUI.BackColor := bgColor
-  triggerGUI.SetFont(textColor . " s12", "Segoe UI")
-  triggerGUI.AddText("left", "Press a Key to start an application:")
-  triggerGUI.SetFont(textColor . " s12", "Segoe UI")
-  triggerGUI.AddText("left", message)
-  triggerGUI.Show("NoActivate AutoSize")
-  ; Position bottom right of active monitor
-  thisMonitor := MonitorGetWorkArea(, &thisMonLeft, &thisMonTop, &thisMonRight, &thisMonBottom)
-  triggerGUI.GetPos(&__, &__, &triggerGUIWidth, &triggerGUIHeight)
-  triggerGUI.Move(thismonRight - triggerGUIWidth - 20, thisMonBottom - triggerGUIHeight - 20)
+  triggerGUI := ShowModernHud(title, message, "bottom-right")
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
 ; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │
@@ -91,11 +76,11 @@ ShowTriggerSplash(message, icon := "none") {
 ; │  [w] Warp Terminal                                                             │
 ; │  [z] Zed                                                                       │
 ; ╰────────────────────────────────────────────────────────────────────────────────╯
-; [Win][Alt]o will trigger App Mode
+; Replace the hotkey below with 'CapsLock & o::' to use CapsLock as the trigger's modifier
 !#o::
 {
   global triggerGUI
-  KeyWait "CapsLock"
+  ; KeyWait "CapsLock"            ; uncomment if using [CapsLock]+[o] as the trigger
   OptionWindow := "AppModeOptions"
 
   AppModeOptionsString := (
@@ -167,14 +152,10 @@ ShowTriggerSplash(message, icon := "none") {
       LaunchApp("Perplexity Comet")
       return
     case "t":
-      ShowActionSplash("Starting Windows Terminal...")
       LaunchTerminal(false)
-      triggerActionGUI.Destroy()
       return
     case "T":
-      ShowActionSplash("Starting Windows Terminal (Admin)...")
       LaunchTerminal(true)
-      triggerActionGUI.Destroy()
       return
     case "v":
       LaunchApp("Windows Terminal Preview")
@@ -197,22 +178,22 @@ ShowTriggerSplash(message, icon := "none") {
   ; if (retKeyHook = "b") {
   ;   ShowActionSplash("Starting Beyond Compare 4...")
   ;   LaunchApp("Beyond Compare 4")
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "c") {
   ;   ShowActionSplash("Starting Visual Studio Code...")
   ;   LaunchApp("Visual Studio Code")
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "e") {
   ;   ShowActionSplash("Starting Epic Pen...")
   ;   LaunchApp("Epic Pen")
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "n") {
   ;   ShowActionSplash("Starting Notion...")
   ;   LaunchApp("Notion")
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; ; Else If (retKeyHook = "o") {
   ; ;   ShowActionSplash("Starting Outlook...")
@@ -238,17 +219,17 @@ ShowTriggerSplash(message, icon := "none") {
   ;   try {
   ;     Run "*RunAs wt.exe -w 0 new-tab --title Terminal(Admin) --suppressApplicationTitle"
   ;   }
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "t") {
   ;   ShowActionSplash("Starting Windows Terminal...")
   ;   LaunchTerminal()
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "w") {
   ;   ShowActionSplash("Starting Warp Terminal...")
   ;   LaunchApp("Warp")
-  ;   triggerActionGUI.Destroy()
+  ;   arpeActionGUI.Destroy()
   ; }
   ; else {
   ;   ; MsgBox("Invalid key pressed: " retKeyHook)
@@ -256,11 +237,11 @@ ShowTriggerSplash(message, icon := "none") {
 }
 
 !#p::
-{
+{ 
   global triggerGUI
-  KeyWait "CapsLock"
   ShowTriggerSplash(
-    "Window Management Mode:`nArrows: move / Ctrl+Arrows: resize / Alt+Arrows: extend to edge`nNumpad 7..9 / 4..6 / 1..3 → grid`nPress [Tab] to exit"
+    "Arrows: move / Ctrl+Arrows: resize / Alt+Arrows: extend to edge`nNumpad 7..9 / 4..6 / 1..3 → grid`nPress [Tab] to exit",
+    "Window Management Mode:"
   )
 
   prev := {}
