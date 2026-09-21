@@ -569,7 +569,6 @@ ConstructAboutDialog(*) {
   a_lv_apps.Add(, "C", "VS Code Insiders", "")
   a_lv_apps.Add(, "d", "Claude", "")
   a_lv_apps.Add(, "e", "Epic Pen", "")
-  a_lv_apps.Add(, "k", "KeyViz", "")
   a_lv_apps.Add(, "l", "Copilot", "")
   a_lv_apps.Add(, "n", "Notion", "")
   a_lv_apps.Add(, "N", "Notepad", "")

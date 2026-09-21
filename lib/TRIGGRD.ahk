@@ -64,7 +64,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
 ; │  [C] Visual Studio Code Insiders                                               │
 ; │  [d] Claude                                                                    │
 ; │  [e] Epic Pen                                                                  │
-; │  [k] KeyViz                                                                    │
 ; │  [l] Copilot                                                                   │
 ; │  [n] Notion                                                                    │
 ; │  [N] Notepad                                                                   │
@@ -89,7 +88,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
     "`nC`t VS Code Insiders"
     "`nd`t Claude"
     "`ne`t Epic Pen"
-    "`nk`t KeyViz"
     "`nl`t Copilot"
     "`nn`t Notion"
     "`nN`t Notepad"
@@ -130,9 +128,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
       return
     case "e":
       LaunchApp("Epic Pen")
-      return
-    case "k":
-      LaunchApp("KeyViz")
       return
     case "l":
       LaunchApp("Copilot")
