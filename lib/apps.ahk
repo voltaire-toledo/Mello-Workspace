@@ -82,13 +82,14 @@ LaunchTerminal(asAdmin := false, *) {
 ; ╭─────────────────────────────────────────────────────────────╮
 ; │ Modern HUD / Splash Helpers (SoundSwap & Fluent-styled)     │
 ; ╰─────────────────────────────────────────────────────────────╯
-ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "", opacity := 255) {
+ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "", opacity := 255, isBold := false) {
   ; Shared HUD component styled consistently with SoundSwap OSD:
   ; - Windows light/dark theme aware (Segoe UI Variable font)
   ; - Soft rounded corners (WinSetRegion r16-16)
   ; - Flexible positioning: "center", "bottom-right", etc.
   ; - Optional auto-dismiss timer or persistent until destroyed
   ; - Configurable opacity (e.g. 230 for ~90% transparency)
+  ; - Configurable font weight (norm by default, optional bold)
   isLight := false
   try isLight := !!AppsUseLightTheme()
 
@@ -108,16 +109,17 @@ ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconP
   }
 
   textX := hasIcon ? 58 : 22
+  bodyWeight := isBold ? "bold" : "norm"
 
   if (title != "") {
     ; Use smaller secondary style if body exists, otherwise prominent title
     if (body != "") {
       hudGui.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
       hudGui.Add("Text", "x" textX " y16 left", title).OnEvent("Click", dismissHud)
-      hudGui.SetFont("s11 bold c" . fg, "Segoe UI Variable")
+      hudGui.SetFont("s11 " . bodyWeight . " c" . fg, "Segoe UI Variable")
       hudGui.Add("Text", "x" textX " y+6 left", body).OnEvent("Click", dismissHud)
     } else {
-      hudGui.SetFont("s11 bold c" . fg, "Segoe UI Variable")
+      hudGui.SetFont("s11 " . bodyWeight . " c" . fg, "Segoe UI Variable")
       hudGui.Add("Text", "x" textX " y18 left", title).OnEvent("Click", dismissHud)
     }
   }
