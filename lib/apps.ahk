@@ -33,7 +33,7 @@ LaunchTerminal(asAdmin := false, *) {
 
   runPrefix := asAdmin ? "*RunAs " : ""
   wtArgs := asAdmin
-    ? "-w 0 new-tab --title Terminal(Admin) --suppressApplicationTitle"
+    ? "-w new --title `"[ADMINISTRATOR]`" --tabColor `"#D32F2F`" --suppressApplicationTitle"
     : "--size 0,45 --window last new-tab --tabColor #367d55 --title (ツ)_/¯ --focus"
 
   ; Tier 1: Try launching wt.exe via PATH
