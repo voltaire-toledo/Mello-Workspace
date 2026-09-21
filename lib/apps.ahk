@@ -82,29 +82,29 @@ LaunchTerminal(asAdmin := false, *) {
 ShowActionSplash(actionMessage, appPath := "") {
   ; This function displays a splash screen with a message in the center of the screen.
   ; It uses a GUI to show the message and positions it at the center of the active monitor.
-  global arpeActionGUI, arpeGUIWidth, arpeGUIHeight
+  global triggerActionGUI, triggerGUIWidth, triggerGUIHeight
 
-  if IsSet(arpeActionGUI) {
-    arpeActionGUI.Destroy()
-    arpeActionGUI := ""
+  if IsSet(triggerActionGUI) {
+    triggerActionGUI.Destroy()
+    triggerActionGUI := ""
   }
-  arpeActionGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
+  triggerActionGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
   ; Detect dark mode and set colors accordingly
   isDarkMode := AppsUseLightTheme() = 0
   bgColor := isDarkMode ? "364249" : "cWhite"
   textColor := isDarkMode ? "cWhite" : "364249"
 
   ; Set the background and text colors for the GUI
-  arpeActionGUI.BackColor := bgColor
-  arpeActionGUI.SetFont(textColor . " s11", "Segoe UI")
-  arpeActionGUI.AddText("w250 left", "Action in progress:")
-  arpeActionGUI.SetFont(textColor . " s13", "Segoe UI")
-  arpeActionGUI.AddText("w250 left", actionMessage)
-  arpeActionGUI.Show("NoActivate AutoSize Center")
+  triggerActionGUI.BackColor := bgColor
+  triggerActionGUI.SetFont(textColor . " s11", "Segoe UI")
+  triggerActionGUI.AddText("w250 left", "Action in progress:")
+  triggerActionGUI.SetFont(textColor . " s13", "Segoe UI")
+  triggerActionGUI.AddText("w250 left", actionMessage)
+  triggerActionGUI.Show("NoActivate AutoSize Center")
   ; Position center of active monitor
   thisMonitor := MonitorGetWorkArea(, &thisMonLeft, &thisMonTop, &thisMonRight, &thisMonBottom)
-  arpeActionGUI.GetPos(&__, &__, &arpeGUIWidth, &arpeGUIHeight)
-  arpeActionGUI.Move((thisMonRight - thisMonLeft - arpeGUIWidth) // 2, (thisMonBottom - thisMonTop - arpeGUIHeight) //
+  triggerActionGUI.GetPos(&__, &__, &triggerGUIWidth, &triggerGUIHeight)
+  triggerActionGUI.Move((thisMonRight - thisMonLeft - triggerGUIWidth) // 2, (thisMonBottom - thisMonTop - triggerGUIHeight) //
     2)
 }
 
@@ -160,7 +160,7 @@ LaunchApp(appName, asAdmin := 0) {
       }
     }
   }
-  arpeActionGUI.Destroy()
+  triggerActionGUI.Destroy()
 }
 
 GetKnownFolderPath(FolderGUID) {

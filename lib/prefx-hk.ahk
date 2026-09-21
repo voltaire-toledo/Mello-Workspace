@@ -1,7 +1,7 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
 ; ║  PREFX-HK.AHK                                                                                                   ║
-; ║    Hit the [CapsLock]+[?] To enter the MODE, then follow it with another key to complete the ARPEGGIO.          ║
+; ║    Hit the [CapsLock]+[?] To enter the MODE, then follow it with another key to complete the TRIGGER.            ║
 ; ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ; ║  MODES:                                                                                                         ║
 ; ║  [B] BROWSE WEB     Open your favorite sites                                                                    ║
@@ -40,16 +40,16 @@ KeyWaitAny(*) {
   return ih.Input  ; Return the input string
 }
 
-ShowArpeggioSplash(message, icon := "none") {
+ShowTriggerSplash(message, icon := "none") {
   ; This function displays a splash screen with a message in the bottom right corner.
   ; It uses a GUI to show the message and positions it at the bottom right of the active monitor.
   ; The GUI will fade in and out, and it will not activate the window.
-  global arpeGUI, arpeGUIWidth, arpeGUIHeight
+  global triggerGUI, triggerGUIWidth, triggerGUIHeight
 
   ; If the GUI already exists, destroy it first
-  if IsSet(arpeGUI) {
-    arpeGUI.Destroy()
-    arpeGUI := ""
+  if IsSet(triggerGUI) {
+    triggerGUI.Destroy()
+    triggerGUI := ""
   }
 
   ; Detect dark mode and set colors accordingly
@@ -58,17 +58,17 @@ ShowArpeggioSplash(message, icon := "none") {
   textColor := isDarkMode ? "cWhite" : "364249"
 
   ; Display a dialog in the bottom right corner with a list, fade in/out
-  arpeGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
-  arpeGUI.BackColor := bgColor
-  arpeGUI.SetFont(textColor . " s12", "Segoe UI")
-  arpeGUI.AddText("left", "Press a Key to start an application:")
-  arpeGUI.SetFont(textColor . " s12", "Segoe UI")
-  arpeGUI.AddText("left", message)
-  arpeGUI.Show("NoActivate AutoSize")
+  triggerGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
+  triggerGUI.BackColor := bgColor
+  triggerGUI.SetFont(textColor . " s12", "Segoe UI")
+  triggerGUI.AddText("left", "Press a Key to start an application:")
+  triggerGUI.SetFont(textColor . " s12", "Segoe UI")
+  triggerGUI.AddText("left", message)
+  triggerGUI.Show("NoActivate AutoSize")
   ; Position bottom right of active monitor
   thisMonitor := MonitorGetWorkArea(, &thisMonLeft, &thisMonTop, &thisMonRight, &thisMonBottom)
-  arpeGUI.GetPos(&__, &__, &arpeGUIWidth, &arpeGUIHeight)
-  arpeGUI.Move(thismonRight - arpeGUIWidth - 20, thisMonBottom - arpeGUIHeight - 20)
+  triggerGUI.GetPos(&__, &__, &triggerGUIWidth, &triggerGUIHeight)
+  triggerGUI.Move(thismonRight - triggerGUIWidth - 20, thisMonBottom - triggerGUIHeight - 20)
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
 ; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │
@@ -91,9 +91,10 @@ ShowArpeggioSplash(message, icon := "none") {
 ; │  [w] Warp Terminal                                                             │
 ; │  [z] Zed                                                                       │
 ; ╰────────────────────────────────────────────────────────────────────────────────╯
-; CapsLock & o::
+; [Win][Alt]o will trigger App Mode
 !#o::
 {
+  global triggerGUI
   KeyWait "CapsLock"
   OptionWindow := "AppModeOptions"
 
@@ -117,14 +118,14 @@ ShowArpeggioSplash(message, icon := "none") {
     "`nz`t Zed"
   )
 
-  ShowArpeggioSplash(AppModeOptionsString)
+  ShowTriggerSplash(AppModeOptionsString)
   ; Begin the 4 second wait before fading out the GUI
   retKeyHook := KeyWaitAny()
 
   ; Fade Out
   AW_BLEND := 0x00080000, AW_HIDE := 0x00010000
-  DllCall("user32.dll\AnimateWindow", "Ptr", arpeGUI.hwnd, "UInt", 250, "UInt", AW_BLEND | AW_HIDE)
-  arpeGUI.Destroy()
+  DllCall("user32.dll\AnimateWindow", "Ptr", triggerGUI.hwnd, "UInt", 250, "UInt", AW_BLEND | AW_HIDE)
+  triggerGUI.Destroy()
 
   ; Use a value switch on the captured key to avoid expression fall-through
   switch retKeyHook
@@ -160,20 +161,20 @@ ShowArpeggioSplash(message, icon := "none") {
       LaunchApp("Notepad")
       return
     case "o":
-      LaunchApp("Codex")
+      LaunchApp("OpenAI Codex")
       return
     case "p":
-      LaunchApp("Comet")
+      LaunchApp("Perplexity Comet")
       return
     case "t":
       ShowActionSplash("Starting Windows Terminal...")
       LaunchTerminal(false)
-      arpeActionGUI.Destroy()
+      triggerActionGUI.Destroy()
       return
     case "T":
       ShowActionSplash("Starting Windows Terminal (Admin)...")
       LaunchTerminal(true)
-      arpeActionGUI.Destroy()
+      triggerActionGUI.Destroy()
       return
     case "v":
       LaunchApp("Windows Terminal Preview")
@@ -196,22 +197,22 @@ ShowArpeggioSplash(message, icon := "none") {
   ; if (retKeyHook = "b") {
   ;   ShowActionSplash("Starting Beyond Compare 4...")
   ;   LaunchApp("Beyond Compare 4")
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "c") {
   ;   ShowActionSplash("Starting Visual Studio Code...")
   ;   LaunchApp("Visual Studio Code")
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "e") {
   ;   ShowActionSplash("Starting Epic Pen...")
   ;   LaunchApp("Epic Pen")
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "n") {
   ;   ShowActionSplash("Starting Notion...")
   ;   LaunchApp("Notion")
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; ; Else If (retKeyHook = "o") {
   ; ;   ShowActionSplash("Starting Outlook...")
@@ -237,17 +238,17 @@ ShowArpeggioSplash(message, icon := "none") {
   ;   try {
   ;     Run "*RunAs wt.exe -w 0 new-tab --title Terminal(Admin) --suppressApplicationTitle"
   ;   }
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "t") {
   ;   ShowActionSplash("Starting Windows Terminal...")
   ;   LaunchTerminal()
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; else if (retKeyHook = "w") {
   ;   ShowActionSplash("Starting Warp Terminal...")
   ;   LaunchApp("Warp")
-  ;   arpeActionGUI.Destroy()
+  ;   triggerActionGUI.Destroy()
   ; }
   ; else {
   ;   ; MsgBox("Invalid key pressed: " retKeyHook)
@@ -256,8 +257,9 @@ ShowArpeggioSplash(message, icon := "none") {
 
 !#p::
 {
+  global triggerGUI
   KeyWait "CapsLock"
-  ShowArpeggioSplash(
+  ShowTriggerSplash(
     "Window Management Mode:`nArrows: move / Ctrl+Arrows: resize / Alt+Arrows: extend to edge`nNumpad 7..9 / 4..6 / 1..3 → grid`nPress [Tab] to exit"
   )
 
@@ -333,10 +335,10 @@ ShowArpeggioSplash(message, icon := "none") {
 
   ; Fade out & destroy splash
   AW_BLEND := 0x00080000, AW_HIDE := 0x00010000
-  if IsSet(arpeGUI) {
-    DllCall("user32.dll\AnimateWindow", "Ptr", arpeGUI.hwnd, "UInt", 150, "UInt", AW_BLEND | AW_HIDE)
-    arpeGUI.Destroy()
-    arpeGUI := ""
+  if IsSet(triggerGUI) {
+    DllCall("user32.dll\AnimateWindow", "Ptr", triggerGUI.hwnd, "UInt", 150, "UInt", AW_BLEND | AW_HIDE)
+    triggerGUI.Destroy()
+    triggerGUI := ""
   }
 
   return
