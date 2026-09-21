@@ -578,7 +578,6 @@ ConstructAboutDialog(*) {
   a_lv_apps.Add(, "t", "Windows Terminal", "")
   a_lv_apps.Add(, "T", "Windows Terminal", "Elevated")
   a_lv_apps.Add(, "v", "Windows Terminal Preview", "")
-  a_lv_apps.Add(, "w", "Warp Terminal", "")
   a_lv_apps.Add(, "z", "Zed", "")
   a_lv_apps.ModifyCol(1, 50)
   a_lv_apps.ModifyCol(2, 220)

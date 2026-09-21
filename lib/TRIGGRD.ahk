@@ -73,7 +73,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
 ; │  [t] Windows Terminal                                                          │
 ; │  [T] Windows Terminal (ADMIN)                                                  │
 ; │  [v] Windows Terminal Preview                                                  │
-; │  [w] Warp Terminal                                                             │
 ; │  [z] Zed                                                                       │
 ; ╰────────────────────────────────────────────────────────────────────────────────╯
 ; Replace the hotkey below with 'CapsLock & o::' to use CapsLock as the trigger's modifier
@@ -99,7 +98,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
     "`nt`t Windows Terminal"
     "`nT`t Windows Terminal (Admin)"
     "`nv`t Windows Terminal Preview"
-    "`nw`t Warp Terminal"
     "`nz`t Zed"
   )
 
@@ -159,9 +157,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
       return
     case "v":
       LaunchApp("Windows Terminal Preview")
-      return
-    case "w":
-      LaunchApp("Warp", false)
       return
     case "z":
       LaunchApp("Zed")
