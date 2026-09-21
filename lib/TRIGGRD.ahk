@@ -40,8 +40,10 @@ KeyWaitAny(*) {
   return ih.Input  ; Return the input string
 }
 
-ShowTriggerSplash(message, title := "Press a Key to start an application:") {
-  ; This function displays a HUD in the bottom right corner styled consistently with SoundSwap OSD:
+ShowTriggerSplash(message, title := "Press a Key to start an application:", position := "center", opacity := 230) {
+  ; This function displays a HUD dialog styled consistently with SoundSwap OSD:
+  ; - Positioned center (or configurable)
+  ; - Slightly transparent (~90% opacity = alpha 230)
   ; - Theme responsive (light/dark)
   ; - Segoe UI Variable font typography
   ; - Rounded corners (r16-16)
@@ -53,7 +55,7 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:") {
     triggerGUI := ""
   }
 
-  triggerGUI := ShowModernHud(title, message, "bottom-right")
+  triggerGUI := ShowModernHud(title, message, position, 0, "", opacity)
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
 ; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │

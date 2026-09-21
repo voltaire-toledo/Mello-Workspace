@@ -82,12 +82,13 @@ LaunchTerminal(asAdmin := false, *) {
 ; ╭─────────────────────────────────────────────────────────────╮
 ; │ Modern HUD / Splash Helpers (SoundSwap & Fluent-styled)     │
 ; ╰─────────────────────────────────────────────────────────────╯
-ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "") {
+ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "", opacity := 255) {
   ; Shared HUD component styled consistently with SoundSwap OSD:
   ; - Windows light/dark theme aware (Segoe UI Variable font)
   ; - Soft rounded corners (WinSetRegion r16-16)
   ; - Flexible positioning: "center", "bottom-right", etc.
   ; - Optional auto-dismiss timer or persistent until destroyed
+  ; - Configurable opacity (e.g. 230 for ~90% transparency)
   isLight := false
   try isLight := !!AppsUseLightTheme()
 
@@ -139,6 +140,9 @@ ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconP
 
   hudGui.Show("NoActivate x" posX " y" posY)
   try WinSetRegion("0-0 w" . hudW . " h" . hudH . " r16-16", hudGui.Hwnd)
+  if (opacity < 255) {
+    try WinSetTransparent(opacity, hudGui.Hwnd)
+  }
 
   if (autoDismissMs > 0) {
     SetTimer(dismissHud, -autoDismissMs)
