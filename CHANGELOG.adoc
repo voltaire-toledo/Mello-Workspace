@@ -249,7 +249,7 @@ Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 product
 | 9-zone quadrant grid snapping, 5% border resizing, and middle-click gesture engine
 | Multi-monitor workstation
 
-| `TRIGGRD.ahk`
+| `triggrd.ahk`
 | Modal HUD overlay (kbd:[Alt+Win+P]) for interactive arrow-key moving and numpad snapping
 | Multi-monitor workstation
 
@@ -334,7 +334,7 @@ Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 product
 ** Auto-generation of user-customizable `custom/_custom_functions.ahk` stub.
 
 ==== ⚡ Triggers & Modal Launching
-* **Modal Keystroke Launching (`TRIGGRD.ahk`):**
+* **Modal Keystroke Launching (`triggrd.ahk`):**
 ** Multi-key sequence trigger with HUD splash feedback.
 ** kbd:[Alt+Win+P] – Window Management Mode modal overlay with live interactive arrow-key moving, resizing, and numpad grid snapping.
 * **Application Automation (`app-automate.ahk`):**

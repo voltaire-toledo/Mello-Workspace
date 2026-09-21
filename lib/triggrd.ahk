@@ -1,8 +1,8 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║   TRIGGRD.AHK                                                                                                   ║
-; ║    1. Hit the [Win][Alt][Trigger-key] To enter a MODEfollow it with another key to complete the TRIGGER.    ║
-; ║    2. Then follow it with another key to complete the TRIGGER.    ║
+; ║  triggrd.ahk                                                                                                   ║
+; ║    1. Hit the [Win][Alt][Trigger-key] to enter a MODE.                                                          ║
+; ║    2. Then follow it with another key to complete the TRIGGER.                                                  ║
 ; ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ; ║  MODES:                                                                                                         ║
 ; ║  [O] App-Launcher   (O)pen Common Applications by a single key                                                  ║
@@ -59,6 +59,11 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
 ; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │
+; ├────────────────────────────────────────────────────────────────────────────────┤
+; │  [TIP] Prompt your AI Agent to customize this list for you:                    │
+; │   Analyze Windows Explorer telemetry (UserAssist and FeatureUsage\AppSwitched),│
+; │   active process trees, and taskbar launch history for the last 90 days and    │
+; │   provide me with a list of my most frequently launched applications.          │
 ; ├────────────────────────────────────────────────────────────────────────────────┤
 ; │  [a] Antigravity                                                               │
 ; │  [b] Beyond Compare                                                            │
