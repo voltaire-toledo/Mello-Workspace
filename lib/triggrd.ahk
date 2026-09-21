@@ -77,7 +77,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
 ; │  [o] OpenAI Codex                                                              │
 ; │  [p] Perplexity Comet                                                          │
 ; │  [t] Windows Terminal                                                          │
-; │  [T] Windows Terminal (ADMIN)                                                  │
 ; │  [v] Windows Terminal Preview                                                  │
 ; │  [z] Zed                                                                       │
 ; ╰────────────────────────────────────────────────────────────────────────────────╯
@@ -101,7 +100,6 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
     "`no`t OpenAI Codex"
     "`np`t Perplexity Comet"
     "`nt`t Windows Terminal"
-    "`nT`t Windows Terminal (Admin)"
     "`nv`t Windows Terminal Preview"
     "`nz`t Zed"
   )
