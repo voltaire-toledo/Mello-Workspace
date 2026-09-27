@@ -562,7 +562,7 @@ Bottom-Right Corner (Quarter)</simpara></entry>
 │   ├── 📄 hotkeys.ahk           &lt;-- Core system shortcuts &amp; suspend exemptions
 │   ├── 📄 hotstr.ahk            &lt;-- Unicode boxes, trees, kaomojis, and text macros
 │   ├── 📄 mcursor.ahk           &lt;-- Real-time cursor scaling engine
-│   ├── 📄 prefx-hk.ahk          &lt;-- Modal sequence HUD &amp; grid management
+│   ├── 📄 triggrd.ahk           &lt;-- Modal sequence HUD &amp; grid management
 │   ├── 📄 traymenu.ahk          &lt;-- Context-aware system tray &amp; theme engine
 │   └── 📄 win-mgmt.ahk          &lt;-- Window snapping, sizing &amp; mouse gestures
 ├── 📁 media/                    &lt;-- Icons, audio assets, and UI imagery

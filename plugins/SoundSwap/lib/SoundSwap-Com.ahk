@@ -224,6 +224,22 @@ SWAP_GetDeviceById(deviceId) {
   return (hr = 0 && pDevice) ? ComValue(13, pDevice) : ""
 }
 
+; Reads the current Windows default endpoint for the console role. Windows can change this
+; outside SoundSwap (notably when an RDP session creates a Remote Audio endpoint).
+SWAP_GetDefaultDeviceId(kind) {
+  try {
+    devEnum := ComObject(SWAP_Guid.CLSID_MMDeviceEnumerator, SWAP_Guid.IID_IMMDeviceEnumerator)
+    pDevice := 0
+    dataFlow := (kind = "Output") ? SWAP_eRender : SWAP_eCapture
+    hr := ComCall(4, devEnum, "int", dataFlow, "int", SWAP_eConsole, "ptr*", &pDevice)
+    if (hr != 0) || !pDevice
+      return ""
+    return SWAP_GetDeviceId(ComValue(13, pDevice))
+  } catch {
+    return ""
+  }
+}
+
 ; Switches the default device for all three roles (console/multimedia/communications) so the
 ; switch is respected everywhere — every third-party sound-switcher does the same.
 ; Returns true on success, false on failure (caller treats false as "skip, don't hang").

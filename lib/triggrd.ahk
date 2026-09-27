@@ -1,12 +1,12 @@
 #Requires AutoHotkey v2.0
 ; ╭════════════════════════════════════════════════════════════════════════════════════════════════════════════════─╮
-; ║  PREFX-HK.AHK                                                                                                   ║
-; ║    Hit the [CapsLock]+[?] To enter the MODE, then follow it with another key to complete the ARPEGGIO.          ║
+; ║  triggrd.ahk                                                                                                   ║
+; ║    1. Hit the [Win][Alt][Trigger-key] to enter a MODE.                                                          ║
+; ║    2. Then follow it with another key to complete the TRIGGER.                                                  ║
 ; ╠═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╣
 ; ║  MODES:                                                                                                         ║
-; ║  [B] BROWSE WEB     Open your favorite sites                                                                    ║
-; ║  [O] OPEN APP       Open Application Mode                                                                       ║
-; ║  [P] POWERTOYS      Shortcuts to PowerToys utils                                                                ║
+; ║  [O] App-Launcher   (O)pen Common Applications by a single key                                                  ║
+; ║  [?] Window-Snapper Move and resize active windows with your numpads                                            ║
 ; ║  [C] CLIP UTILs     Cliboard Utilities                                                                          ║
 ; ║  [U] UTILITIES      Utilities                                                                                   ║
 ; ╰═════════════════════════════════════════════════════════════════════════════════════════════════════════════════╯
@@ -40,38 +40,30 @@ KeyWaitAny(*) {
   return ih.Input  ; Return the input string
 }
 
-ShowArpeggioSplash(message, icon := "none") {
-  ; This function displays a splash screen with a message in the bottom right corner.
-  ; It uses a GUI to show the message and positions it at the bottom right of the active monitor.
-  ; The GUI will fade in and out, and it will not activate the window.
-  global arpeGUI, arpeGUIWidth, arpeGUIHeight
+ShowTriggerSplash(message, title := "Press a Key to start an application:", position := "center", opacity := 230) {
+  ; This function displays a HUD dialog styled consistently with SoundSwap OSD:
+  ; - Positioned center (or configurable)
+  ; - Slightly transparent (~90% opacity = alpha 230)
+  ; - Theme responsive (light/dark)
+  ; - Segoe UI Variable font typography
+  ; - Rounded corners (r16-16)
+  global triggerGUI
 
   ; If the GUI already exists, destroy it first
-  if IsSet(arpeGUI) {
-    arpeGUI.Destroy()
-    arpeGUI := ""
+  if IsSet(triggerGUI) && IsObject(triggerGUI) {
+    try triggerGUI.Destroy()
+    triggerGUI := ""
   }
 
-  ; Detect dark mode and set colors accordingly
-  isDarkMode := AppsUseLightTheme() = 0
-  bgColor := isDarkMode ? "364249" : "cWhite"
-  textColor := isDarkMode ? "cWhite" : "364249"
-
-  ; Display a dialog in the bottom right corner with a list, fade in/out
-  arpeGUI := Gui("+AlwaysOnTop -Caption +ToolWindow")
-  arpeGUI.BackColor := bgColor
-  arpeGUI.SetFont(textColor . " s12", "Segoe UI")
-  arpeGUI.AddText("left", "Press a Key to start an application:")
-  arpeGUI.SetFont(textColor . " s12", "Segoe UI")
-  arpeGUI.AddText("left", message)
-  arpeGUI.Show("NoActivate AutoSize")
-  ; Position bottom right of active monitor
-  thisMonitor := MonitorGetWorkArea(, &thisMonLeft, &thisMonTop, &thisMonRight, &thisMonBottom)
-  arpeGUI.GetPos(&__, &__, &arpeGUIWidth, &arpeGUIHeight)
-  arpeGUI.Move(thismonRight - arpeGUIWidth - 20, thisMonBottom - arpeGUIHeight - 20)
+  triggerGUI := ShowModernHud(title, message, position, 0, "", opacity)
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
 ; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │
+; ├────────────────────────────────────────────────────────────────────────────────┤
+; │  [TIP] Prompt your AI Agent to customize this list for you:                    │
+; │   Analyze Windows Explorer telemetry (UserAssist and FeatureUsage\AppSwitched),│
+; │   active process trees, and taskbar launch history for the last 90 days and    │
+; │   provide me with a list of my most frequently launched applications.          │
 ; ├────────────────────────────────────────────────────────────────────────────────┤
 ; │  [a] Antigravity                                                               │
 ; │  [b] Beyond Compare                                                            │
@@ -79,22 +71,20 @@ ShowArpeggioSplash(message, icon := "none") {
 ; │  [C] Visual Studio Code Insiders                                               │
 ; │  [d] Claude                                                                    │
 ; │  [e] Epic Pen                                                                  │
-; │  [k] KeyViz                                                                    │
 ; │  [l] Copilot                                                                   │
 ; │  [n] Notion                                                                    │
 ; │  [N] Notepad                                                                   │
 ; │  [o] OpenAI Codex                                                              │
 ; │  [p] Perplexity Comet                                                          │
 ; │  [t] Windows Terminal                                                          │
-; │  [T] Windows Terminal (ADMIN)                                                  │
 ; │  [v] Windows Terminal Preview                                                  │
-; │  [w] Warp Terminal                                                             │
 ; │  [z] Zed                                                                       │
 ; ╰────────────────────────────────────────────────────────────────────────────────╯
-; CapsLock & o::
+; Replace the hotkey below with 'CapsLock & o::' to use CapsLock as the trigger's modifier
 !#o::
 {
-  KeyWait "CapsLock"
+  global triggerGUI
+  ; KeyWait "CapsLock"            ; uncomment if using [CapsLock]+[o] as the trigger
   OptionWindow := "AppModeOptions"
 
   AppModeOptionsString := (
@@ -104,27 +94,24 @@ ShowArpeggioSplash(message, icon := "none") {
     "`nC`t VS Code Insiders"
     "`nd`t Claude"
     "`ne`t Epic Pen"
-    "`nk`t KeyViz"
     "`nl`t Copilot"
     "`nn`t Notion"
     "`nN`t Notepad"
     "`no`t OpenAI Codex"
     "`np`t Perplexity Comet"
     "`nt`t Windows Terminal"
-    "`nT`t Windows Terminal (Admin)"
     "`nv`t Windows Terminal Preview"
-    "`nw`t Warp Terminal"
     "`nz`t Zed"
   )
 
-  ShowArpeggioSplash(AppModeOptionsString)
+  ShowTriggerSplash(AppModeOptionsString)
   ; Begin the 4 second wait before fading out the GUI
   retKeyHook := KeyWaitAny()
 
   ; Fade Out
   AW_BLEND := 0x00080000, AW_HIDE := 0x00010000
-  DllCall("user32.dll\AnimateWindow", "Ptr", arpeGUI.hwnd, "UInt", 250, "UInt", AW_BLEND | AW_HIDE)
-  arpeGUI.Destroy()
+  DllCall("user32.dll\AnimateWindow", "Ptr", triggerGUI.hwnd, "UInt", 250, "UInt", AW_BLEND | AW_HIDE)
+  triggerGUI.Destroy()
 
   ; Use a value switch on the captured key to avoid expression fall-through
   switch retKeyHook
@@ -147,9 +134,6 @@ ShowArpeggioSplash(message, icon := "none") {
     case "e":
       LaunchApp("Epic Pen")
       return
-    case "k":
-      LaunchApp("KeyViz")
-      return
     case "l":
       LaunchApp("Copilot")
       return
@@ -160,26 +144,19 @@ ShowArpeggioSplash(message, icon := "none") {
       LaunchApp("Notepad")
       return
     case "o":
-      LaunchApp("Codex")
+      LaunchApp("OpenAI Codex")
       return
     case "p":
-      LaunchApp("Comet")
+      LaunchApp("Perplexity Comet")
       return
     case "t":
-      ShowActionSplash("Starting Windows Terminal...")
       LaunchTerminal(false)
-      arpeActionGUI.Destroy()
       return
     case "T":
-      ShowActionSplash("Starting Windows Terminal (Admin)...")
       LaunchTerminal(true)
-      arpeActionGUI.Destroy()
       return
     case "v":
       LaunchApp("Windows Terminal Preview")
-      return
-    case "w":
-      LaunchApp("Warp", false)
       return
     case "z":
       LaunchApp("Zed")
@@ -255,10 +232,11 @@ ShowArpeggioSplash(message, icon := "none") {
 }
 
 !#p::
-{
-  KeyWait "CapsLock"
-  ShowArpeggioSplash(
-    "Window Management Mode:`nArrows: move / Ctrl+Arrows: resize / Alt+Arrows: extend to edge`nNumpad 7..9 / 4..6 / 1..3 → grid`nPress [Tab] to exit"
+{ 
+  global triggerGUI
+  ShowTriggerSplash(
+    "Arrows: move / Ctrl+Arrows: resize / Alt+Arrows: extend to edge`nNumpad 7..9 / 4..6 / 1..3 → grid`nPress [Tab] to exit",
+    "Window Management Mode:"
   )
 
   prev := {}
@@ -333,10 +311,10 @@ ShowArpeggioSplash(message, icon := "none") {
 
   ; Fade out & destroy splash
   AW_BLEND := 0x00080000, AW_HIDE := 0x00010000
-  if IsSet(arpeGUI) {
-    DllCall("user32.dll\AnimateWindow", "Ptr", arpeGUI.hwnd, "UInt", 150, "UInt", AW_BLEND | AW_HIDE)
-    arpeGUI.Destroy()
-    arpeGUI := ""
+  if IsSet(triggerGUI) {
+    DllCall("user32.dll\AnimateWindow", "Ptr", triggerGUI.hwnd, "UInt", 150, "UInt", AW_BLEND | AW_HIDE)
+    triggerGUI.Destroy()
+    triggerGUI := ""
   }
 
   return

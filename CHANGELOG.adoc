@@ -92,7 +92,7 @@ Major feature and architecture release introducing the WebView2-powered QuickNot
 ** **Tier 1:** Standard `wt.exe` execution via `PATH`.
 ** **Tier 2:** Dynamic discovery via COM `shell:AppsFolder` searching for registered instances ("Terminal", "Windows Terminal", "Terminal Preview") without hardcoded absolute paths or package GUIDs.
 ** **Tier 3:** Tiered shell fallback cascade launching `pwsh.exe`, `powershell.exe`, or `A_ComSpec` (`cmd.exe`).
-** Full support for elevated Administrator terminals (kbd:[Ctrl+Alt+Shift+T] and arpeggio kbd:[Alt+Win+O] -> kbd:[T]).
+** Full support for elevated Administrator terminals (kbd:[Ctrl+Alt+Shift+T] and trigger kbd:[Alt+Win+O] -> kbd:[T]).
 
 ==== 🔔 Disable Startup Sound Tray Option (TASK-10)
 * **Audio Preference Management (`lib/traymenu.ahk`, `Mello-Workspace.ahk`):**
@@ -249,7 +249,7 @@ Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 product
 | 9-zone quadrant grid snapping, 5% border resizing, and middle-click gesture engine
 | Multi-monitor workstation
 
-| `arpeggios.ahk`
+| `triggrd.ahk`
 | Modal HUD overlay (kbd:[Alt+Win+P]) for interactive arrow-key moving and numpad snapping
 | Multi-monitor workstation
 
@@ -333,8 +333,8 @@ Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 product
 ** Seamless inclusion of user hotstrings and overrides from `custom/.mslrc.ahk`, `.mslrc.ahk`, or `%AppData%\.mslrc.ahk`.
 ** Auto-generation of user-customizable `custom/_custom_functions.ahk` stub.
 
-==== 🎵 Arpeggios & Modal Launching
-* **Modal Keystroke Launching (`arpeggios.ahk`):**
+==== ⚡ Triggers & Modal Launching
+* **Modal Keystroke Launching (`triggrd.ahk`):**
 ** Multi-key sequence trigger with HUD splash feedback.
 ** kbd:[Alt+Win+P] – Window Management Mode modal overlay with live interactive arrow-key moving, resizing, and numpad grid snapping.
 * **Application Automation (`app-automate.ahk`):**
@@ -349,7 +349,7 @@ Initial commit of the refactored *Mello-Workspace* modular AutoHotkey v2 product
 ** Direct shortcuts to reload, edit, open directory, inspect WindowSpy, or view script lines.
 ** Start Menu startup integration toggle (`ToggleRunAtStartup`).
 * **Interactive Help & About Dashboard (`help_about.ahk`):**
-** Tabbed graphical interface displaying cheat sheets for hotkeys, hotstrings, window commands, and arpeggios.
+** Tabbed graphical interface displaying cheat sheets for hotkeys, hotstrings, window commands, and triggers.
 ** **ThisSystem.Info tab:** Live system metrics gathering (Host Name, Current User, OS Version, Architecture, CPU details, RAM capacity, Uptime) with one-click clipboard copy buttons.
 
 ==== 🌐 Remote Desktop & Cross-Platform Compatibility

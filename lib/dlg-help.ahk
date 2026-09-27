@@ -153,6 +153,8 @@ class ThisPC {
 
 ShowHelpAbout(*) {
   global aboutDlg
+  if IsSet(SWAP_SyncDefaultState)
+    SWAP_SyncDefaultState()
   try {
     aboutDlg.Restore()
     aboutDlg.Show()
@@ -569,7 +571,6 @@ ConstructAboutDialog(*) {
   a_lv_apps.Add(, "C", "VS Code Insiders", "")
   a_lv_apps.Add(, "d", "Claude", "")
   a_lv_apps.Add(, "e", "Epic Pen", "")
-  a_lv_apps.Add(, "k", "KeyViz", "")
   a_lv_apps.Add(, "l", "Copilot", "")
   a_lv_apps.Add(, "n", "Notion", "")
   a_lv_apps.Add(, "N", "Notepad", "")
@@ -578,7 +579,6 @@ ConstructAboutDialog(*) {
   a_lv_apps.Add(, "t", "Windows Terminal", "")
   a_lv_apps.Add(, "T", "Windows Terminal", "Elevated")
   a_lv_apps.Add(, "v", "Windows Terminal Preview", "")
-  a_lv_apps.Add(, "w", "Warp Terminal", "")
   a_lv_apps.Add(, "z", "Zed", "")
   a_lv_apps.ModifyCol(1, 50)
   a_lv_apps.ModifyCol(2, 220)

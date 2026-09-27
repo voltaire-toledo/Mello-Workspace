@@ -19,7 +19,6 @@ global SWAP_MUTEX_NAME := "Local\MelloWorkspace_SoundSwap_Mutex"
 global SWAP_IsStandalone := !InStr(A_ScriptFullPath, "SoundSwap.ahk") ? false : (A_ScriptFullPath = SWAP_SELF_DIR . "\SoundSwap.ahk")
 global SWAP_HasMutex := false
 global SWAP_Config := Map()
-global SWAP_PollTimer := ""
 
 SWAP_Init()
 
@@ -43,11 +42,11 @@ SWAP_Init() {
   }
 
   SWAP_Config := SWAP_LoadConfig()
-  if SWAP_Config["Enabled"] {
+  if SWAP_Config["Enabled"]
     SWAP_RegisterHotkeys()
-    ; ADR-0001: polling, not IMMNotificationClient, for hot-plug/default-change detection in v1.
-    SWAP_PollTimer := SetTimer(SWAP_PollDevices, 4000)
-  }
+
+  ; Refresh the tray immediately before AutoHotkey displays its context menu.
+  OnMessage(0x404, SWAP_OnTrayClick, -1)
 
   if SWAP_IsStandalone
     SWAP_BuildStandaloneTray()
@@ -170,19 +169,16 @@ SWAP_ReregisterHotkeys(newOutputCombo, newInputCombo) {
     SWAP_RegisterHotkeys()
 }
 
-; Toggles the plugin on/off at runtime (About dialog "Enabled" checkbox). Off = hotkeys
-; deregistered and poll timer stopped; On = re-registered and poll timer restarted.
+; Toggles the plugin hotkeys on/off at runtime (About dialog "Enabled" checkbox).
 SWAP_SetEnabled(enabled) {
-  global SWAP_Config, SWAP_PollTimer
+  global SWAP_Config
   SWAP_Config["Enabled"] := enabled
   SWAP_SaveConfig(SWAP_Config)
   if enabled {
     SWAP_RegisterHotkeys()
-    SWAP_PollTimer := SetTimer(SWAP_PollDevices, 4000)
   } else {
     try Hotkey(SWAP_Config["HotkeyOutput"], "Off")
     try Hotkey(SWAP_Config["HotkeyInput"], "Off")
-    SetTimer(SWAP_PollDevices, 0)
   }
 }
 
@@ -190,6 +186,7 @@ SWAP_SetEnabled(enabled) {
 ; devices that disappear mid-rotation are skipped, not errored on.
 SWAP_Cycle(kind) {
   global SWAP_Config
+  SWAP_SyncDefaultState()
   devices := SWAP_EligibleDevices(kind)
   if !devices.Length {
     SWAP_RefreshTray()
@@ -230,38 +227,47 @@ SWAP_SwitchTo(kind, device) {
   SWAP_RefreshTray()
 }
 
-; ── Polling (ADR-0001) ────────────────────────────────────────────
-; Re-enumerates and diffs against the last-known active device; if it vanished (physical
-; removal), fails over to the next eligible device (Q2 — removal auto-switches, filtering doesn't).
-SWAP_PollDevices() {
+; ── On-demand device refresh ──────────────────────────────────────
+; Windows may change the default outside SoundSwap, especially when RDP creates Remote Audio.
+; Adopt the active Windows default when a user invokes SoundSwap, without switching devices.
+SWAP_SyncDefaultState() {
   global SWAP_Config
+  changed := false
   for kind in ["Output", "Input"] {
     lastId := (kind = "Output") ? SWAP_Config["LastOutputId"] : SWAP_Config["LastInputId"]
-    if (lastId = "")
-      continue
-    current := SWAP_EnumDevices(kind)
-    stillPresent := false
-    for dev in current {
-      if (dev.id = lastId) {
-        stillPresent := true
-        break
+    defaultId := SWAP_GetDefaultDeviceId(kind)
+    if (defaultId != "" && defaultId != lastId) {
+      for dev in SWAP_EnumDevices(kind) {
+        if (dev.id = defaultId) {
+          SWAP_Config[(kind = "Output") ? "LastOutputId" : "LastInputId"] := defaultId
+          changed := true
+          break
+        }
       }
     }
-    if !stillPresent {
-      eligible := SWAP_EligibleDevices(kind)
-      if eligible.Length
-        SWAP_SwitchTo(kind, eligible[1]) ; already refreshes the tray on its own
-    }
   }
-  ; No unconditional SWAP_RefreshTray() here — that used to rebuild (and yank focus from) the
-  ; tray menu on every 4s tick even when nothing changed, per user report during TASK-17 QA.
+  if changed
+    SWAP_SaveConfig(SWAP_Config)
+}
+
+SWAP_OnTrayClick(wParam, lParam, *) {
+  global SWAP_IsStandalone
+  ; WM_RBUTTONUP, or WM_CONTEXTMENU with newer notification-icon behavior.
+  event := lParam & 0xFFFF
+  if (event != 0x205 && event != 0x7B)
+    return
+  SWAP_SyncDefaultState()
+  if SWAP_IsStandalone
+    SWAP_BuildStandaloneTray()
+  else
+    SWAP_RefreshTray()
 }
 
 ; ── Tray integration ─────────────────────────────────────────────
 ; Called from traymenu.ahk's BuildTrayMenu() (repurposed "Custom Tools" -> "Plugins" submenu,
 ; per task-17 design session). Builds Input/Output submenus with checkmarks + Configure entry.
 ; Because BuildTrayMenu() does a full A_TrayMenu.Delete()+rebuild, this must be called on every
-; rebuild (hotkey switch, poll-detected change) rather than patching a live Menu in place.
+; rebuild (hotkey switch or tray invocation) rather than patching a live Menu in place.
 SWAP_BuildDeviceMenu(parentMenu) {
   global SWAP_Config
   soundswapMenu := Menu()
