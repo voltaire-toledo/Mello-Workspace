@@ -153,6 +153,8 @@ class ThisPC {
 
 ShowHelpAbout(*) {
   global aboutDlg
+  if IsSet(SWAP_SyncDefaultState)
+    SWAP_SyncDefaultState()
   try {
     aboutDlg.Restore()
     aboutDlg.Show()
