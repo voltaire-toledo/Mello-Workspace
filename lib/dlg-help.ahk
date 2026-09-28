@@ -858,19 +858,15 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
   dlg.Add("Text", "x32 y" (innerY + 8) " w300", "Cycle through devices:")
 
   ; Row 2: Input hotkey (Mic + Edit) on the left, Output hotkey (Headphone + Edit) on the right
-  iconMic := A_ScriptDir "\plugins\SoundSwap\assets\microphone.ico"
-  if !FileExist(iconMic)
-    iconMic := A_ScriptDir "\plugins\SoundSwap\assets\microphone.png"
+  iconMic := A_ScriptDir "\plugins\SoundSwap\assets\microphone.png"
   if FileExist(iconMic)
-    dlg.Add("Picture", "x32 y" (innerY + 30) " w20 h20 +BackgroundTrans", iconMic)
-  editInHk := dlg.Add("Edit", "x58 y" (innerY + 28) " w180 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
+    dlg.Add("Picture", "x32 y" (innerY + 31) " w18 h18", iconMic)
+  editInHk := dlg.Add("Edit", "x56 y" (innerY + 28) " w180 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
 
-  iconHp := A_ScriptDir "\plugins\SoundSwap\assets\headphone.ico"
-  if !FileExist(iconHp)
-    iconHp := A_ScriptDir "\plugins\SoundSwap\assets\headphone.png"
+  iconHp := A_ScriptDir "\plugins\SoundSwap\assets\headphone.png"
   if FileExist(iconHp)
-    dlg.Add("Picture", "x408 y" (innerY + 30) " w20 h20 +BackgroundTrans", iconHp)
-  editOutHk := dlg.Add("Edit", "x434 y" (innerY + 28) " w180 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
+    dlg.Add("Picture", "x408 y" (innerY + 31) " w18 h18", iconHp)
+  editOutHk := dlg.Add("Edit", "x432 y" (innerY + 28) " w180 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
 
   ; Row 3: Device selection labels
   listY := innerY + 62
