@@ -3,7 +3,7 @@
 SendMode "Input"
 ; =============================================================================
 ; QuickNote MD — floating Markdown scratchpad with Edit/View modes + image paste
-;   Win+Alt+M / Win+Ctrl+M : show/hide (invoking brings the window to focus)
+;   Win+Alt+M (configurable) : show/hide (invoking brings the window to focus)
 ;   Esc / X   : hide window (contents are never destroyed)
 ;   Alt+V     : toggle Edit mode <-> View mode (rendered, read-only Markdown)
 ;   Ctrl+B / Ctrl+I : wrap selection in **bold** / *italic*   Ctrl+Shift+C : `code`
@@ -44,9 +44,7 @@ OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 20% opacity re
 OnExit(QNMD_SaveGeometry)
 
 QNMD_LoadConfig()
-QNMD_RegisterHotkeys()   ; ^#m (Win+Ctrl+M) is the fixed secondary toggle; QNMD_HotkeyToggle is
-                          ; the configurable primary one (About dialog Plugins tab). Both are
-                          ; skipped entirely when QNMD_Enabled is false.
+QNMD_RegisterHotkeys()
 
 ; ── Config persistence ───────────────────────────────────────────
 QNMD_DefaultConfig() {
@@ -87,11 +85,9 @@ QNMD_RegisterHotkeys() {
     global QNMD_Enabled, QNMD_HotkeyToggle
     HotIf()
     try Hotkey(QNMD_HotkeyToggle, "Off")
-    try Hotkey("^#m", "Off")
     if !QNMD_Enabled
         return
     try Hotkey(QNMD_HotkeyToggle, (*) => QNMD_Toggle())
-    try Hotkey("^#m", (*) => QNMD_Toggle())
 }
 
 ; Called from the About dialog's Plugins tab (SoundSwap-style config: Save applies without a
@@ -104,7 +100,9 @@ QNMD_SetEnabled(enabled) {
 }
 
 QNMD_ReregisterHotkey(newCombo) {
-    global QNMD_Enabled
+    global QNMD_Enabled, QNMD_HotkeyToggle
+    HotIf()
+    try Hotkey(QNMD_HotkeyToggle, "Off")
     QNMD_HotkeyToggle := newCombo
     QNMD_WriteConfig(QNMD_Enabled, QNMD_HotkeyToggle)
     QNMD_RegisterHotkeys()

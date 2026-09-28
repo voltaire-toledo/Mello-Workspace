@@ -252,7 +252,7 @@ SWAP_SetDefaultDevice(deviceId) {
     ; task-17 architecture note: this is the single highest fragility point in the whole plugin.
     ok := true
     for role in [SWAP_eConsole, SWAP_eMultimedia, SWAP_eCommunications] {
-      hr := ComCall(10, policyConfig, "wstr", deviceId, "int", role)
+      hr := ComCall(13, policyConfig, "wstr", deviceId, "int", role)
       if (hr != 0)
         ok := false
     }
