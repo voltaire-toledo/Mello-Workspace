@@ -3,9 +3,9 @@
 SendMode "Input"
 
 ; ╭──────────────────────────────────────────────────────────────╮
-; │ SoundSwap — audio device switcher plugin                      │
-; │ Standalone-capable: #Include'd into Mello-Workspace.ahk, or   │
-; │ run directly as plugins\SoundSwap\SoundSwap.ahk.               │
+; │ SoundSwap — audio device switcher plugin                     │
+; │ Standalone-capable: #Include'd into Mello-Workspace.ahk, or  │
+; │ run directly as plugins\SoundSwap\SoundSwap.ahk.             │
 ; ╰──────────────────────────────────────────────────────────────╯
 
 global SWAP_SELF_DIR := SubStr(A_LineFile, 1, InStr(A_LineFile, "\",, -1) - 1)
@@ -147,6 +147,9 @@ SWAP_EligibleDevices(kind) {
         eligible.Push(dev)
     }
   }
+  ; If filtering blocked everything, fallback to all active devices to avoid hard lock
+  if !eligible.Length && all.Length
+    return all
   return eligible
 }
 
@@ -325,13 +328,21 @@ SWAP_GetAboutState() {
 
 SWAP_OpenConfigWindowFromTray() {
   global SWAP_Config
+  outEligible := Map()
+  for dev in SWAP_EligibleDevices("Output")
+    outEligible[dev.id] := true
+
+  inEligible := Map()
+  for dev in SWAP_EligibleDevices("Input")
+    inEligible[dev.id] := true
+
   state := {
     outputDevices: SWAP_EnumDevices("Output"),
     inputDevices: SWAP_EnumDevices("Input"),
     outputMode: SWAP_Config["OutputMode"],
     inputMode: SWAP_Config["InputMode"],
-    outputAllowed: SWAP_ToSet(SWAP_Config["OutputList"]),
-    inputAllowed: SWAP_ToSet(SWAP_Config["InputList"]),
+    outputAllowed: outEligible,
+    inputAllowed: inEligible,
     hotkeyOutput: SWAP_Config["HotkeyOutput"],
     hotkeyInput: SWAP_Config["HotkeyInput"]
   }
@@ -345,13 +356,34 @@ SWAP_ToSet(arr) {
   return s
 }
 
-; List semantics follow the kind's current Mode: checked items are stored as the List either way
-; (Allow = "these are the ones I want"; Block = "these are the ones I don't want" — the config
-; window doesn't switch Mode itself, only what's ticked within whichever mode is active).
+; Checked items always represent devices the user wants in the rotation ("check to include in rotation").
+; If Mode is Allow: stored List = checked devices.
+; If Mode is Block: stored List = unchecked devices (the ones to exclude).
 SWAP_OnConfigSaved(result) {
   global SWAP_Config
-  SWAP_Config["OutputList"] := result.outputChecked
-  SWAP_Config["InputList"] := result.inputChecked
+  if (SWAP_Config["OutputMode"] = "Allow") {
+    SWAP_Config["OutputList"] := result.outputChecked
+  } else {
+    blocked := []
+    checkedSet := SWAP_ToSet(result.outputChecked)
+    for dev in SWAP_EnumDevices("Output") {
+      if !checkedSet.Has(dev.id)
+        blocked.Push(dev.id)
+    }
+    SWAP_Config["OutputList"] := blocked
+  }
+
+  if (SWAP_Config["InputMode"] = "Allow") {
+    SWAP_Config["InputList"] := result.inputChecked
+  } else {
+    blocked := []
+    checkedSet := SWAP_ToSet(result.inputChecked)
+    for dev in SWAP_EnumDevices("Input") {
+      if !checkedSet.Has(dev.id)
+        blocked.Push(dev.id)
+    }
+    SWAP_Config["InputList"] := blocked
+  }
   if (result.hotkeyOutput != SWAP_Config["HotkeyOutput"]) || (result.hotkeyInput != SWAP_Config["HotkeyInput"])
     SWAP_ReregisterHotkeys(result.hotkeyOutput, result.hotkeyInput)
   SWAP_SaveConfig(SWAP_Config)
