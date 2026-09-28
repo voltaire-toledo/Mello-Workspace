@@ -611,19 +611,17 @@ ConstructAboutDialog(*) {
   ; │ startup/reload" falls out of that for free.                                            │
   ; ╰───────────────────────────────────────────────────────────────────────────────────────╯
   mainTab.UseTab(6)
-  aboutDlg.SetFont("c000000 Norm q5 s11", guiFont)
-  aboutDlg.Add("Text", "x16 y74 w768 h22", "Per-plugin settings.")
 
-  yPos := 100
+  yPos := 60
   if IsSet(QNMD_RegisterHotkeys)
     yPos := BuildQuickNoteMDPluginSection(aboutDlg, guiFont, yPos) + 16
   else {
     aboutDlg.SetFont("Norm s10", guiFont)
     iconPath := A_ScriptDir "\plugins\QuickNoteMD\assets\markdown.ico"
     if FileExist(iconPath)
-      aboutDlg.Add("Picture", "x16 y" yPos " w16 h16", iconPath)
-    aboutDlg.Add("Text", (FileExist(iconPath) ? "x38 y" yPos : "x16 y" yPos) " w768", "QuickNoteMD is not loaded in this session.")
-    yPos += 30
+      aboutDlg.Add("Picture", "x16 y" (yPos + 14) " w16 h16", iconPath)
+    aboutDlg.Add("Text", (FileExist(iconPath) ? "x38 y" (yPos + 14) : "x16 y" (yPos + 14)) " w768", "QuickNoteMD is not loaded in this session.")
+    yPos += 44
   }
 
   if IsSet(SWAP_GetAboutState)
@@ -820,7 +818,7 @@ BuildQuickNoteMDPluginSection(dlg, guiFont, yTop) {
   innerY := boxY + 28
   dlg.Add("Text", "x32 y" (innerY + 12) " w110", "Toggle shortcut:")
   editHotkey := dlg.Add("Edit", "x150 y" (innerY + 9) " w140 vqnmd_editHotkey", FormatHotkeyForDisplay(QNMD_HotkeyToggle))
-  dlg.Add("Text", "x300 y" (innerY + 12) " w370", "Combos like Win + Alt + M. Secondary shortcut Ctrl + Win + M is fixed.")
+  dlg.Add("Text", "x300 y" (innerY + 12) " w370", "Combos like Win + Alt + M.")
 
   btnSave := dlg.Add("Button", "x680 y" (innerY + 8) " w90 h26", "Save")
   btnSave.OnEvent("Click", (*) => (
@@ -839,7 +837,7 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
   state := SWAP_GetAboutState()
 
   boxY := yTop + 14
-  dlg.Add("GroupBox", "x16 y" boxY " w768 h266", "")
+  dlg.Add("GroupBox", "x16 y" boxY " w768 h290", "")
 
   ; Bold, larger group header overlapping the top border
   iconPath := A_ScriptDir "\plugins\SoundSwap\assets\sound.ico"
@@ -854,15 +852,24 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
   chkEnabled := dlg.Add("Checkbox", "x680 y" (boxY + 0) " w80 Center vswap_chkEnabled", "Enabled ")
   chkEnabled.Value := state.enabled
 
-  innerY := boxY + 28
-  dlg.Add("Text", "x32 y" (innerY + 12) " w110", "Output cycle:")
-  editOutHk := dlg.Add("Edit", "x150 y" (innerY + 9) " w140 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
-  dlg.Add("Text", "x32 y" (innerY + 42) " w110", "Input cycle:")
-  editInHk := dlg.Add("Edit", "x150 y" (innerY + 39) " w140 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
-  dlg.Add("Text", "x300 y" (innerY + 12) " w300", "Combos like Ctrl + Alt + F12.")
+  innerY := boxY + 24
 
-  ; AC #6: Input label and list on the left, Output label and list on the right
-  listY := innerY + 76
+  ; Row 1: Header label
+  dlg.Add("Text", "x32 y" (innerY + 8) " w300", "Cycle through devices:")
+
+  ; Row 2: Input hotkey (Mic + Edit) on the left, Output hotkey (Headphone + Edit) on the right
+  iconMic := A_ScriptDir "\plugins\SoundSwap\assets\microphone.png"
+  if FileExist(iconMic)
+    dlg.Add("Picture", "x32 y" (innerY + 31) " w18 h18", iconMic)
+  editInHk := dlg.Add("Edit", "x56 y" (innerY + 28) " w180 vswap_editHotkeyInput", FormatHotkeyForDisplay(state.hotkeyInput))
+
+  iconHp := A_ScriptDir "\plugins\SoundSwap\assets\headphone.png"
+  if FileExist(iconHp)
+    dlg.Add("Picture", "x408 y" (innerY + 31) " w18 h18", iconHp)
+  editOutHk := dlg.Add("Edit", "x432 y" (innerY + 28) " w180 vswap_editHotkeyOutput", FormatHotkeyForDisplay(state.hotkeyOutput))
+
+  ; Row 3: Device selection labels
+  listY := innerY + 62
   dlg.Add("Text", "x32 y" listY " w360", "Input device (select to switch):")
   dlg.Add("Text", "x408 y" listY " w360", "Output device (select to switch):")
 
@@ -879,14 +886,17 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
       outSelIndex := i
   }
 
-  lbInput := dlg.Add("ListBox", "x32 y" (listY + 22) " w360 r6 vswap_lbInput", inNames)
+  ; Row 4: Device ListBoxes
+  lbY := listY + 22
+  lbInput := dlg.Add("ListBox", "x32 y" lbY " w360 r6 vswap_lbInput", inNames)
   if inSelIndex
     lbInput.Choose(inSelIndex)
-  lbOutput := dlg.Add("ListBox", "x408 y" (listY + 22) " w360 r6 vswap_lbOutput", outNames)
+  lbOutput := dlg.Add("ListBox", "x408 y" lbY " w360 r6 vswap_lbOutput", outNames)
   if outSelIndex
     lbOutput.Choose(outSelIndex)
 
-  btnSave := dlg.Add("Button", "x680 y" (innerY + 8) " w90 h26", "Save")
+  ; Row 5: Save button at bottom right
+  btnSave := dlg.Add("Button", "x678 y" (innerY + 248) " w90 h26", "Save")
   btnSave.OnEvent("Click", (*) => (
     SWAP_SetEnabled(chkEnabled.Value),
     parsedOut := ParseHotkeyFromDisplay(editOutHk.Text),
@@ -902,7 +912,7 @@ BuildSoundSwapPluginSection(dlg, guiFont, yTop) {
     SetTimer(() => ToolTip(), -1200)
   ))
 
-  return boxY + 266
+  return boxY + 290
 }
 
 PopulateTelemetry(_GuiControlObj, *) {
