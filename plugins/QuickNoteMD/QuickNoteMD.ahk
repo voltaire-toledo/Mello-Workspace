@@ -110,6 +110,16 @@ QNMD_ReregisterHotkey(newCombo) {
 
 #HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
 Esc::QNMD_Hide()
+!+::QNMD_AdjustOpacity(25)            ; Alt + Plus = increase opacity
+!=::QNMD_AdjustOpacity(25)            ; Alt + Equal = increase opacity
+!NumpadAdd::QNMD_AdjustOpacity(25)    ; Alt + NumpadAdd
+!-::QNMD_AdjustOpacity(-25)           ; Alt + Minus = decrease opacity
+!NumpadSub::QNMD_AdjustOpacity(-25)   ; Alt + NumpadSub
+^+::try qnmd.wv.ExecuteScriptAsync("document.execCommand('zoomIn')")
+^=::try qnmd.wv.ExecuteScriptAsync("document.execCommand('zoomIn')")
+^NumpadAdd::try qnmd.wv.ExecuteScriptAsync("document.execCommand('zoomIn')")
+^-::try qnmd.wv.ExecuteScriptAsync("document.execCommand('zoomOut')")
+^NumpadSub::try qnmd.wv.ExecuteScriptAsync("document.execCommand('zoomOut')")
 #HotIf
 
 QNMD_IsMouseOver() {
