@@ -37,12 +37,22 @@
   #preview blockquote { margin: 0 0 0 4px; padding-left: 10px; border-left: 3px solid var(--border); color: var(--status-fg); }
   #preview table { border-collapse: collapse; }
   #preview th, #preview td { border: 1px solid var(--border); padding: 3px 8px; }
-  #preview h1 { font-size: 1.5em; margin: 0.6em 0 0.4em; }
-  #preview h2 { font-size: 1.35em; margin: 0.6em 0 0.4em; }
-  #preview h3 { font-size: 1.2em; margin: 0.5em 0 0.3em; }
-  #preview h4 { font-size: 1.10em; margin: 0.5em 0 0.3em; }
-  #preview ul, #preview ol { padding-left: 20px; margin: 6px 0; }
-  #preview li { margin: 3px 0; }
+  #preview h1 { font-size: 1.5em; margin: 0.8em 0 0.4em; }
+  #preview h2 { font-size: 1.35em; margin: 1.4em 0 0.4em; padding-top: 6px; }
+  #preview h3 { font-size: 1.2em; margin: 1.2em 0 0.3em; padding-top: 4px; }
+  #preview h4 { font-size: 1.10em; margin: 1.0em 0 0.3em; }
+  #preview hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 24px 0;
+    opacity: 0.6;
+  }
+  #preview ul, #preview ol { padding-left: 24px; margin: 8px 0; }
+  #preview ul ul, #preview ol ol, #preview ul ol, #preview ol ul {
+    margin: 4px 0;
+    padding-left: 20px;
+  }
+  #preview li { margin: 4px 0; line-height: 1.5; }
   #preview li:has(> input[type="checkbox"]),
   #preview li:has(input[type="checkbox"]),
   #preview li.task-list-item {
