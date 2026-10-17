@@ -7,6 +7,80 @@
 
 All notable changes to the *Mello-Workspace* (MWS) project are documented in this file.
 
+== [0.5] - 2026-09-19 (September Release)
+
+Major architecture and plugin release introducing the standalone-capable **SoundSwap** audio endpoint switcher (`plugins/SoundSwap/`), automated **Windows Sandbox testing harness** (`tests/sandbox/`), the declarative **Trigger** HUD and hotstring system refactor, Chrome/Electron/Tauri application catch-all hotkeys, script persistence hardening, and Help-About dialog modernizations.
+
+=== 📊 Release 0.5 Subsystem Overview
+
+[cols="^1,^1,2,3", options="header"]
+|===
+| Subsystem | Module | Key Features | Scope & Target Environment
+
+.1+| *Audio & Hardware Plugins*
+| `plugins/SoundSwap/`
+| Standalone-capable Core Audio COM endpoint switcher with cyclical hotkey rotation, allow/block device filtering (`config.ini`), centered modal OSD, and named mutex collision protection
+| Windows 11 audio endpoints (Direct Sound, USB DACs, Bluetooth)
+
+.1+| *Testing & Verification*
+| `tests/sandbox/`
+| Headless and interactive Windows Sandbox (`.wsb`) automated testing harness validating bootstrap staging, AHK binary downloads, registry keys, and runtime process health
+| Isolated clean Windows Sandbox environment
+
+.2+| *Core & Hotkeys Architecture*
+| `lib/triggrd.ahk`
+| Declarative nested array HUD system refactoring legacy "arpeggio" terminology into the modern *Trigger* engine with visual hotkey overlays
+| Global desktop input routing
+
+| `lib/apps-hk.ahk`
+| Added `ahk_class Chrome_WidgetWin_1` catch-all mapping providing uniform shortcut dispatch across Chrome, Electron, and Tauri applications
+| Web & hybrid desktop applications
+
+.1+| *Diagnostics & UI*
+| `lib/help_about.ahk`
+| Help-About dialog enhancements replacing legacy GroupBoxes with dedicated Fluent icon indicators, plain-text typography headers, and SoundSwap QC improvements
+| System notification area & dialogs
+|===
+
+=== ⌨️ Detailed Feature Breakdown
+
+==== 🎧 SoundSwap: Audio Device Switcher Plugin (TASK-17, TASK-32)
+* **Core Audio COM Architecture (`plugins/SoundSwap/`):**
+** Seamlessly cycles playback (`eRender`) and recording (`eCapture`) endpoints via dedicated hotkeys without opening Windows Settings.
+** Directly addresses the Windows 11 `IPolicyConfig` COM interface (slot 10) for instant default audio routing without shell UI flickering.
+** Classifies device icons exclusively by `PKEY_AudioEndpoint_FormFactor` (Speakers, Headphones, Line Level, Digital, Headset) eliminating brittle friendly-name string heuristics (ADR-0002).
+** Polling-based device topology discovery (~4s interval) providing robust plug-and-play detection without unstable community vtable callbacks (ADR-0001).
+* **Filtering, Configuration & OSD:**
+** Configurable `Block` or `Allow` list modes in `config.ini` to filter out unused virtual audio cables, monitors, or inactive microphones.
+** Polished modal centered on-screen display (OSD) overlay presenting active device friendly names and volume levels upon cycling.
+** Standalone GUI configuration dialog accessible via the System Tray (`Plugins -> SoundSwap -> Settings`).
+** Named Win32 Mutex guard (`Local\MelloWorkspace_SoundSwap_Mutex`) preventing race conditions and duplicate hotkey conflicts when launched standalone alongside `#Include` runs.
+
+==== 🧪 Windows Sandbox Automated Test Harness (TASK-26)
+* **Isolated Environment Verification (`tests/sandbox/`):**
+** Introduced `mello-sandbox.wsb` configuration mounting host workspaces into an isolated Windows Sandbox with automated startup execution.
+** `guest-runner.ps1` staging suite:
+*** Validates host mount accessibility and stages clean execution copies via `robocopy`.
+*** Tests end-to-end execution of `Mello-Workspace.ps1` bootstrap script.
+*** Asserts AutoHotkey v2 binary integrity, cloned executable size thresholds (>1MB), and Start Menu shortcut generation.
+*** Verifies resident process health, working set footprint, and HKCU registry isolation.
+*** Emits test reports to Desktop (`mello-test-results.log`) with automated summary metrics.
+
+==== ⚡ Trigger HUD System & Naming Refactor (TASK-30)
+* **Declarative Hotstring HUD (`lib/triggrd.ahk`):**
+** Deprecated and purged legacy "arpeggio" naming conventions in favor of the standardized **Trigger** engine.
+** Restructured visual HUD layouts into declarative nested array matrices for immediate render performance and maintainable key-combination definitions.
+
+==== 🌐 Uniform Chrome/Electron/Tauri Hotkey Layer
+* **Cross-Application Support (`lib/apps-hk.ahk`):**
+** Added `ahk_class Chrome_WidgetWin_1` umbrella rule ensuring consistent paste-as-plain-text (kbd:[Ctrl+Shift+V]), tab switching (kbd:[Ctrl+Tab] / kbd:[Ctrl+Shift+Tab]), and read-aloud controls across Google Chrome, Brave, VS Code, Discord, Slack, and Tauri webview apps.
+
+==== 🛡️ Script Persistence & Context Isolation Hardening
+* **Runtime Stability:**
+** Added explicit `Persistent()` call in `Mello-Workspace.ahk` to eliminate intermittent script suspension or premature exit when no active GUI windows are open.
+** Enforced strict dynamic `#HotIf` resets preventing application-specific hotkey contexts from bleeding into global system actions or plugin tray menus.
+** Streamlined internal library file names and decoupled standalone plugin menus.
+
 == [0.4] - 2026-08-25 (August Release)
 
 Major feature and architecture release introducing the WebView2-powered QuickNote MD markdown scratchpad, comprehensive hardware and network telemetry in the ThisPC dashboard, dynamic terminal resolution with fallback cascade, registry-backed startup sound controls, heavy Unicode diagramming hotstrings, and AsciiDoc documentation overhaul.
