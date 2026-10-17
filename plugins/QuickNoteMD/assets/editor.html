@@ -35,6 +35,39 @@
   #preview pre code { background: none; padding: 0; }
   #preview a { color: var(--link); }
   #preview blockquote { margin: 0 0 0 4px; padding-left: 10px; border-left: 3px solid var(--border); color: var(--status-fg); }
+  #preview blockquote.callout {
+    margin: 12px 0; padding: 10px 14px; border-left: 4px solid var(--border);
+    border-radius: 4px; background: var(--code-bg);
+  }
+  #preview blockquote.callout-note { border-left-color: #2662d9; background: rgba(38, 98, 217, 0.08); }
+  #preview blockquote.callout-tip { border-left-color: #1b873f; background: rgba(27, 135, 63, 0.08); }
+  #preview blockquote.callout-important { border-left-color: #8b34c2; background: rgba(139, 52, 194, 0.08); }
+  #preview blockquote.callout-warning { border-left-color: #d97706; background: rgba(217, 119, 6, 0.08); }
+  #preview blockquote.callout-caution { border-left-color: #dc2626; background: rgba(220, 38, 38, 0.08); }
+  #preview blockquote.callout .callout-title { font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px; }
+
+  /* Keyboard shortcut styling */
+  #preview kbd {
+    display: inline-block; padding: 2px 6px; font: 11px/1.4 Consolas, "Segoe UI", monospace;
+    color: var(--fg); background-color: var(--pane-bg); border: 1px solid var(--border);
+    border-radius: 4px; box-shadow: 0 1px 0 var(--border), 0 0 0 1px #fff inset; vertical-align: baseline;
+  }
+  body.dark #preview kbd { box-shadow: 0 1px 0 var(--border), 0 0 0 1px #2a3238 inset; }
+
+  /* Feature & Enhancement Badges */
+  #preview .badge {
+    display: inline-flex; align-items: center; padding: 2px 8px; font-size: 11px;
+    font-weight: 600; border-radius: 12px; margin: 0 3px; vertical-align: baseline;
+  }
+  #preview .badge-feature { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3); }
+  #preview .badge-enhancement { background: rgba(99, 102, 241, 0.15); color: #4f46e5; border: 1px solid rgba(99, 102, 241, 0.3); }
+  #preview .badge-bug { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.3); }
+  #preview .badge-lookup { background: rgba(14, 165, 233, 0.15); color: #0284c7; border: 1px solid rgba(14, 165, 233, 0.3); }
+  body.dark #preview .badge-feature { color: #34d399; }
+  body.dark #preview .badge-enhancement { color: #818cf8; }
+  body.dark #preview .badge-bug { color: #f87171; }
+  body.dark #preview .badge-lookup { color: #38bdf8; }
+
   #preview table { border-collapse: collapse; }
   #preview th, #preview td { border: 1px solid var(--border); padding: 3px 8px; }
   #preview h1 { font-size: 1.5em; margin: 0.6em 0 0.4em; }
@@ -99,8 +132,53 @@
   let noticeTimer = null;
   let transparencyPct = 100;
 
+  function processExtensions(src) {
+    if (!src) return '';
+    // 1. [[Key]] -> <kbd>Key</kbd>
+    let out = src.replace(/\[\[([a-zA-Z0-9_+\- /\\.?]+)\]\]/g, '<kbd>$1</kbd>');
+
+    // 2. Badge tags: [🪶FEATURE], [🎁ENHANCEMENT], [🐞BUG], [👁️LOOKUP]
+    out = out.replace(/\[(?:🪶|🪶\s*)FEATURE\]/gi, '<span class="badge badge-feature">🪶 FEATURE</span>');
+    out = out.replace(/\[(?:🎁|🎁\s*)ENHANCEMENT\]/gi, '<span class="badge badge-enhancement">🎁 ENHANCEMENT</span>');
+    out = out.replace(/\[(?:🐞|🐞\s*)BUG\]/gi, '<span class="badge badge-bug">🐞 BUG</span>');
+    out = out.replace(/\[(?:👁️|👁\s*)LOOKUP\]/gi, '<span class="badge badge-lookup">👁️ LOOKUP</span>');
+
+    // 3. Admonitions: > [!NOTE], > [!TIP], > [!IMPORTANT], > [!WARNING], > [!CAUTION]
+    const icons = {
+      note: 'ℹ️',
+      tip: '💡',
+      important: '📌',
+      warning: '⚠️',
+      caution: '🛑'
+    };
+    out = out.replace(/^>\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*(.*)$/gim, (m, type, rest) => {
+      const t = type.toLowerCase();
+      const icon = icons[t] || 'ℹ️';
+      const label = type.toUpperCase();
+      return `> <strong class="callout-header">${icon} ${label}</strong>${rest ? '<br>' + rest : ''}`;
+    });
+
+    return out;
+  }
+
   function render() {
-    preview.innerHTML = marked.parse(editor.value);
+    const rawMarkdown = processExtensions(editor.value);
+    preview.innerHTML = marked.parse(rawMarkdown);
+
+    // Apply callout container classes to blockquotes containing callout headers
+    preview.querySelectorAll('blockquote').forEach((bq) => {
+      const header = bq.querySelector('.callout-header');
+      if (header) {
+        bq.classList.add('callout');
+        const text = header.textContent.toLowerCase();
+        if (text.includes('note')) bq.classList.add('callout-note');
+        else if (text.includes('tip')) bq.classList.add('callout-tip');
+        else if (text.includes('important')) bq.classList.add('callout-important');
+        else if (text.includes('warning')) bq.classList.add('callout-warning');
+        else if (text.includes('caution')) bq.classList.add('callout-caution');
+      }
+    });
+
     const text = editor.value, trimmed = text.trim();
     const words = trimmed === '' ? 0 : trimmed.replace(/\s+/g, ' ').split(' ').length;
     counts.textContent = words + ' words, ' + text.length + ' chars, ' + transparencyPct + '% tr';
