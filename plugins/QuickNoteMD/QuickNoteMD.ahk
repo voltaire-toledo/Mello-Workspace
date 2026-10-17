@@ -34,7 +34,7 @@ global QNMD_MIN_W := 320, QNMD_MIN_H := 240
 global QNMD_Enabled := true
 global QNMD_HotkeyToggle := "#!m"
 
-global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, themeMode: "auto", opacity: 255, ready: false }
+global qnmd := { gui: "", host: "", wvc: "", wv: "", geom: "", dark: true, themeMode: "auto", opacity: 255, ready: false, nc: "", wmr: "", nwr: "", ns: "" }
 
 if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
@@ -220,6 +220,8 @@ QNMD_Create() {
 
     qnmd.nc := wv.NavigationCompleted(QNMD_OnNavCompleted)
     qnmd.wmr := wv.WebMessageReceived(QNMD_OnWebMessage)
+    qnmd.nwr := wv.NewWindowRequested(QNMD_OnNewWindowRequested)
+    qnmd.ns := wv.NavigationStarting(QNMD_OnNavStarting)
 
     htmlPath := QNMD_SELF_DIR "\assets\editor.html"
     wv.Navigate("file:///" StrReplace(htmlPath, "\", "/"))
@@ -296,12 +298,33 @@ QNMD_OnWebMessage(sender, args) {
             QNMD_Hide()
             return
         }
+        if (InStr(text, "__QNMD_OPEN_URL__:") = 1) {
+            targetUrl := SubStr(text, 19)
+            if (targetUrl != "")
+                try Run(targetUrl)
+            return
+        }
         f := FileOpen(QNMD_NOTE_FILE, "w", "UTF-8")
         f.Write(text)
         f.Close()
     } catch Any {
         ; saving is best-effort; never interrupt the user
     }
+}
+
+QNMD_OnNewWindowRequested(sender, args) {
+    args.Handled := true
+    targetUri := args.Uri
+    if (targetUri != "")
+        try Run(targetUri)
+}
+
+QNMD_OnNavStarting(sender, args) {
+    uri := args.Uri
+    if InStr(uri, "editor.html")
+        return
+    args.Cancel := true
+    try Run(uri)
 }
 
 ; Escape a raw string into a double-quoted JS string literal argument.
