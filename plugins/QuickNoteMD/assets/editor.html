@@ -133,9 +133,14 @@
 (function () {
   marked.use({
     renderer: {
-      // Raw HTML embedded in pasted/typed markdown is dropped, not executed —
-      // this is a local single-user notes surface, not a sanitized document viewer.
-      html() { return ''; }
+      // Allow intentional line break tags (<br>, <br/>, <br />) while ignoring arbitrary raw HTML injection
+      html(token) {
+        const raw = typeof token === 'string' ? token : (token && token.raw ? token.raw : '');
+        if (/^<br\s*\/?>$/i.test(raw.trim())) {
+          return '<br>';
+        }
+        return '';
+      }
     }
   });
   marked.setOptions({ gfm: true, breaks: true });
@@ -196,10 +201,36 @@
       }
     });
 
+    // Enable interactive checkboxes in preview mode
+    const checkboxes = preview.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach((cb, index) => {
+      cb.removeAttribute('disabled');
+      cb.dataset.index = index;
+    });
+
     const text = editor.value, trimmed = text.trim();
     const words = trimmed === '' ? 0 : trimmed.replace(/\s+/g, ' ').split(' ').length;
     counts.textContent = words + ' words, ' + text.length + ' chars, ' + transparencyPct + '% tr';
   }
+
+  // Handle interactive checkbox toggling in preview mode
+  preview.addEventListener('change', (e) => {
+    if (e.target && e.target.type === 'checkbox') {
+      const targetIndex = parseInt(e.target.dataset.index, 10);
+      let count = 0;
+      editor.value = editor.value.replace(/^(\s*[-*]\s+\[)([ xX])(\]\s+)/gm, (match, prefix, state, suffix) => {
+        if (count === targetIndex) {
+          const nextState = e.target.checked ? 'x' : ' ';
+          count++;
+          return prefix + nextState + suffix;
+        }
+        count++;
+        return match;
+      });
+      render();
+      scheduleSave();
+    }
+  });
 
   function updateHint() {
     hint.classList.remove('notice');
