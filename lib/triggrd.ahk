@@ -40,12 +40,12 @@ KeyWaitAny(*) {
   return ih.Input  ; Return the input string
 }
 
-ShowTriggerSplash(message, title := "Press a Key to start an application:", position := "center", opacity := 230) {
+ShowTriggerSplash(message, title := "Press a Key to start an application:", position := "center", opacity := 235) {
   ; This function displays a HUD dialog styled consistently with SoundSwap OSD:
   ; - Positioned center (or configurable)
-  ; - Slightly transparent (~90% opacity = alpha 230)
+  ; - Slightly transparent (~92% opacity = alpha 235)
   ; - Theme responsive (light/dark)
-  ; - Segoe UI Variable font typography
+  ; - Segoe UI Variable font typography with enlarged sizing
   ; - Rounded corners (r16-16)
   global triggerGUI
 
@@ -55,7 +55,7 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
     triggerGUI := ""
   }
 
-  triggerGUI := ShowModernHud(title, message, position, 0, "", opacity)
+  triggerGUI := ShowModernHud(title, message, position, 0, "", opacity, false, 13, 14)
 }
 ; ╭────────────────────────────────────────────────────────────────────────────────╮
 ; │  [Win]+[Alt]+[o] => OPEN APPLICATION Mode                                      │
@@ -89,29 +89,38 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
 
   AppModeOptionsString := (
     "`na`t Antigravity"
-    "`nb`t Beyond Compare 4"
+    "`nb`t Beyond Compare"
     "`nc`t VS Code"
     "`nC`t VS Code Insiders"
     "`nd`t Claude"
-    "`ne`t Epic Pen"
+    "`ne`t Microsoft Edge"
+    "`ng`t Google Chrome"
     "`nl`t Copilot"
+    "`nm`t Microsoft Teams"
     "`nn`t Notion"
     "`nN`t Notepad"
     "`no`t OpenAI Codex"
-    "`np`t Perplexity Comet"
+    "`np`t Perplexity"
+    "`ns`t Slack"
     "`nt`t Windows Terminal"
+    "`nT`t Windows Terminal (Admin)"
     "`nv`t Windows Terminal Preview"
+    "`nw`t Word / Office"
+    "`nx`t Excel"
     "`nz`t Zed"
   )
 
-  ShowTriggerSplash(AppModeOptionsString)
+  ShowTriggerSplash(AppModeOptionsString, "Launcher — Most Frequent Apps (7 Days):")
   ; Begin the 4 second wait before fading out the GUI
   retKeyHook := KeyWaitAny()
 
   ; Fade Out
   AW_BLEND := 0x00080000, AW_HIDE := 0x00010000
-  DllCall("user32.dll\AnimateWindow", "Ptr", triggerGUI.hwnd, "UInt", 250, "UInt", AW_BLEND | AW_HIDE)
-  triggerGUI.Destroy()
+  if IsSet(triggerGUI) && IsObject(triggerGUI) {
+    try DllCall("user32.dll\AnimateWindow", "Ptr", triggerGUI.hwnd, "UInt", 200, "UInt", AW_BLEND | AW_HIDE)
+    try triggerGUI.Destroy()
+    triggerGUI := ""
+  }
 
   ; Use a value switch on the captured key to avoid expression fall-through
   switch retKeyHook
@@ -120,7 +129,7 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
       LaunchApp("Antigravity")
       return
     case "b":
-      LaunchApp("Beyond Compare 4")
+      LaunchApp("Beyond Compare 5")
       return
     case "c":
       LaunchApp("Visual Studio Code")
@@ -132,10 +141,16 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
       LaunchApp("Claude")
       return
     case "e":
-      LaunchApp("Epic Pen")
+      LaunchApp("Microsoft Edge")
+      return
+    case "g":
+      LaunchApp("Google Chrome")
       return
     case "l":
       LaunchApp("Copilot")
+      return
+    case "m":
+      LaunchApp("Microsoft Teams")
       return
     case "n":
       LaunchApp("Notion")
@@ -147,7 +162,10 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
       LaunchApp("OpenAI Codex")
       return
     case "p":
-      LaunchApp("Perplexity Comet")
+      LaunchApp("Perplexity")
+      return
+    case "s":
+      LaunchApp("Slack")
       return
     case "t":
       LaunchTerminal(false)
@@ -157,6 +175,12 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
       return
     case "v":
       LaunchApp("Windows Terminal Preview")
+      return
+    case "w":
+      LaunchApp("Word")
+      return
+    case "x":
+      LaunchApp("Excel")
       return
     case "z":
       LaunchApp("Zed")
@@ -269,7 +293,8 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
     ; Arrow key handling
     for key, delta in deltas {
       state := GetKeyState(key, "P")
-      if state && !prev[key] {
+      wasPressed := prev.HasOwnProp(key) ? prev.%key% : false
+      if state && !wasPressed {
         if ctrl {
           ; Resize via percentages (matches win-mgmt.ahk conventions)
           if (key = "Up")
@@ -296,16 +321,17 @@ ShowTriggerSplash(message, title := "Press a Key to start an application:", posi
           MoveActiveWindow(delta.dx, delta.dy)
         }
       }
-      prev[key] := state
+      prev.%key% := state
     }
 
     ; Numpad handling (snap)
     for k, spec in numpadMap {
       state := GetKeyState(k, "P")
-      if state && !prev[k] {
-        SnapActiveWindow(spec[1], spec[2], spec[3])
+      wasPressed := prev.HasOwnProp(k) ? prev.%k% : false
+      if state && !wasPressed {
+        SnapActiveWindow(spec.zone, spec.side, spec.size)
       }
-      prev[k] := state
+      prev.%k% := state
     }
   }
 

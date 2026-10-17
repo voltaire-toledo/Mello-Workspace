@@ -82,14 +82,14 @@ LaunchTerminal(asAdmin := false, *) {
 ; ╭─────────────────────────────────────────────────────────────╮
 ; │ Modern HUD / Splash Helpers (SoundSwap & Fluent-styled)     │
 ; ╰─────────────────────────────────────────────────────────────╯
-ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "", opacity := 255, isBold := false) {
+ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconPath := "", opacity := 255, isBold := false, titleSize := 11, bodySize := 13) {
   ; Shared HUD component styled consistently with SoundSwap OSD:
   ; - Windows light/dark theme aware (Segoe UI Variable font)
   ; - Soft rounded corners (WinSetRegion r16-16)
   ; - Flexible positioning: "center", "bottom-right", etc.
   ; - Optional auto-dismiss timer or persistent until destroyed
   ; - Configurable opacity (e.g. 230 for ~90% transparency)
-  ; - Configurable font weight (norm by default, optional bold)
+  ; - Configurable font sizes for prominent launchers and action splashes
   isLight := false
   try isLight := !!AppsUseLightTheme()
 
@@ -105,27 +105,27 @@ ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconP
 
   hasIcon := (iconPath != "" && FileExist(iconPath))
   if hasIcon {
-    hudGui.Add("Picture", "x20 y18 w28 h28", iconPath).OnEvent("Click", dismissHud)
+    hudGui.Add("Picture", "x24 y22 w36 h36", iconPath).OnEvent("Click", dismissHud)
   }
 
-  textX := hasIcon ? 58 : 22
+  textX := hasIcon ? 70 : 28
   bodyWeight := isBold ? "bold" : "norm"
 
   if (title != "") {
     ; Use smaller secondary style if body exists, otherwise prominent title
     if (body != "") {
-      hudGui.SetFont("s10 norm c" . subFg, "Segoe UI Variable")
-      hudGui.Add("Text", "x" textX " y16 left", title).OnEvent("Click", dismissHud)
-      hudGui.SetFont("s11 " . bodyWeight . " c" . fg, "Segoe UI Variable")
-      hudGui.Add("Text", "x" textX " y+6 left", body).OnEvent("Click", dismissHud)
+      hudGui.SetFont("s" . titleSize . " norm c" . subFg, "Segoe UI Variable")
+      hudGui.Add("Text", "x" textX " y20 left", title).OnEvent("Click", dismissHud)
+      hudGui.SetFont("s" . bodySize . " " . bodyWeight . " c" . fg, "Segoe UI Variable")
+      hudGui.Add("Text", "x" textX " y+10 left", body).OnEvent("Click", dismissHud)
     } else {
-      hudGui.SetFont("s11 " . bodyWeight . " c" . fg, "Segoe UI Variable")
-      hudGui.Add("Text", "x" textX " y18 left", title).OnEvent("Click", dismissHud)
+      hudGui.SetFont("s" . titleSize . " " . bodyWeight . " c" . fg, "Segoe UI Variable")
+      hudGui.Add("Text", "x" textX " y22 left", title).OnEvent("Click", dismissHud)
     }
   }
 
   ; Padding on right and bottom
-  hudGui.Add("Text", "x+20 y+16 w0 h0", "")
+  hudGui.Add("Text", "x+28 y+22 w0 h0", "")
 
   hudGui.Show("NoActivate AutoSize Hide")
   hudGui.GetPos(,, &hudW, &hudH)
@@ -154,7 +154,7 @@ ShowModernHud(title, body := "", position := "center", autoDismissMs := 0, iconP
 }
 
 ShowActionSplash(actionMessage, appPath := "") {
-  ; Displays a modern action splash in the center of the screen
+  ; Displays a prominent modern action splash in the center of the screen
   global triggerActionGUI
 
   if IsSet(triggerActionGUI) && IsObject(triggerActionGUI) {
@@ -162,7 +162,7 @@ ShowActionSplash(actionMessage, appPath := "") {
     triggerActionGUI := ""
   }
 
-  triggerActionGUI := ShowModernHud("Action in progress:", actionMessage, "center", 2500)
+  triggerActionGUI := ShowModernHud("Action in progress:", actionMessage, "center", 2500, "", 245, true, 12, 16)
 }
 
 LaunchApp(appName, asAdmin := 0) {
