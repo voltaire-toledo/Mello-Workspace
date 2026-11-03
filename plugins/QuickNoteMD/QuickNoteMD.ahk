@@ -40,7 +40,7 @@ if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
 
 OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
-OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 20% opacity reduction / focused restore
+; OnMessage(0x0006, QNMD_OnActivate)     ; Backdrop blur replaces window alpha reduction
 OnExit(QNMD_SaveGeometry)
 
 QNMD_LoadConfig()
@@ -110,11 +110,11 @@ QNMD_ReregisterHotkey(newCombo) {
 
 #HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
 Esc::QNMD_Hide()
-!+::QNMD_AdjustOpacity(13)            ; Alt + Plus = increase opacity
-!=::QNMD_AdjustOpacity(13)            ; Alt + Equal = increase opacity
-!NumpadAdd::QNMD_AdjustOpacity(13)    ; Alt + NumpadAdd
-!-::QNMD_AdjustOpacity(-13)           ; Alt + Minus = decrease opacity
-!NumpadSub::QNMD_AdjustOpacity(-13)   ; Alt + NumpadSub
+; Opacity adjustment disabled
+; Opacity adjustment disabled
+; Opacity adjustment disabled
+; Opacity adjustment disabled
+; Opacity adjustment disabled
 ^+::QNMD_AdjustZoom(0.1)
 ^=::QNMD_AdjustZoom(0.1)
 ^NumpadAdd::QNMD_AdjustZoom(0.1)
@@ -134,8 +134,8 @@ QNMD_IsMouseOver() {
 }
 
 #HotIf QNMD_IsMouseOver()
-!WheelUp::QNMD_AdjustOpacity(13)     ; Alt + Scroll Up = increase opacity
-!WheelDown::QNMD_AdjustOpacity(-13)  ; Alt + Scroll Down = decrease opacity
+; Opacity wheel disabled
+; Opacity wheel disabled
 #HotIf
 
 ; ---- show / hide / toggle ---------------------------------------------------
@@ -154,16 +154,9 @@ QNMD_Show(activate := true) {
     g := qnmd.gui
     defaultGeom := "w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H
     g.Show((qnmd.geom != "" ? qnmd.geom : defaultGeom) (activate ? "" : " NoActivate"))
-    if activate {
-        if (qnmd.opacity >= 255)
-            WinSetTransparent("Off", g.Hwnd)
-        else
-            WinSetTransparent(qnmd.opacity, g.Hwnd)
+    WinSetTransparent("Off", g.Hwnd)
+    if activate
         WinActivate("ahk_id " g.Hwnd)
-    } else {
-        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
-        WinSetTransparent(unfocusedAlpha, g.Hwnd)
-    }
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
     QNMD_SyncTransparency()
@@ -484,4 +477,15 @@ if QNMD_IsStandalone {
     else
         TraySetIcon("shell32.dll", 174)
     A_IconTip := "QuickNote MD (Win+Alt+M)"
+}
+
+QNMD_ApplyBackdrop(hwnd, isDark) {
+    try {
+        ; DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        darkVal := isDark ? 1 : 0
+        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 20, "int*", darkVal, "uint", 4)
+        ; DWMWA_SYSTEMBACKDROP_TYPE = 38, DWMSBT_TRANSIENTWINDOW (Acrylic) = 3
+        backdropType := 3
+        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 38, "int*", backdropType, "uint", 4)
+    }
 }

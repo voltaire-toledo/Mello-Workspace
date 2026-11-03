@@ -6,13 +6,13 @@
 <script src="marked.min.js"></script>
 <style>
   :root {
-    --bg: #f3f3f3; --fg: #1a2023; --pane-bg: #ffffff; --border: #d8dcde;
-    --status-bg: #e7e9ea; --status-fg: #4a5157; --code-bg: #eef0f1; --link: #2662d9;
+    --bg: rgba(243, 243, 243, 0.72); --fg: #1a2023; --pane-bg: rgba(255, 255, 255, 0.68); --border: rgba(216, 220, 222, 0.65);
+    --status-bg: rgba(231, 233, 234, 0.75); --status-fg: #4a5157; --code-bg: rgba(238, 240, 241, 0.85); --link: #2662d9;
     --notice: #a15c00;
   }
   body.dark {
-    --bg: #232a2f; --fg: #f3f3f3; --pane-bg: #1b2126; --border: #384049;
-    --status-bg: #1b2126; --status-fg: #a9b1b8; --code-bg: #2a3238; --link: #6fa8ff;
+    --bg: rgba(35, 42, 47, 0.75); --fg: #f3f3f3; --pane-bg: rgba(27, 33, 38, 0.70); --border: rgba(56, 64, 73, 0.65);
+    --status-bg: rgba(27, 33, 38, 0.80); --status-fg: #a9b1b8; --code-bg: rgba(42, 50, 56, 0.85); --link: #6fa8ff;
     --notice: #ffb454;
   }
   * { box-sizing: border-box; }
@@ -209,7 +209,7 @@
   </div>
   <div id="statusbar">
     <span class="hint" id="hint"></span>
-    <span class="counts" id="counts">0 words, 0 chars, 100% tr</span>
+    <span class="counts" id="counts">0 words, 0 chars</span>
   </div>
 
 <script>
@@ -309,7 +309,7 @@
 
     const text = editor.value, trimmed = text.trim();
     const words = trimmed === '' ? 0 : trimmed.replace(/\s+/g, ' ').split(' ').length;
-    counts.textContent = words + ' words, ' + text.length + ' chars, ' + transparencyPct + '% tr';
+    counts.textContent = words + ' words, ' + text.length + ' chars';
   }
 
   // Handle interactive checkbox toggling in preview mode
@@ -333,7 +333,7 @@
 
   function updateHint() {
     hint.classList.remove('notice');
-    hint.textContent = 'Alt+V to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to adjust font size \u2022 Alt + Scroll to adjust transparency';
+    hint.textContent = 'Alt+V to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to adjust font size \u2022 Acrylic Backdrop Blur Enabled';
   }
 
   function flashReadonlyNotice() {
