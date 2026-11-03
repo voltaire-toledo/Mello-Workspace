@@ -33,6 +33,7 @@ trayitem_edit_ico := icons_path . "edit.ico"
 trayitem_runatstartup := "Launch at Startup"
 trayitem_usingmackeybd := "Using Mac Keyboard Layout"
 trayitem_disablestartupsound := "Disable Startup Sound"
+trayitem_neutralizeofficekey := "Neutralize Office 365 Key Hijack"
 trayitem_openappdir := "Open script &folder`tCTRL + ⊞ + ALT + F"
 trayitem_openappdir_ico := icons_path . "icons8-code-folder-32.ico"
 traymenu_icon_checked := icons_path . "checked.ico"
@@ -47,6 +48,7 @@ try {
 
 trayitem_disablestartupsound_ico := IsStartupSoundDisabled ? traymenu_icon_checked : traymenu_icon_unchecked
 trayitem_usingmackeybd_ico := IsMacKeyboard ? traymenu_icon_checked : traymenu_icon_unchecked
+trayitem_neutralizeofficekey_ico := IsOfficeKeyNeutralized ? traymenu_icon_checked : traymenu_icon_unchecked
 
 ; ╭───────────────────────────────────────────────────────────────────╮
 ; │  Helper: SetMenuIcon                                             │
@@ -90,6 +92,9 @@ BuildTrayMenu() {
 
   A_TrayMenu.Add(trayitem_disablestartupsound, ToggleDisableStartupSound)
   SetMenuIcon(A_TrayMenu, trayitem_disablestartupsound, trayitem_disablestartupsound_ico)
+
+  A_TrayMenu.Add(trayitem_neutralizeofficekey, ToggleNeutralizeOfficeKey)
+  SetMenuIcon(A_TrayMenu, trayitem_neutralizeofficekey, trayitem_neutralizeofficekey_ico)
 
   A_TrayMenu.Add() ; separator
 
@@ -203,6 +208,37 @@ ToggleDisableStartupSound(*) {
   }
   trayitem_disablestartupsound_ico := IsStartupSoundDisabled ? traymenu_icon_checked : traymenu_icon_unchecked
   SetMenuIcon(A_TrayMenu, trayitem_disablestartupsound, trayitem_disablestartupsound_ico)
+}
+
+ToggleNeutralizeOfficeKey(*) {
+  global IsOfficeKeyNeutralized, trayitem_neutralizeofficekey_ico
+  regKey := "HKCU\Software\Mello-Workspace"
+  regVal := "NeutralizeOfficeKey"
+  IsOfficeKeyNeutralized := !IsOfficeKeyNeutralized
+  try {
+    RegWrite(IsOfficeKeyNeutralized ? 1 : 0, "REG_DWORD", regKey, regVal)
+  } catch {
+  }
+  ApplyOfficeKeyNeutralization(IsOfficeKeyNeutralized)
+  trayitem_neutralizeofficekey_ico := IsOfficeKeyNeutralized ? traymenu_icon_checked : traymenu_icon_unchecked
+  SetMenuIcon(A_TrayMenu, trayitem_neutralizeofficekey, trayitem_neutralizeofficekey_ico)
+}
+
+ApplyOfficeKeyNeutralization(enable) {
+  cmdKey := "HKCU\Software\Classes\ms-officeapp\Shell\Open\Command"
+  try {
+    if (enable) {
+      ; Use rundll32 as a silent no-op executable. A blank string ("") causes Windows
+      ; shell to fall back to launching File Explorer on Windows 11.
+      RegWrite("rundll32", "REG_SZ", cmdKey)
+    } else {
+      RegDeleteKey(cmdKey)
+      try RegDeleteKey("HKCU\Software\Classes\ms-officeapp\Shell\Open")
+      try RegDeleteKey("HKCU\Software\Classes\ms-officeapp\Shell")
+      try RegDeleteKey("HKCU\Software\Classes\ms-officeapp")
+    }
+  } catch {
+  }
 }
 
 ShowListLines(*) {

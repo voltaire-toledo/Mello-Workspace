@@ -110,6 +110,16 @@ QNMD_ReregisterHotkey(newCombo) {
 
 #HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
 Esc::QNMD_Hide()
+!+::QNMD_AdjustOpacity(13)            ; Alt + Plus = increase opacity
+!=::QNMD_AdjustOpacity(13)            ; Alt + Equal = increase opacity
+!NumpadAdd::QNMD_AdjustOpacity(13)    ; Alt + NumpadAdd
+!-::QNMD_AdjustOpacity(-13)           ; Alt + Minus = decrease opacity
+!NumpadSub::QNMD_AdjustOpacity(-13)   ; Alt + NumpadSub
+^+::QNMD_AdjustZoom(0.1)
+^=::QNMD_AdjustZoom(0.1)
+^NumpadAdd::QNMD_AdjustZoom(0.1)
+^-::QNMD_AdjustZoom(-0.1)
+^NumpadSub::QNMD_AdjustZoom(-0.1)
 #HotIf
 
 QNMD_IsMouseOver() {
@@ -124,8 +134,8 @@ QNMD_IsMouseOver() {
 }
 
 #HotIf QNMD_IsMouseOver()
-!WheelUp::QNMD_AdjustOpacity(25)     ; Alt + Scroll Up = increase opacity
-!WheelDown::QNMD_AdjustOpacity(-25)  ; Alt + Scroll Down = decrease opacity
+!WheelUp::QNMD_AdjustOpacity(13)     ; Alt + Scroll Up = increase opacity
+!WheelDown::QNMD_AdjustOpacity(-13)  ; Alt + Scroll Down = decrease opacity
 #HotIf
 
 ; ---- show / hide / toggle ---------------------------------------------------
@@ -157,8 +167,10 @@ QNMD_Show(activate := true) {
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
     QNMD_SyncTransparency()
-    if activate
+    if activate {
+        try qnmd.wvc.MoveFocus(0)
         try qnmd.wv.ExecuteScriptAsync("QN.focus()")
+    }
 }
 
 QNMD_Hide(*) {
@@ -176,7 +188,7 @@ QNMD_Hide(*) {
 QNMD_Create() {
     global qnmd, QNMD_USERDATA_DIR, QNMD_MIN_W, QNMD_MIN_H, QNMD_DEFAULT_W, QNMD_DEFAULT_H
 
-    g := Gui("+AlwaysOnTop +Resize -MaximizeBox +MinSize" QNMD_MIN_W "x" QNMD_MIN_H, "QuickNote MD")
+    g := Gui("+AlwaysOnTop +Resize +MinSize" QNMD_MIN_W "x" QNMD_MIN_H, "QuickNote MD")
     g.MarginX := 0, g.MarginY := 0
     host := g.AddText("x0 y0 w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H)
 
@@ -367,13 +379,25 @@ QNMD_ToggleTheme(*) {
     QNMD_SetThemeMode(nextMode)
 }
 
+; ---- zoom scaling ------------------------------------------------------------
+QNMD_AdjustZoom(delta) {
+    global qnmd
+    if (qnmd.wvc = "")
+        return
+    try {
+        currentZoom := qnmd.wvc.ZoomFactor
+        newZoom := Round(Min(Max(currentZoom + delta, 0.5), 3.0), 2)
+        qnmd.wvc.ZoomFactor := newZoom
+    }
+}
+
 ; ---- opacity / transparency --------------------------------------------------
 QNMD_AdjustOpacity(delta) {
     global qnmd, QNMD_INI
     if (qnmd.gui = "" || !DllCall("IsWindowVisible", "ptr", qnmd.gui.Hwnd))
         return
 
-    newAlpha := Min(Max(qnmd.opacity + delta, 64), 255)
+    newAlpha := Min(Max(qnmd.opacity + delta, 128), 255)
     if (newAlpha = qnmd.opacity)
         return
 

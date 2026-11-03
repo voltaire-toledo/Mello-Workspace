@@ -83,7 +83,7 @@ ModalMsg(message_string := "No Action Assigned", app_in_use := "No App Defined",
 app_notion := "✏️ Notion"
 F13:: Send "^+{h}"                           ; Open current page in full screen
 F14:: Send "{Home}{Enter}>{Space}"              ; Convert to a Toggle text block
-F15:: Send "^+L"                                ; Toggle between light and dark mode
+; F15:: Send "^+L"                                ; Toggle between light and dark mode
 F16:: ModalMsg "", app_notion, 2
 F17:: Send "{Home}{Enter}{# 2}{Space}>{Space}"  ; Convert to a Toggle Heading 2
 F18:: Send "^+L"                              ; Toggle between light and dark mode
@@ -102,7 +102,7 @@ F23:: Send "^{/}"                   ; Open Format Menu
 app_msword := "📝 MS Word"
 F13:: Click
 F14:: ModalMsg "", app_msword, 2
-F15:: ModalMsg "", app_msword, 2
+; F15:: ModalMsg "", app_msword, 2
 F16:: ModalMsg "", app_msword, 2
 F17:: ModalMsg "", app_msword, 2
 F18:: ModalMsg "", app_msword, 2
@@ -120,7 +120,7 @@ F23:: ModalMsg "", app_msword, 2   ; /turntoggleheading1
 app_gmail := "📫 GMail"
 F13:: Click
 F14:: Send "k"                      ; Navigate to previous message
-F15:: ModalMsg "", app_gmail, 2
+; F15:: ModalMsg "", app_gmail, 2
 F16:: Send "j"                      ; Navigate to next message
 F17:: Send "+u"                     ; Mark as unread
 F18:: Send "{z}"                    ; Undo last action
@@ -138,7 +138,7 @@ F23:: Send "{#}"   ; Delete the current email
 global app_vscode := "💻 VS Code"
 F13:: Click
 F14:: Send "^["                         ; Increase Indent
-F15:: ModalMsg "", app_vscode
+; F15:: ModalMsg "", app_vscode
 F16:: Send "^]"                         ; Decrease Indent
 F17:: ModalMsg "", app_vscode
 F18:: ModalMsg "", app_vscode
@@ -159,7 +159,7 @@ F23:: ModalMsg "", app_vscode
 app_yt := "🎬 YouTube"
 F13:: Click
 ^F14:: Send "{<}"                     ; Switch to the previous tab
-F15:: ModalMsg "", app_yt
+; F15:: ModalMsg "", app_yt
 ^F16:: Send "{>}"                    ; Switch to the previous tab
 F18:: ModalMsg "", app_yt
 F17:: Send "{>}"                     ; Speed up the playback
@@ -189,7 +189,7 @@ F14:: {
     Send "^,"                                         ; If in Mail view - Previous Message
   }
 }
-F15:: ModalMsg "", app_msolk_new
+; F15:: ModalMsg "", app_msolk_new
 F16:: {
   if WinActive(, "Calendar -") {
     Send "^!{Right}"                                  ; If in Calendar view - Next week (This was changed from Alt+Down to Ctrl+Alt+Right)
@@ -219,7 +219,7 @@ F14:: {
     Send "^,"                                       ; If in Mail view - Previous Message
   }
 }
-F15:: ModalMsg "", app_msolk
+; F15:: ModalMsg "", app_msolk
 F16:: {
   if WinActive("Calendar -") {
     Send "!{Down}"                                  ; If in Calendar view - Next week
@@ -243,7 +243,7 @@ F23:: Send "{Del}"                                    ; Delete Current Email
 app_msexcel := "📊 MS Excel"
 F13:: ModalMsg "", app_msexcel
 F14:: Send "^{PgUp}"                                 ; Previous Worksheet
-F15:: ModalMsg "", app_msexcel
+; F15:: ModalMsg "", app_msexcel
 F16:: Send "^{PgDn}"                                 ; Next Worksheet
 F18:: {
   Send "^!{v}"                                 ; Paste the clipboard's format only
@@ -267,7 +267,7 @@ NumpadAdd:: Send "^{z}"                               ; Undo
 app_msteams := "💻 MS Teams"
 F13:: ModalMsg "", app_msteams
 F14:: Send "^{PgUp}"                                 ; Previous Worksheet
-F15:: ModalMsg "", app_msteams
+; F15:: ModalMsg "", app_msteams
 F16:: Send "^{PgDn}"                                 ; Next Worksheet
 F18:: {
   Send "^!{v}"                                 ; Paste the clipboard's format only
@@ -291,10 +291,10 @@ NumpadAdd:: Send "^{z}"                               ; Undo
 app_msedge := "🧭 MS Edge"
 F13:: Send "^+{v}"                                    ; Ctrl+Shift+V to Paste as plain text
 F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab to switch to the previous tab
-F15:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
+; F15:: ModalMsg "", app_msedge
 ; F16:: MsgBox "Now running app-dyn"                                   ; Ctrl+Tab to switch to the next tab
 F16:: Send "^{Tab}"                                   ; Ctrl+Tab to switch to the next tab
-F18:: ModalMsg "", app_msedge
+F18:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
 F17:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
 F19:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
 F20:: ModalMsg "", app_msedge
@@ -310,9 +310,9 @@ F23:: Send "^{w}"                                     ; Ctrl+W to close the curr
 app_msedge := "🌐 Chrome-ish"
 F13:: Send "^+{v}"                                    ; Ctrl+Shift+V to Paste as plain text
 F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab to switch to the previous tab
-F15:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
+; F15:: ModalMsg "", app_msedge
 F16:: Send "^{Tab}"                                   ; Ctrl+Tab to switch to the next tab
-F18:: ModalMsg "", app_msedge
+F18:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
 F17:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
 F19:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
 F20:: ModalMsg "", app_msedge
@@ -328,7 +328,7 @@ F23:: Send "^{w}"                                     ; Ctrl+W to close the curr
 app_paintdotnet := "🎨 Paint.NET"
 F13:: ModalMsg("", app_paintdotnet)             ; [G502X: Onboard Cycle][G604: Side #1][NumPad ?]
 F14:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Scroll_Left][G604: Side #1][NumPad ?]
-F15:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Middle_Click][G604: Side #1][NumPad ?]
+; F15:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Middle_Click][G604: Side #1][NumPad ?]
 F16:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Scroll_Right][G604: Side #1][NumPad ?]
 F17:: ModalMsg("", app_paintdotnet)             ; [G502X: Top_Forward][G604: Side #1][NumPad ?]
 F18:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Top_Forward][G604: Side #1][NumPad ?]
@@ -345,7 +345,7 @@ HotIf()
 ; ╰──────────────────────────────────────────────────────────────────────╯
 F13:: Click
 F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab
-F15:: ModalMsg "", ""
+; F15:: ModalMsg "", ""
 F16:: Send "^{Tab}"                                   ; Ctrl+Tab
 F17:: Send "#{Tab}"                                   ; Win+Tab
 F18:: ModalMsg "", ""

@@ -133,3 +133,18 @@ sendEndKey := () => Send("{Blind>^}{End}")
 ; #z:: Send "^z"    ; Cmd+Z -> Ctrl+Z (Undo)
 
 #HotIf ; Turn off context sensitivity
+; ╭────────────────────────────────────────────────────────────────────────────────────────────╮
+; │ Neutralize Office 365 Chords (Ctrl+Alt+Shift+Win + Key)                                   │
+; │ Neutralizes PowerPoint (P), Word (W), Excel (X), Outlook (O), Teams (T), etc.              │
+; ╰────────────────────────────────────────────────────────────────────────────────────────────╯
+#HotIf (IsSet(IsOfficeKeyNeutralized) && IsOfficeKeyNeutralized)
+*#^!p::return   ; PowerPoint
+*#^!w::return   ; Word
+*#^!x::return   ; Excel
+*#^!o::return   ; Outlook
+*#^!t::return   ; Teams
+*#^!l::return   ; LinkedIn
+*#^!y::return   ; Yammer
+*#^!n::return   ; OneNote
+*#^!d::return   ; OneDrive
+#HotIf
