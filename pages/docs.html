@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation & Wiki — Mello-Workspace</title>
+  <meta name="description" content="Complete architectural documentation, hotkey reference, and hardware mapping guides for Mello-Workspace.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="wiki.css">
+</head>
+<body class="wiki-body">
+
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="brand">
+        <div class="brand-badge">
+          <img src="mello-keycap.png" alt="Mello Logo" class="brand-icon">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Mello-Workspace</span>
+          <span class="brand-sub">AutoHotkey v2 · Reference Wiki</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="index.html">Product Showcase</a>
+        <a href="docs.html" class="active-nav">Wiki & Docs</a>
+        <a href="https://github.com/voltaire-toledo/Mello-Workspace" target="_blank" rel="noopener" class="nav-cta">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          Source
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wiki-layout">
+    <!-- Wiki Sidebar Navigation -->
+    <aside class="wiki-sidebar">
+      <div class="sidebar-search">
+        <input type="text" id="wikiSearchInput" placeholder="Search reference docs..." aria-label="Search documentation">
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-group">
+          <span class="group-title">Getting Started</span>
+          <ul>
+            <li><a href="#overview" class="wiki-link active">Architecture Overview</a></li>
+            <li><a href="#installation" class="wiki-link">Installation & Setup</a></li>
+            <li><a href="#composition-root" class="wiki-link">Composition Root Pattern</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <span class="group-title">Hardware & Signal Planes</span>
+          <ul>
+            <li><a href="#higher-function-keys" class="wiki-link">Higher Function Keys (F13–F24)</a></li>
+            <li><a href="#mouse-chording" class="wiki-link">Logitech G502 X & G-Shift</a></li>
+            <li><a href="#office-key-neutralizer" class="wiki-link">Office 365 Hyper Key Layer</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <span class="group-title">Core Subsystems</span>
+          <ul>
+            <li><a href="#window-geometry" class="wiki-link">Deterministic Window Engine</a></li>
+            <li><a href="#window-exclusions" class="wiki-link">IsExcludedWindow() Guard</a></li>
+            <li><a href="#quicknote-subsystem" class="wiki-link">QuickNoteMD Scratchpad</a></li>
+            <li><a href="#soundswap-subsystem" class="wiki-link">SoundSwap (CoreAudio COM)</a></li>
+          </ul>
+        </div>
+
+        <div class="nav-group">
+          <span class="group-title">Decisions & Standards</span>
+          <ul>
+            <li><a href="#adrs" class="wiki-link">Architectural Decision Records</a></li>
+            <li><a href="#precommit-standards" class="wiki-link">Strict Pre-Commit Verification</a></li>
+          </ul>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Wiki Main Content Area -->
+    <main class="wiki-content">
+      
+      <!-- Doc 1: Overview -->
+      <section id="overview" class="doc-section">
+        <div class="doc-header">
+          <span class="doc-category">Architecture Overview</span>
+          <h1>Mello-Workspace Architectural Blueprint</h1>
+          <p class="doc-lead">
+            A low-cortisol productivity toolkit for Windows targeting AutoHotkey v2 exclusively. Engineered for zero input latency, deterministic geometry, and intentional ergonomic friction.
+          </p>
+        </div>
+
+        <div class="doc-body">
+          <h2>Core Philosophy</h2>
+          <p>
+            Mello-Workspace eliminates the cognitive friction inherent to modern operating systems. Standard window managers use rubber-band animations, unpredictable snapping heuristics, and OS telemetry. Mello bypasses these layers entirely using native Win32 coordinate transforms and silent protocol intercepts.
+          </p>
+
+          <div class="callout callout-note">
+            <strong>Key Axiom:</strong> The screen should never argue with your hands. Every chord has a deterministic, sub-millisecond outcome.
+          </div>
+        </div>
+      </section>
+
+      <!-- Doc 2: Composition Root -->
+      <section id="composition-root" class="doc-section">
+        <div class="doc-header">
+          <span class="doc-category">Code Architecture</span>
+          <h1>Composition Root & Library Decoupling</h1>
+        </div>
+        <div class="doc-body">
+          <p>
+            <code>Mello-Workspace.ahk</code> is the single composition root. It loads self-contained, loosely coupled modules residing in <code>lib/</code>.
+          </p>
+
+          <pre><code>; Composition Root Pattern in Mello-Workspace.ahk
+#Requires AutoHotkey v2.0
+#SingleInstance Force
+
+; Pure decoupled module includes
+#Include &lt;window-mgmt&gt;
+#Include &lt;hotkeys&gt;
+#Include &lt;apps-hk&gt;
+#Include &lt;traymenu&gt;
+#Include &lt;../plugins/SoundSwap/SoundSwap&gt;</code></pre>
+
+          <h3>Hard Invariants</h3>
+          <ul>
+            <li><strong>AutoHotkey v2.0 Exclusivity:</strong> Legacy v1 syntax or backward-compatibility shims are strictly defects.</li>
+            <li><strong>No circular includes:</strong> Modules in <code>lib/</code> must never include each other directly; orchestration occurs exclusively at the root.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Doc 3: Higher Function Keys -->
+      <section id="higher-function-keys" class="doc-section">
+        <div class="doc-header">
+          <span class="doc-category">Hardware & Signals</span>
+          <h1>Demystifying Higher Function Keys (F13–F24)</h1>
+          <p class="doc-lead">
+            Routing mouse buttons, keypad macros, and secondary tiers into virtual higher function keycodes without shortcut collisions.
+          </p>
+        </div>
+        <div class="doc-body">
+          <p>
+            Standard software constantly competes for <code>Ctrl</code>, <code>Alt</code>, and <code>Shift</code> combinations. By utilizing virtual keys <code>F13</code> through <code>F24</code>, Mello-Workspace establishes a dedicated, silent signal plane.
+          </p>
+
+          <h2>Ergonomic Tiers & Intentional Friction</h2>
+          <div class="doc-table-wrap">
+            <table class="doc-table">
+              <thead>
+                <tr>
+                  <th>Tier</th>
+                  <th>Keycodes</th>
+                  <th>Physical Trigger</th>
+                  <th>Design Objective</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Velocity Actions</strong></td>
+                  <td><code>F14</code>, <code>F16</code></td>
+                  <td>Thumb side clicks, wheel tilts</td>
+                  <td>Rapid, low-friction operations (tab switching, page stepping).</td>
+                </tr>
+                <tr>
+                  <td><strong>Guarded Actions</strong></td>
+                  <td><code>F23</code>, <code>F18</code></td>
+                  <td>G-Shift modifier + reach</td>
+                  <td>Intentional posture change to prevent accidental window closure or deletions.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Doc 4: Office Key Neutralizer -->
+      <section id="office-key-neutralizer" class="doc-section">
+        <div class="doc-header">
+          <span class="doc-category">Input Architecture</span>
+          <h1>Office 365 Hyper Key Layer (TASK-25)</h1>
+        </div>
+        <div class="doc-body">
+          <p>
+            Windows Explorer hardcodes the chord <code>Ctrl+Alt+Shift+Win</code> to invoke <code>ms-officeapp:</code>, opening the Microsoft 365 web portal and stealing focus.
+          </p>
+
+          <h3>Neutralization Mechanism</h3>
+          <p>
+            Mello intercepts the protocol under <code>HKCU:\Software\Classes\ms-officeapp\Shell\Open\Command</code>, replacing the default command with a silent <code>rundll32</code> no-op executable.
+          </p>
+          <pre><code>; AutoHotkey v2 registry neutralization routine
+ApplyOfficeKeyNeutralization(enable) {
+  cmdKey := "HKCU\Software\Classes\ms-officeapp\Shell\Open\Command"
+  try {
+    if (enable) {
+      RegWrite("rundll32", "REG_SZ", cmdKey)
+    } else {
+      RegDeleteKey(cmdKey)
+    }
+  }
+}</code></pre>
+
+          <ul>
+            <li><strong>Zero elevation required:</strong> Runs cleanly under user scope (<code>HKCU</code>) with no UAC prompt.</li>
+            <li><strong>Hotkeys swallowed:</strong> Chords like <code>*#^!p</code> and <code>*#^!w</code> are cleanly absorbed without opening unwanted browser tabs.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Doc 5: Window Exclusions Guard -->
+      <section id="window-exclusions" class="doc-section">
+        <div class="doc-header">
+          <span class="doc-category">Safety Architecture</span>
+          <h1>IsExcludedWindow() Safety Guard</h1>
+        </div>
+        <div class="doc-body">
+          <p>
+            Window management tools often break games, virtual machines, or system dialogs when applying automatic snapping.
+            In Mello-Workspace, every geometric manipulation function MUST invoke <code>IsExcludedWindow()</code> before calculating bounds.
+          </p>
+          <pre><code>; Strict pre-commit requirement (Test 5)
+SnapWindow(direction) {
+  activeHwnd := WinGetID("A")
+  if IsExcludedWindow(activeHwnd) {
+    return ; Never disrupt excluded window states
+  }
+  ; Proceed with deterministic coordinate transform...
+}</code></pre>
+        </div>
+      </section>
+
+      <!-- Doc 6: ADRs -->
+      <section id="adrs" class="doc-section">
+        <div class="doc-header">
+          <span class="doc-category">Decision Records</span>
+          <h1>Architectural Decision Records (ADRs)</h1>
+        </div>
+        <div class="doc-body">
+          <ul class="adr-list">
+            <li>
+              <strong>ADR 0001:</strong> SoundSwap Polling Over Notification for v1 — Prioritized simplicity and zero thread blocking for initial device detection.
+            </li>
+            <li>
+              <strong>ADR 0002:</strong> SoundSwap FormFactor-Only Device Classification — Classifies audio targets by endpoint role rather than vendor strings.
+            </li>
+            <li>
+              <strong>ADR 0003:</strong> SoundSwap Windows 11-Only IPolicyConfig Interface — Relies on direct COM vtable invocation for sub-millisecond audio target switching.
+            </li>
+            <li>
+              <strong>ADR 0004:</strong> SoundSwap Named Mutex Guard — Guarantees atomic audio switching without race conditions.
+            </li>
+          </ul>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <img src="mello-keycap.png" alt="Mello Logo" class="footer-icon">
+          <span class="brand-title">Mello-Workspace</span>
+        </div>
+        <p class="footer-desc">
+          Low-cortisol Windows productivity architecture. Built for developers, designers, and thinkers who demand zero latency.
+        </p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h5>Reference</h5>
+          <ul>
+            <li><a href="#overview">Architecture</a></li>
+            <li><a href="#higher-function-keys">Function Keys</a></li>
+            <li><a href="#office-key-neutralizer">Hyper Key Layer</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Repository</h5>
+          <ul>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace" target="_blank" rel="noopener">GitHub Project</a></li>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace/releases" target="_blank" rel="noopener">Releases</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>AutoHotkey v2 · Flow without friction.</span>
+      <span class="dude-quote">"The Dude abides."</span>
+    </div>
+  </footer>
+
+  <script>
+    // Wiki navigation and live search filter
+    document.addEventListener('DOMContentLoaded', () => {
+      const links = document.querySelectorAll('.wiki-link');
+      const sections = document.querySelectorAll('.doc-section');
+      const searchInput = document.getElementById('wikiSearchInput');
+
+      // Scrollspy & active link updates
+      window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop - 120;
+          if (window.scrollY >= sectionTop) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        links.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === `#${current}`) {
+            link.classList.add('active');
+          }
+        });
+      }, { passive: true });
+
+      // Realtime sidebar search
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase().trim();
+          links.forEach(link => {
+            const text = link.textContent.toLowerCase();
+            const parentLi = link.parentElement;
+            if (!query || text.includes(query)) {
+              parentLi.style.display = 'block';
+            } else {
+              parentLi.style.display = 'none';
+            }
+          });
+        });
+      }
+    });
+  </script>
+</body>
+</html>

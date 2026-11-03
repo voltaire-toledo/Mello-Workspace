@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mello-Workspace — Flow Without Friction</title>
+  <meta name="description" content="A calm, portable, low-cortisol productivity toolkit for Windows. Engineered for zero input latency, effortless window management, and intentional focus.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Background Subtle Shapes -->
+  <div class="canvas-shapes" aria-hidden="true">
+    <div class="shape shape-circle"></div>
+    <div class="shape shape-wedge"></div>
+    <div class="shape shape-pill"></div>
+    <div class="shape shape-ring"></div>
+  </div>
+
+  <!-- Minimal Nav -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="#" class="brand">
+        <div class="brand-badge">
+          <img src="mello-keycap.png" alt="Mello Logo" class="brand-icon">
+        </div>
+        <div class="brand-text">
+          <span class="brand-title">Mello-Workspace</span>
+          <span class="brand-sub">AutoHotkey v2 · Low-Cortisol Systems</span>
+        </div>
+      </a>
+      <nav class="nav-links">
+        <a href="#sensations">How It Feels</a>
+        <a href="#experience">The Interactions</a>
+        <a href="docs.html">Reference Wiki</a>
+        <a href="https://github.com/voltaire-toledo/Mello-Workspace" target="_blank" rel="noopener" class="nav-cta">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+          Source
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="hero-content">
+        <div class="hero-eyebrow">
+          <span class="status-indicator"></span>
+          <span>Zero noise · Instant tactile response</span>
+        </div>
+        <h1 class="hero-headline">
+          Windows computing at the pace of your thought.
+        </h1>
+        <p class="hero-lead">
+          No animations stuttering your brain. No micro-delays between intention and action. 
+          Mello-Workspace strips out the cognitive friction of desktop multitasking so you remain entirely in flow.
+        </p>
+
+        <div class="hero-actions">
+          <a href="#experience" class="btn-primary">
+            Experience the flow
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          </a>
+          <button id="btnAudioWalkthrough" class="btn-audio-pill" type="button" aria-label="Play audio walkthrough">
+            <span class="audio-play-icon">▶</span>
+            <span class="audio-text">Listen: Walkthrough (60s)</span>
+            <span class="audio-wave-anim" aria-hidden="true"><span></span><span></span><span></span></span>
+          </button>
+          <audio id="walkthroughAudio" src="walkthrough-voiceover.mp3" preload="none"></audio>
+        </div>
+      </div>
+
+      <!-- Hero Visual Composition: Tactile Keycap + Simulated Ambient Viewport -->
+      <div class="hero-stage">
+        <div class="stage-frame">
+          <div class="stage-topbar">
+            <div class="dots"><span></span><span></span><span></span></div>
+            <span class="stage-caption">mello-core // active buffer</span>
+            <div class="stage-status"><span class="pulse"></span> 0.08ms Latency</div>
+          </div>
+          <div class="stage-display">
+            <div class="stage-device-focus">
+              <img src="mello-keycap.png" alt="Mello Workspace Tactile Keycap" class="stage-keycap-image">
+            </div>
+            <div class="stage-ambient-quote">
+              <blockquote>
+                "The screen shouldn't argue with your hands. You hit a chord, the window snaps instantly. You press hyper, Office doesn't steal focus. It feels like mechanical switch precision applied to the OS."
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sensations Section: How It Feels -->
+    <section id="sensations" class="sensations-section">
+      <div class="section-label">
+        <span class="label-number">01</span>
+        <span class="label-text">The Physiology of Focus</span>
+      </div>
+      <h2 class="section-heading">How your nervous system feels the difference.</h2>
+      
+      <div class="sensations-grid">
+        <div class="sensation-card">
+          <div class="sensation-icon" style="--accent: var(--accent-amber)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4m0 12v4M4.93 4.93l2.83 2.83m8.48 8.48l2.83 2.83M2 12h4m12 0h4M4.93 19.07l2.83-2.83m8.48-8.48l2.83-2.83"/></svg>
+          </div>
+          <h3>Low-Cortisol Input</h3>
+          <p>
+            When hotkeys fail to register or have unpredictable 300ms delays, your brain experiences micro-spikes of frustration. Mello is architected in pure AHK v2 with native Win32 message interception for sub-millisecond tactile assurance.
+          </p>
+        </div>
+
+        <div class="sensation-card">
+          <div class="sensation-icon" style="--accent: var(--accent-teal)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          </div>
+          <h3>Deterministic Geometry</h3>
+          <p>
+            Windows don't "slide" or rubber-band. They appear precisely where your mental layout needs them: 50/50 splits, custom third columns, or dedicated scratchpads that instantly dismiss the moment your note is taken.
+          </p>
+        </div>
+
+        <div class="sensation-card">
+          <div class="sensation-icon" style="--accent: var(--accent-burgundy)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+          </div>
+          <h3>Neutralized Hijacks</h3>
+          <p>
+            Windows explorer intercepting your beloved <code>Ctrl+Alt+Shift+Win</code> to launch the web Office portal? Mello silently intercepts protocol calls, reclaiming your Hyper Key as uninterrupted command territory.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Experience / Feature Walkthrough Video Simulations -->
+    <section id="experience" class="experience-section">
+      <div class="section-label">
+        <span class="label-number">02</span>
+        <span class="label-text">Interactive Showcase</span>
+      </div>
+      <h2 class="section-heading">Quiet mastery in short loops.</h2>
+      <p class="section-sub">
+        Explore each core capability through live canvas simulations demonstrating the exact rhythm of the tool.
+      </p>
+
+      <!-- Showcase Tabs -->
+      <div class="showcase-tabs">
+        <button class="tab-btn active" data-target="panel-snapping">Snap & Window Flow</button>
+        <button class="tab-btn" data-target="panel-quicknote">QuickNote Scratchpad</button>
+        <button class="tab-btn" data-target="panel-soundswap">SoundSwap Audio Toggle</button>
+        <button class="tab-btn" data-target="panel-hyperkey">Hyper Key & Office Neutralizer</button>
+      </div>
+
+      <!-- Feature Showcase Panels -->
+      <div class="showcase-container">
+
+        <!-- Panel 1: Window Snapping -->
+        <div class="showcase-panel active" id="panel-snapping">
+          <div class="panel-preview">
+            <div class="screen-simulation">
+              <div class="sim-header">
+                <span class="sim-title">Virtual Desktop — 4K Workspace</span>
+                <span class="sim-badge">Win + Alt + Arrows</span>
+              </div>
+              <div class="sim-canvas sim-snapping">
+                <div class="sim-window win-left active-snap">
+                  <div class="win-bar"><span>Terminal // Neovim</span></div>
+                  <div class="win-content code-lines">
+                    <span class="c-dim">// Instantaneous geometry</span>
+                    <span class="c-amber">const</span> <span class="c-teal">flowState</span> = <span class="c-amber">true</span>;
+                    <span>WinMove(0, 0, A_ScreenWidth/2, A_ScreenHeight)</span>
+                  </div>
+                </div>
+                <div class="sim-window win-right active-snap">
+                  <div class="win-bar"><span>Browser // Documentation</span></div>
+                  <div class="win-content doc-lines">
+                    <h4>Mello Layout Guidelines</h4>
+                    <p>Clean margins, no window overlap, zero visual clutter.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-controls">
+              <button class="sim-action-btn" id="btnTriggerSnap">Simulate Snap Chords</button>
+              <span class="sim-legend">Watch windows snap cleanly without OS window-management lag</span>
+            </div>
+          </div>
+          <div class="panel-details">
+            <span class="feature-tag">Core Window Engine</span>
+            <h3>Sub-millisecond window layout snapping</h3>
+            <p>
+              Traditional Windows Snap frequently trips up when multi-monitor scaling, edge detection, or slow animations kick in.
+              Mello's window engine bypasses explorer animations and calculates precise bounding boxes using direct Win32 coordinate transforms.
+            </p>
+            <ul class="feature-bullets">
+              <li><strong>Zero border overlap:</strong> Computes true client rectangles excluding invisible DWM drop shadows.</li>
+              <li><strong>Multi-monitor aware:</strong> Snaps and traverses monitors regardless of asymmetric resolution configurations.</li>
+              <li><strong>Excluded Windows guard:</strong> Never snaps or distorts floating dialogs, Task Manager, or games.</li>
+            </ul>
+            <div class="code-pill">
+              <code>Win+Alt+Left</code> &nbsp;·&nbsp; Left Half &nbsp;|&nbsp; <code>Win+Alt+Up</code> &nbsp;·&nbsp; Maximized Focus
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 2: QuickNote -->
+        <div class="showcase-panel" id="panel-quicknote">
+          <div class="panel-preview">
+            <div class="screen-simulation">
+              <div class="sim-header">
+                <span class="sim-title">QuickNoteMD Scratchpad</span>
+                <span class="sim-badge">Win + N</span>
+              </div>
+              <div class="sim-canvas sim-quicknote">
+                <div class="sim-notepad">
+                  <div class="notepad-top">
+                    <span class="notepad-badge">Markdown Preview Active</span>
+                    <span class="notepad-auto">Auto-saved to daily log</span>
+                  </div>
+                  <div class="notepad-text">
+                    <span class="np-h1"># Architectural Note</span>
+                    <span class="np-task"> [x] Preserve zero-token principles</span>
+                    <span class="np-task"> [x] Auto-route URLs to external browser</span>
+                    <span class="np-body">Thoughts captured in 0.2s without breaking deep context. Hit Esc to vanish.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-controls">
+              <button class="sim-action-btn" id="btnToggleNotepad">Simulate Win+N Toggle</button>
+              <span class="sim-legend">Appears instantly over your work, writes directly to your vault</span>
+            </div>
+          </div>
+          <div class="panel-details">
+            <span class="feature-tag">Markdown Scratchpad</span>
+            <h3>Thoughts captured without losing context</h3>
+            <p>
+              When a crucial thought flashes during deep coding or writing, opening a heavyweight editor breaks your train of thought.
+              QuickNoteMD pops up a lightweight, transparent WebView2 markdown scratchpad in a fraction of a second.
+            </p>
+            <ul class="feature-bullets">
+              <li><strong>Direct disk persistence:</strong> Stored immediately as standard Markdown files in your local workspace.</li>
+              <li><strong>Smart URL routing:</strong> Clicked links open in your default browser instead of trapping you inside webviews.</li>
+              <li><strong>Single-stroke dismissal:</strong> Press <code>Escape</code> or toggle again to slide back to work.</li>
+            </ul>
+            <div class="code-pill">
+              <code>Win+N</code> &nbsp;·&nbsp; Summon scratchpad &nbsp;|&nbsp; <code>Esc</code> &nbsp;·&nbsp; Dismiss & Auto-Save
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 3: SoundSwap -->
+        <div class="showcase-panel" id="panel-soundswap">
+          <div class="panel-preview">
+            <div class="screen-simulation">
+              <div class="sim-header">
+                <span class="sim-title">SoundSwap Audio Toggle</span>
+                <span class="sim-badge">Win + Alt + S</span>
+              </div>
+              <div class="sim-canvas sim-soundswap">
+                <div class="audio-switch-card">
+                  <div class="audio-device active" id="devHeadphones">
+                    <div class="dev-icon">🎧</div>
+                    <div class="dev-info">
+                      <span class="dev-name">Bose QuietComfort 45</span>
+                      <span class="dev-status">Active Playback Device</span>
+                    </div>
+                    <div class="dev-wave">
+                      <span></span><span></span><span></span><span></span>
+                    </div>
+                  </div>
+                  <div class="swap-indicator">⇄ Swapping Devices</div>
+                  <div class="audio-device" id="devSpeakers">
+                    <div class="dev-icon">🔊</div>
+                    <div class="dev-info">
+                      <span class="dev-name">Desktop Studio Monitors</span>
+                      <span class="dev-status">Standby</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-controls">
+              <button class="sim-action-btn" id="btnTriggerSoundSwap">Simulate Audio Swap</button>
+              <span class="sim-legend">Instant COM-based audio device cycling without opening Windows Settings</span>
+            </div>
+          </div>
+          <div class="panel-details">
+            <span class="feature-tag">Audio Architecture</span>
+            <h3>Seamless audio toggling with zero UI dialogs</h3>
+            <p>
+              Tired of clicking through Windows 11 sound flyouts, opening control panels, or dealing with RDP audio sync failures?
+              SoundSwap directly interfaces with the Windows CoreAudio COM interface (IPolicyConfig) to switch audio targets with a single chord.
+            </p>
+            <ul class="feature-bullets">
+              <li><strong>Headphones to Monitors:</strong> Instant single-key transition when stepping away from the desk.</li>
+              <li><strong>Remote Desktop aware:</strong> Correctly maps and restores Remote Audio endpoints during enterprise sessions.</li>
+              <li><strong>Whisper-quiet feedback:</strong> Crisp, subtle audio clicks confirm switches without annoying modal popups.</li>
+            </ul>
+            <div class="code-pill">
+              <code>Win+Alt+S</code> &nbsp;·&nbsp; Cycle Audio Targets &nbsp;|&nbsp; <code>Win+Alt+M</code> &nbsp;·&nbsp; Toggle Mic Mute
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel 4: Hyper Key & Office Neutralizer -->
+        <div class="showcase-panel" id="panel-hyperkey">
+          <div class="panel-preview">
+            <div class="screen-simulation">
+              <div class="sim-header">
+                <span class="sim-title">Office 365 Protocol Interceptor</span>
+                <span class="sim-badge">TASK-25 Active</span>
+              </div>
+              <div class="sim-canvas sim-hyperkey">
+                <div class="registry-display">
+                  <div class="reg-line active">
+                    <span class="reg-tag">Registry intercept</span>
+                    <code>Software\Classes\ms-officeapp\Shell\Open\Command</code>
+                  </div>
+                  <div class="reg-status-box">
+                    <div class="status-indicator-big"></div>
+                    <div class="status-msg">
+                      <strong>Office Protocol Neutralized</strong>
+                      <span>Default handler mapped to silent no-op (rundll32)</span>
+                    </div>
+                  </div>
+                  <div class="hyper-chord-tester">
+                    <span class="chord-title">Reclaimed Chord Space:</span>
+                    <div class="keys">
+                      <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>Win</kbd> + <kbd>P</kbd>
+                    </div>
+                    <span class="chord-result">→ No browser opens. Handled directly by Mello.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sim-controls">
+              <button class="sim-action-btn" id="btnTestHyper">Simulate Hyper Key Press</button>
+              <span class="sim-legend">No Office portal. Total key dominance for personal workflows</span>
+            </div>
+          </div>
+          <div class="panel-details">
+            <span class="feature-tag">Registry & Input Architecture</span>
+            <h3>Reclaiming the sacred Hyper Key from the OS</h3>
+            <p>
+              Keyboards with an Office key or users pressing <code>Ctrl+Alt+Shift+Win</code> are routinely interrupted by Windows launching Microsoft 365.
+              Mello neutralizes this hijack at the user-registry level without requiring Administrator elevation.
+            </p>
+            <ul class="feature-bullets">
+              <li><strong>Zero UAC prompts:</strong> Executes completely in <code>HKCU</code>; no admin elevation or security alerts.</li>
+              <li><strong>Reversible at any time:</strong> Easily toggled via the Mello tray menu with real-time checkbox status.</li>
+              <li><strong>Swallows chord triggers:</strong> Chords for Word, Excel, Teams, and PowerPoint are absorbed cleanly.</li>
+            </ul>
+            <div class="code-pill">
+              <code>^!+#</code> &nbsp;·&nbsp; Hyper Key liberated for your personalized productivity macros
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Architecture & Philosophy Section -->
+    <section id="architecture" class="architecture-section">
+      <div class="section-label">
+        <span class="label-number">03</span>
+        <span class="label-text">The Engineering Doctrine</span>
+      </div>
+      <h2 class="section-heading">Built to last. Built to respect your computer.</h2>
+
+      <div class="principles-grid">
+        <div class="principle-card">
+          <span class="p-num">01</span>
+          <h4>Composition Root Pattern</h4>
+          <p>
+            <code>Mello-Workspace.ahk</code> is the sole entry point. Modules in <code>lib/</code> remain strictly decoupled, clean, and self-contained. There are no circular dependencies or spaghetti includes.
+          </p>
+        </div>
+
+        <div class="principle-card">
+          <span class="p-num">02</span>
+          <h4>The Window Exclusion Guard</h4>
+          <p>
+            Every single function touching window geometry must pass through <code>IsExcludedWindow()</code>. Fullscreen games, virtual machines, and system dialogs are sacred and never disrupted.
+          </p>
+        </div>
+
+        <div class="principle-card">
+          <span class="p-num">03</span>
+          <h4>Zero Telemetry & Offline First</h4>
+          <p>
+            Your keystrokes, scratchpad notes, and window titles stay completely on your machine. Mello contains zero analytics beacons, zero phone-home routines, and runs completely air-gapped.
+          </p>
+        </div>
+
+        <div class="principle-card">
+          <span class="p-num">04</span>
+          <h4>AutoHotkey v2 Exclusive</h4>
+          <p>
+            Targeting AutoHotkey v2 exclusively eliminates legacy v1 quirks. Native object types, lexical scoping, structured error handling, and clean PascalCase functions ensure high reliability.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Documentation / Cheat Sheet -->
+    <section class="cheatsheet-section">
+      <div class="section-label">
+        <span class="label-number">04</span>
+        <span class="label-text">Hotkey Reference</span>
+      </div>
+      <h2 class="section-heading">Core keyboard muscle memory.</h2>
+
+      <div class="cheatsheet-table-wrap">
+        <table class="cheatsheet-table">
+          <thead>
+            <tr>
+              <th>Chord</th>
+              <th>Action</th>
+              <th>Category</th>
+              <th>Feeling</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>Win + Alt + Left/Right</code></td>
+              <td>Snap Active Window to 50% Left/Right Screen</td>
+              <td>Geometry</td>
+              <td>Instant snapping without window friction</td>
+            </tr>
+            <tr>
+              <td><code>Win + Alt + Up</code></td>
+              <td>Maximized Focus Mode (Clean Titlebar)</td>
+              <td>Geometry</td>
+              <td>Deep concentration viewport</td>
+            </tr>
+            <tr>
+              <td><code>Win + N</code></td>
+              <td>Summon / Dismiss QuickNoteMD Scratchpad</td>
+              <td>Scratchpad</td>
+              <td>Capture transient thoughts in 0.2s</td>
+            </tr>
+            <tr>
+              <td><code>Win + Alt + S</code></td>
+              <td>Toggle Default Audio Endpoint (SoundSwap)</td>
+              <td>Audio</td>
+              <td>Instant headphone-to-speaker shift</td>
+            </tr>
+            <tr>
+              <td><code>Win + Alt + M</code></td>
+              <td>Global Microphone Hardware Mute Toggle</td>
+              <td>Audio</td>
+              <td>Confidence during remote work meetings</td>
+            </tr>
+            <tr>
+              <td><code>Ctrl + Alt + Shift + Win + [Key]</code></td>
+              <td>Hyper Key Custom Layer (Office Hijack Neutralized)</td>
+              <td>Hyper Layer</td>
+              <td>Zero OS interference; pure custom power</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="footer-container">
+      <div class="footer-col">
+        <div class="brand">
+          <img src="mello-keycap.png" alt="Mello Logo" class="footer-icon">
+          <span class="brand-title">Mello-Workspace</span>
+        </div>
+        <p class="footer-desc">
+          Low-cortisol Windows productivity architecture. Built for developers, designers, and thinkers who demand zero latency.
+        </p>
+      </div>
+      <div class="footer-links">
+        <div>
+          <h5>Repository</h5>
+          <ul>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace" target="_blank" rel="noopener">GitHub Project</a></li>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace/releases" target="_blank" rel="noopener">Releases & Binaries</a></li>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace/blob/main/README.adoc" target="_blank" rel="noopener">README (AsciiDoc)</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Architecture</h5>
+          <ul>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace/tree/main/lib" target="_blank" rel="noopener">Core Libraries</a></li>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace/tree/main/plugins" target="_blank" rel="noopener">Plugins & Modules</a></li>
+            <li><a href="https://github.com/voltaire-toledo/Mello-Workspace/tree/main/docs/adr" target="_blank" rel="noopener">Architectural Decision Records</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>AutoHotkey v2 · Licensed under MIT · Flow without friction.</span>
+      <span class="dude-quote">"The Dude abides."</span>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
