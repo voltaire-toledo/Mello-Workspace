@@ -38,6 +38,13 @@ try {
 } catch {
   global IsStartupSoundDisabled := false
 }
+global IsOfficeKeyNeutralized := true
+try {
+  global IsOfficeKeyNeutralized := RegRead("HKCU\Software\Mello-Workspace", "NeutralizeOfficeKey", 1) != 0
+} catch {
+  global IsOfficeKeyNeutralized := true
+}
+ApplyOfficeKeyNeutralization(IsOfficeKeyNeutralized)
 
 ; ╭──────────────────────────────────────────────────────────────╮
 ; │ HANDLERS                                                     │
