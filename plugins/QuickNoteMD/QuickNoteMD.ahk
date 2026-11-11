@@ -1,6 +1,9 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 SendMode "Input"
+
+; Initialize WebView2 default background to transparent so Windows 11 system backdrop shows through
+EnvSet("WEBVIEW2_DEFAULT_BACKGROUND_COLOR", "0x00000000")
 ; =============================================================================
 ; QuickNote MD — floating Markdown scratchpad with Edit/View modes + image paste
 ;   Win+Alt+M (configurable) : show/hide (invoking brings the window to focus)
@@ -208,6 +211,7 @@ QNMD_Create() {
 
     qnmd.gui := g, qnmd.host := host
     QNMD_DetectTheme()
+    QNMD_ApplyBackdrop(g.Hwnd, qnmd.dark)
     QNMD_RestoreGeometry()
 
     dllDir := QNMD_SELF_DIR "\vendor\WebView2\" (A_PtrSize = 8 ? "64bit" : "32bit")
@@ -254,8 +258,10 @@ QNMD_OnSettingChange(wParam, lParam, msg, hwnd) {
         return
     was := qnmd.dark
     QNMD_DetectTheme()
-    if (was != qnmd.dark)
+    if (was != qnmd.dark) {
+        QNMD_ApplyBackdrop(qnmd.gui.Hwnd, qnmd.dark)
         try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
+    }
 }
 
 QNMD_OnActivate(wParam, lParam, msg, hwnd) {
@@ -369,6 +375,8 @@ QNMD_SetThemeMode(mode) {
     }
 
     try IniWrite(qnmd.themeMode, QNMD_INI, "theme", "mode")
+    if (qnmd.gui != "")
+        QNMD_ApplyBackdrop(qnmd.gui.Hwnd, qnmd.dark)
     if (qnmd.wv != "")
         try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
 }
@@ -484,4 +492,16 @@ if QNMD_IsStandalone {
     else
         TraySetIcon("shell32.dll", 174)
     A_IconTip := "QuickNote MD (Win+Alt+M)"
+}
+
+QNMD_ApplyBackdrop(hwnd, isDark) {
+    try {
+        ; DWMWA_USE_IMMERSIVE_DARK_MODE = 20
+        darkVal := isDark ? 1 : 0
+        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 20, "int*", darkVal, "uint", 4)
+
+        ; DWMWA_SYSTEMBACKDROP_TYPE = 38, DWMSBT_MAINWINDOW (Mica) = 2
+        backdropType := 2
+        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 38, "int*", backdropType, "uint", 4)
+    }
 }
