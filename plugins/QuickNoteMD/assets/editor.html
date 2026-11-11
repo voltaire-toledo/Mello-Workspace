@@ -6,17 +6,17 @@
 <script src="marked.min.js"></script>
 <style>
   :root {
-    --bg: transparent; --fg: #1a2023; --pane-bg: transparent; --border: rgba(216, 220, 222, 0.50);
-    --status-bg: rgba(231, 233, 234, 0.50); --status-fg: #4a5157; --code-bg: rgba(238, 240, 241, 0.70); --link: #2662d9;
+    --bg: #f3f3f3; --fg: #1a2023; --pane-bg: #ffffff; --border: #d8dcde;
+    --status-bg: #e7e9ea; --status-fg: #4a5157; --code-bg: #eef0f1; --link: #2662d9;
     --notice: #a15c00;
   }
   body.dark {
-    --bg: transparent; --fg: #f3f3f3; --pane-bg: transparent; --border: rgba(56, 64, 73, 0.50);
-    --status-bg: rgba(30, 30, 30, 0.50); --status-fg: #a9b1b8; --code-bg: rgba(45, 45, 45, 0.70); --link: #6fa8ff;
+    --bg: #252525; --fg: #f3f3f3; --pane-bg: #252525; --border: #384049;
+    --status-bg: #1c1c1c; --status-fg: #a9b1b8; --code-bg: #2e2e2e; --link: #6fa8ff;
     --notice: #ffb454;
   }
   * { box-sizing: border-box; }
-  html, body { height: 100%; margin: 0; background: transparent; }
+  html, body { height: 100%; margin: 0; }
   body {
     display: flex; flex-direction: column; background: var(--bg); color: var(--fg);
     font: 13px/1.4 -apple-system, "Segoe UI", sans-serif; overflow: hidden;
