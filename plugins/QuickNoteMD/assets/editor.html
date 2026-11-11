@@ -6,13 +6,13 @@
 <script src="marked.min.js"></script>
 <style>
   :root {
-    --bg: rgba(243, 243, 243, 0.72); --fg: #1a2023; --pane-bg: rgba(255, 255, 255, 0.68); --border: rgba(216, 220, 222, 0.65);
-    --status-bg: rgba(231, 233, 234, 0.75); --status-fg: #4a5157; --code-bg: rgba(238, 240, 241, 0.85); --link: #2662d9;
+    --bg: rgba(243, 243, 243, 0.50); --fg: #1a2023; --pane-bg: rgba(255, 255, 255, 0.45); --border: rgba(216, 220, 222, 0.50);
+    --status-bg: rgba(231, 233, 234, 0.55); --status-fg: #4a5157; --code-bg: rgba(238, 240, 241, 0.70); --link: #2662d9;
     --notice: #a15c00;
   }
   body.dark {
-    --bg: rgba(35, 42, 47, 0.75); --fg: #f3f3f3; --pane-bg: rgba(27, 33, 38, 0.70); --border: rgba(56, 64, 73, 0.65);
-    --status-bg: rgba(27, 33, 38, 0.80); --status-fg: #a9b1b8; --code-bg: rgba(42, 50, 56, 0.85); --link: #6fa8ff;
+    --bg: rgba(35, 42, 47, 0.55); --fg: #f3f3f3; --pane-bg: rgba(27, 33, 38, 0.50); --border: rgba(56, 64, 73, 0.50);
+    --status-bg: rgba(27, 33, 38, 0.60); --status-fg: #a9b1b8; --code-bg: rgba(42, 50, 56, 0.70); --link: #6fa8ff;
     --notice: #ffb454;
   }
   * { box-sizing: border-box; }
@@ -309,7 +309,7 @@
 
     const text = editor.value, trimmed = text.trim();
     const words = trimmed === '' ? 0 : trimmed.replace(/\s+/g, ' ').split(' ').length;
-    counts.textContent = words + ' words, ' + text.length + ' chars';
+    counts.textContent = words + ' words, ' + text.length + ' chars, ' + transparencyPct + '% tr';
   }
 
   // Handle interactive checkbox toggling in preview mode
@@ -333,7 +333,7 @@
 
   function updateHint() {
     hint.classList.remove('notice');
-    hint.textContent = 'Alt+V to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to adjust font size \u2022 Acrylic Backdrop Blur Enabled';
+    hint.textContent = 'Alt+V to toggle Edit/Preview Mode \u2022 Ctrl + Scroll to zoom \u2022 Alt + Scroll to adjust transparency';
   }
 
   function flashReadonlyNotice() {

@@ -40,7 +40,7 @@ if !DirExist(QNMD_DIR)
     DirCreate(QNMD_DIR)
 
 OnMessage(0x1A, QNMD_OnSettingChange)   ; WM_SETTINGCHANGE -> live theme flip
-; OnMessage(0x0006, QNMD_OnActivate)     ; Backdrop blur replaces window alpha reduction
+OnMessage(0x0006, QNMD_OnActivate)     ; WM_ACTIVATE -> unfocused 20% opacity reduction / focused restore
 OnExit(QNMD_SaveGeometry)
 
 QNMD_LoadConfig()
@@ -110,11 +110,11 @@ QNMD_ReregisterHotkey(newCombo) {
 
 #HotIf (qnmd.gui != "" && WinActive("ahk_id " qnmd.gui.Hwnd))
 Esc::QNMD_Hide()
-; Opacity adjustment disabled
-; Opacity adjustment disabled
-; Opacity adjustment disabled
-; Opacity adjustment disabled
-; Opacity adjustment disabled
+!+::QNMD_AdjustOpacity(13)            ; Alt + Plus = increase opacity
+!=::QNMD_AdjustOpacity(13)            ; Alt + Equal = increase opacity
+!NumpadAdd::QNMD_AdjustOpacity(13)    ; Alt + NumpadAdd
+!-::QNMD_AdjustOpacity(-13)           ; Alt + Minus = decrease opacity
+!NumpadSub::QNMD_AdjustOpacity(-13)   ; Alt + NumpadSub
 ^+::QNMD_AdjustZoom(0.1)
 ^=::QNMD_AdjustZoom(0.1)
 ^NumpadAdd::QNMD_AdjustZoom(0.1)
@@ -134,8 +134,8 @@ QNMD_IsMouseOver() {
 }
 
 #HotIf QNMD_IsMouseOver()
-; Opacity wheel disabled
-; Opacity wheel disabled
+!WheelUp::QNMD_AdjustOpacity(13)     ; Alt + Scroll Up = increase opacity
+!WheelDown::QNMD_AdjustOpacity(-13)  ; Alt + Scroll Down = decrease opacity
 #HotIf
 
 ; ---- show / hide / toggle ---------------------------------------------------
@@ -154,9 +154,16 @@ QNMD_Show(activate := true) {
     g := qnmd.gui
     defaultGeom := "w" QNMD_DEFAULT_W " h" QNMD_DEFAULT_H
     g.Show((qnmd.geom != "" ? qnmd.geom : defaultGeom) (activate ? "" : " NoActivate"))
-    WinSetTransparent("Off", g.Hwnd)
-    if activate
+    if activate {
+        if (qnmd.opacity >= 255)
+            WinSetTransparent("Off", g.Hwnd)
+        else
+            WinSetTransparent(qnmd.opacity, g.Hwnd)
         WinActivate("ahk_id " g.Hwnd)
+    } else {
+        unfocusedAlpha := Min(Round(qnmd.opacity * 0.8), 204)
+        WinSetTransparent(unfocusedAlpha, g.Hwnd)
+    }
     try qnmd.wvc.IsVisible := true
     try qnmd.wvc.Fill()
     QNMD_SyncTransparency()
@@ -201,6 +208,7 @@ QNMD_Create() {
 
     qnmd.gui := g, qnmd.host := host
     QNMD_DetectTheme()
+    QNMD_ApplyBackdrop(g.Hwnd, qnmd.dark)
     QNMD_RestoreGeometry()
 
     dllDir := QNMD_SELF_DIR "\vendor\WebView2\" (A_PtrSize = 8 ? "64bit" : "32bit")
@@ -218,6 +226,7 @@ QNMD_Create() {
         )
         ExitApp()
     }
+    try wvc.DefaultBackgroundColor := 0
     wv := wvc.CoreWebView2
     qnmd.wvc := wvc, qnmd.wv := wv
 
@@ -247,8 +256,10 @@ QNMD_OnSettingChange(wParam, lParam, msg, hwnd) {
         return
     was := qnmd.dark
     QNMD_DetectTheme()
-    if (was != qnmd.dark)
+    if (was != qnmd.dark) {
+        QNMD_ApplyBackdrop(qnmd.gui.Hwnd, qnmd.dark)
         try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
+    }
 }
 
 QNMD_OnActivate(wParam, lParam, msg, hwnd) {
@@ -362,6 +373,8 @@ QNMD_SetThemeMode(mode) {
     }
 
     try IniWrite(qnmd.themeMode, QNMD_INI, "theme", "mode")
+    if (qnmd.gui != "")
+        QNMD_ApplyBackdrop(qnmd.gui.Hwnd, qnmd.dark)
     if (qnmd.wv != "")
         try qnmd.wv.ExecuteScriptAsync("QN.setTheme(" (qnmd.dark ? "true" : "false") ")")
 }
@@ -481,9 +494,18 @@ if QNMD_IsStandalone {
 
 QNMD_ApplyBackdrop(hwnd, isDark) {
     try {
+        ; Extend frame into client area (-1 on all sides) so backdrop covers the entire window
+        margins := Buffer(16, 0)
+        NumPut("Int", -1, margins, 0)  ; cxLeftWidth
+        NumPut("Int", -1, margins, 4)  ; cxRightWidth
+        NumPut("Int", -1, margins, 8)  ; cyTopHeight
+        NumPut("Int", -1, margins, 12) ; cyBottomHeight
+        DllCall("dwmapi\DwmExtendFrameIntoClientArea", "ptr", hwnd, "ptr", margins)
+
         ; DWMWA_USE_IMMERSIVE_DARK_MODE = 20
         darkVal := isDark ? 1 : 0
         DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 20, "int*", darkVal, "uint", 4)
+
         ; DWMWA_SYSTEMBACKDROP_TYPE = 38, DWMSBT_TRANSIENTWINDOW (Acrylic) = 3
         backdropType := 3
         DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 38, "int*", backdropType, "uint", 4)
