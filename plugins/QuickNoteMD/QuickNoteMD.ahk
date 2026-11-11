@@ -494,7 +494,7 @@ if QNMD_IsStandalone {
 
 QNMD_ApplyBackdrop(hwnd, isDark) {
     try {
-        ; Extend frame into client area (-1 on all sides) so backdrop covers the entire window
+        ; Extend frame into client area (-1 on all sides)
         margins := Buffer(16, 0)
         NumPut("Int", -1, margins, 0)  ; cxLeftWidth
         NumPut("Int", -1, margins, 4)  ; cxRightWidth
@@ -506,8 +506,23 @@ QNMD_ApplyBackdrop(hwnd, isDark) {
         darkVal := isDark ? 1 : 0
         DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 20, "int*", darkVal, "uint", 4)
 
-        ; DWMWA_SYSTEMBACKDROP_TYPE = 38, DWMSBT_TRANSIENTWINDOW (Acrylic) = 3
-        backdropType := 3
-        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 38, "int*", backdropType, "uint", 4)
+        ; Apply Acrylic blur via SetWindowCompositionAttribute (ACCENT_ENABLE_ACRYLICBLURBEHIND = 4)
+        ; Gradient color in ABGR format: Alpha (0xCC = ~80%) + BGR (#252525 for dark, #F3F3F3 for light)
+        tintColor := isDark ? 0xCC252525 : 0xCCF3F3F3
+        accentSize := 16
+        accentPolicy := Buffer(accentSize, 0)
+        NumPut("int", 4, accentPolicy, 0)          ; AccentState: ACCENT_ENABLE_ACRYLICBLURBEHIND
+        NumPut("int", 2, accentPolicy, 4)          ; AccentFlags: 2 = DrawBorder
+        NumPut("uint", tintColor, accentPolicy, 8) ; GradientColor (ABGR)
+        NumPut("int", 0, accentPolicy, 12)         ; AnimationId
+
+        pad := (A_PtrSize == 8) ? 4 : 0
+        dataSize := 4 + pad + A_PtrSize + 4 + pad
+        winCompAttrData := Buffer(dataSize, 0)
+        NumPut("int", 19, winCompAttrData, 0)                          ; WCA_ACCENT_POLICY = 19
+        NumPut("ptr", accentPolicy.Ptr, winCompAttrData, 4 + pad)      ; pvData
+        NumPut("uint", accentSize, winCompAttrData, 4 + pad + A_PtrSize) ; cbData
+
+        DllCall("user32\SetWindowCompositionAttribute", "ptr", hwnd, "ptr", winCompAttrData.Ptr, "int")
     }
 }
