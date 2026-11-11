@@ -1,6 +1,9 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 SendMode "Input"
+
+; Initialize WebView2 default background to transparent so Windows 11 system backdrop shows through
+EnvSet("WEBVIEW2_DEFAULT_BACKGROUND_COLOR", "0x00000000")
 ; =============================================================================
 ; QuickNote MD — floating Markdown scratchpad with Edit/View modes + image paste
 ;   Win+Alt+M (configurable) : show/hide (invoking brings the window to focus)
@@ -496,5 +499,9 @@ QNMD_ApplyBackdrop(hwnd, isDark) {
         ; DWMWA_USE_IMMERSIVE_DARK_MODE = 20
         darkVal := isDark ? 1 : 0
         DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 20, "int*", darkVal, "uint", 4)
+
+        ; DWMWA_SYSTEMBACKDROP_TYPE = 38, DWMSBT_MAINWINDOW (Mica) = 2
+        backdropType := 2
+        DllCall("dwmapi\DwmSetWindowAttribute", "ptr", hwnd, "int", 38, "int*", backdropType, "uint", 4)
     }
 }
