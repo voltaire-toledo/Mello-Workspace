@@ -1,0 +1,42 @@
+# Auto-detect text files and normalize line endings to LF across all platforms
+* text=auto eol=lf
+
+# AutoHotkey & Windows Automation
+# AHK v2 source files: LF normalized (AHK v2 natively supports LF)
+*.ahk text eol=lf
+
+# Windows command & shell scripts: must preserve CRLF for cmd.exe compatibility
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Shell & container scripts: always LF
+*.sh text eol=lf
+*.bash text eol=lf
+
+# Documentation & Web / Assets
+*.md text eol=lf
+*.txt text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.js text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+
+# Binary Assets - preserve exact byte stream without newline translation
+*.ico binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.mp3 binary
+*.wav binary
+*.exe binary
+*.dll binary
+*.zip binary
+*.tar.gz binary
+*.chm binary
+*.pdf binary
+*.docx binary
