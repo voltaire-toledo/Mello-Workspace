@@ -12,18 +12,21 @@ ModalMsg(message_string := "No Action Assigned", app_in_use := "No App Defined",
   trigger_key := "" ; ensure variable is initialized to avoid linter warnings when no case matches
   Switch A_ThisHotkey
   {
-    case "F13": trigger_key := "⌨️  [F13] `n🖱️  [G + Onboard_Cycle] `n#️⃣  [Num_###?]"
-    case "F14": trigger_key := "⌨️  [F14] `n🖱️  [G + Scroll_Left]   `n#️⃣  [Num_###?]"
-    case "F15": trigger_key := "⌨️  [F15] `n🖱️  [G + Middle_Click]  `n#️⃣  [Num_8]"
-    case "F16": trigger_key := "⌨️  [F16] `n🖱️  [G + Scroll_Right]  `n#️⃣  [Num_6]"
-    case "F17": trigger_key := "⌨️  [F17] `n🖱️  [Top_Forward]       `n#️⃣  [Num_Lock]"
-    case "F18": trigger_key := "⌨️  [F18] `n🖱️  [G + Top_Forward]   `n#️⃣  [Num_8]"
-    case "F19": trigger_key := "⌨️  [F19] `n🖱️  [Top_Back]          `n#️⃣  [Num_7]"
-    case "F20": trigger_key := "⌨️  [F20] `n🖱️  [G + Top_Back]      `n#️⃣  [Num_###?]"
-    case "F21": trigger_key := "⌨️  [F21] `n🖱️  [G + Scroll_Up]     `n#️⃣  [Num_4]"
-    case "F22": trigger_key := "⌨️  [F22] `n🖱️  [G + Scroll_Down]   `n#️⃣  [Num_2]"
-    case "F23": trigger_key := "⌨️  [F23] `n🖱️  [G + Btn_Right]     `n#️⃣  [Num_9]"
-   ;case "F24": trigger_key := "⌨️  [F24] `n🖱️  [G + Side_Back]     `n#️⃣  [Num_1]"
+    ;case "???": trigger_key := "⌨️  [???] `n🖱️  [G + Side_Fwo]"        ; G6
+    ;case "???": trigger_key := "⌨️  [???] `n🖱️  [G + Side_Back]"       ; G6
+    ;case "???": trigger_key := "⌨️  [???] `n🖱️  [Onboard_Cycle]"       ; G9
+    ;case "???": trigger_key := "⌨️  [???] `n🖱️  [G + Onboard_Cycle]"   ; GShift G9
+    case "F13": trigger_key := "⌨️  [F13] `n🖱️  [G + Side_Fwd]"        ; GShift G6
+    case "F14": trigger_key := "⌨️  [F14] `n🖱️  [G + Scroll_Left]"     ; GShift G7
+    case "F15": trigger_key := "⌨️  [F15] `n🖱️  [G + Middle_Click]"    ; GShift G3
+    case "F16": trigger_key := "⌨️  [F16] `n🖱️  [G + Scroll_Right]"    ; GShift G8
+    case "F17": trigger_key := "⌨️  [F17] `n🖱️  [G + Top_Forward]"     ; GShift G10
+    case "F18": trigger_key := "⌨️  [F18] `n🖱️  [G + Top_Back]"        ; GShift G11
+    case "F19": trigger_key := "⌨️  [F19] `n🖱️  [Top_Forward]"         ; G10
+    case "F20": trigger_key := "⌨️  [F20] `n🖱️  [Top_Back]"            ; G11
+    case "F21": trigger_key := "⌨️  [F21] `n🖱️  [G + Scroll_Up]"       ; GShift SCROLL1
+    case "F22": trigger_key := "⌨️  [F22] `n🖱️  [G + Scroll_Down]"     ; GShift SCROLL2
+    case "F23": trigger_key := "⌨️  [F23] `n🖱️  [G + Btn_Right]"       ; GShift G2
   }
 
   if message_string = ""
@@ -85,10 +88,10 @@ F13:: Send "^+{h}"                           ; Open current page in full screen
 F14:: Send "{Home}{Enter}>{Space}"              ; Convert to a Toggle text block
 ; F15:: Send "^+L"                                ; Toggle between light and dark mode
 F16:: ModalMsg "", app_notion, 2
-F17:: Send "{Home}{Enter}{# 2}{Space}>{Space}"  ; Convert to a Toggle Heading 2
 F18:: Send "^+L"                              ; Toggle between light and dark mode
-F19:: Send "{Home}{Enter}{# 3}{Space}>{Space}"  ; Convert to a Toggle Heading 3
-F20:: ModalMsg "", app_notion, 2
+F19:: Send "{Home}{Enter}{# 2}{Space}>{Space}"  ; Convert to a Toggle Heading 2
+F20:: Send "{Home}{Enter}{# 3}{Space}>{Space}"  ; Convert to a Toggle Heading 3
+; F20:: ModalMsg "", app_notion, 2
 ; F21:: ModalMsg "", app_notion, 2
 ; F22:: ModalMsg "", app_notion, 2
 F23:: Send "^{/}"                   ; Open Format Menu
@@ -104,7 +107,7 @@ F13:: Click
 F14:: ModalMsg "", app_msword, 2
 ; F15:: ModalMsg "", app_msword, 2
 F16:: ModalMsg "", app_msword, 2
-F17:: ModalMsg "", app_msword, 2
+; F17:: ModalMsg "", app_msword, 2
 F18:: ModalMsg "", app_msword, 2
 F19:: ModalMsg "", app_msword, 2
 F20:: ModalMsg "", app_msword, 2   ; /block equation
@@ -122,10 +125,9 @@ F13:: Click
 F14:: Send "k"                      ; Navigate to previous message
 ; F15:: ModalMsg "", app_gmail, 2
 F16:: Send "j"                      ; Navigate to next message
-F17:: Send "+u"                     ; Mark as unread
+F19:: Send "+u"                     ; Mark as unread
 F18:: Send "{z}"                    ; Undo last action
-F19:: Send "+i"                     ; Mark as read
-F20:: ModalMsg "", app_gmail, 2
+F20:: Send "+i"                     ; Mark as read
 ; F21:: ModalMsg "", app_gmail, 2
 ; F22:: ModalMsg "", app_gmail, 2
 F23:: Send "{#}"   ; Delete the current email
@@ -140,7 +142,6 @@ F13:: Click
 F14:: Send "^["                         ; Increase Indent
 ; F15:: ModalMsg "", app_vscode
 F16:: Send "^]"                         ; Decrease Indent
-F17:: ModalMsg "", app_vscode
 F18:: ModalMsg "", app_vscode
 F19:: ModalMsg "", app_vscode
 F20:: ModalMsg "", app_vscode
@@ -162,10 +163,9 @@ F13:: Click
 ; F15:: ModalMsg "", app_yt
 ^F16:: Send "{>}"                    ; Switch to the previous tab
 F18:: ModalMsg "", app_yt
-F17:: Send "{>}"                     ; Speed up the playback
-F19:: Send "{<}"                     ; Slow down the playback
+F19:: Send "{>}"                     ; Speed up the playback
+F20:: Send "{<}"                     ; Slow down the playback
 ; F21:: ModalMsg "", app_yt
-F20:: ModalMsg "", app_yt
 ; F22:: ModalMsg "", app_yt
 F23:: Send "^{w}"                    ; Close the current tab
 ^WheelUp:: Send "{Volume_Up 1}"      ; Increase the volume
@@ -198,10 +198,10 @@ F16:: {
   }
 }
 F18:: Send "^t"                                       ; Post a reply
-F17:: Send "^{1}"                                     ; Switch to Mail view
-F19:: Send "^{2}"                                     ; Switch to Calendar view
+F19:: Send "^{1}"                                     ; Switch to Mail view
+F20:: Send "^{2}"                                     ; Switch to Calendar view
 ; F21:: ModalMsg "", app_msolk_new
-F20:: Send "^U"                                       ; Mark as Unread
+F21:: Send "^U"                                       ; Mark as Unread
 ; F22:: ModalMsg "", app_msolk_new
 F23:: Send "{Del}"                                    ; Delete Current Email
 #HotIf
@@ -228,10 +228,9 @@ F16:: {
   }
 }
 F18:: Send "^+r"                                      ; Post a reply to all
-F17:: Send "^{1}"                                     ; Switch to Mail view
-F19:: Send "^{2}"                                     ; Switch to Calendar view
-; F21:: ModalMsg "", app_msolk
-F20:: Send "^U"                                       ; Mark as Unread
+F19:: Send "^{1}"                                     ; Switch to Mail view
+F20:: Send "^{2}"                                     ; Switch to Calendar view
+F21:: Send "^U"                                       ; Mark as Unread
 ; F22:: ModalMsg "", app_msolk
 F23:: Send "{Del}"                                    ; Delete Current Email
 #HotIf
@@ -250,11 +249,9 @@ F18:: {
   Send "{t}"
   Send "{Enter}"
 }
-F17:: Send "^+{v}"                                    ; Paste as plain textt
-F19:: Send "^{c}"                                     ; Copy
-F20:: ModalMsg "", app_msexcel
-; F21:: ModalMsg "", app_msexcel
-; F22:: ModalMsg "", app_msexcel
+F19:: Send "^+{v}"                                    ; Paste as plain textt
+F20:: Send "^{c}"                                     ; Copy
+F21:: ModalMsg "", app_msexcel
 F23:: ModalMsg "", app_msexcel
 NumpadSub:: Send "^{y}"                               ; Redo
 NumpadAdd:: Send "^{z}"                               ; Undo
@@ -274,9 +271,9 @@ F18:: {
   Send "{t}"
   Send "{Enter}"
 }
-F17:: Send "^{2}"                                     ; Chat View
-F19:: Send "^{4}"                                     ; Calendar View
-F20:: Send "^{3}"                                     ; Teams View
+F19:: Send "^{2}"                                     ; Chat View
+F20:: Send "^{4}"                                     ; Calendar View
+F21:: Send "^{3}"                                     ; Teams View
 ; F21:: ModalMsg "", app_msteams
 ; F22:: ModalMsg "", app_msteams
 F23:: ModalMsg "", app_msteams
@@ -291,15 +288,10 @@ NumpadAdd:: Send "^{z}"                               ; Undo
 app_msedge := "🧭 MS Edge"
 F13:: Send "^+{v}"                                    ; Ctrl+Shift+V to Paste as plain text
 F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab to switch to the previous tab
-; F15:: ModalMsg "", app_msedge
-; F16:: MsgBox "Now running app-dyn"                                   ; Ctrl+Tab to switch to the next tab
 F16:: Send "^{Tab}"                                   ; Ctrl+Tab to switch to the next tab
 F18:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
-F17:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
-F19:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
-F20:: ModalMsg "", app_msedge
-; F21:: ModalMsg "", app_msedge
-; F22:: ModalMsg "", app_msedge
+F19:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
+F20:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
 F23:: Send "^{w}"                                     ; Ctrl+W to close the current tab
 #HotIf
 
@@ -310,49 +302,24 @@ F23:: Send "^{w}"                                     ; Ctrl+W to close the curr
 app_msedge := "🌐 Chrome-ish"
 F13:: Send "^+{v}"                                    ; Ctrl+Shift+V to Paste as plain text
 F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab to switch to the previous tab
-; F15:: ModalMsg "", app_msedge
 F16:: Send "^{Tab}"                                   ; Ctrl+Tab to switch to the next tab
 F18:: Send "^+{u}"                                    ; Ctrl+Shift+U to Read Out Loud
-F17:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
-F19:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
-F20:: ModalMsg "", app_msedge
+F19:: Send "{Home}"                                   ; "{Home}" to go to the top of the page
+F20:: Send "{End}"                                    ; "{End}" to go to the bottom of the page
+F21:: ModalMsg "", app_msedge
 ; F21:: ModalMsg "", app_msedge
 ; F22:: ModalMsg "", app_msedge
 F23:: Send "^{w}"                                     ; Ctrl+W to close the current tab
 #HotIf
-
-#HotIf WinActive("ahk_exe paintdotnet.exe")
-; ╭──────────────────────────────────────────────────────────────────────╮
-; │  Paint.NET: PaintDotNet.exe                                          │
-; ╰──────────────────────────────────────────────────────────────────────╯
-app_paintdotnet := "🎨 Paint.NET"
-F13:: ModalMsg("", app_paintdotnet)             ; [G502X: Onboard Cycle][G604: Side #1][NumPad ?]
-F14:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Scroll_Left][G604: Side #1][NumPad ?]
-; F15:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Middle_Click][G604: Side #1][NumPad ?]
-F16:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Scroll_Right][G604: Side #1][NumPad ?]
-F17:: ModalMsg("", app_paintdotnet)             ; [G502X: Top_Forward][G604: Side #1][NumPad ?]
-F18:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Top_Forward][G604: Side #1][NumPad ?]
-F19:: ModalMsg("", app_paintdotnet)             ; [G502X: Top_Back][G604: Side #1][NumPad ?]
-F20:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Top_Back][G604: Side #1][NumPad ?]
-F21:: Send("]")                                 ; [G502X: G + Scroll_Up][G604: Side #1][NumPad ?]
-F22:: Send("[")                                 ; [G502X: G + Scroll_Down][G604: Side #1][NumPad ?]
-F23:: ModalMsg("", app_paintdotnet)             ; [G502X: G + Right_Click][G604: Side #1][NumPad ?]
-#HotIf
-HotIf()
 
 ; ╭──────────────────────────────────────────────────────────────────────╮
 ; │ EVERYTHING ELSE: Default Mouse Button Hotkeys                        │
 ; ╰──────────────────────────────────────────────────────────────────────╯
 F13:: Click
 F14:: Send "^+{Tab}"                                  ; Ctrl+Shift+Tab
-; F15:: ModalMsg "", ""
 F16:: Send "^{Tab}"                                   ; Ctrl+Tab
-F17:: Send "#{Tab}"                                   ; Win+Tab
-F18:: ModalMsg "", ""
-F19:: ModalMsg "", ""
-F20:: ModalMsg "", ""
+F19:: Send "#{Tab}"                                   ; Win+Tab
 F21:: Send "^{SPACE}"
-; F22:: ModalMsg "", ""
 F23:: Send "^{w}"                                     ; Ctrl+W
 <^#!WheelLeft:: Send "^#{Left}"                         ; Navigate to the Virtual Desktop on the Left
 <^#!WheelRight:: Send "^#{Right}"                       ; Navigate to the Virtual Desktop on the Right
